@@ -2,19 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: ".env");
-
-  try {
-    final client = await Supabase.initialize(
-      url: dotenv.get('SUPABASE_URL'),
-      anonKey: dotenv.get('SUPABASE_ANNON_KEY'),
-    );
-  } catch (e) {
-    print(e);
-  }
 
   runApp(
     MaterialApp(
@@ -59,32 +50,46 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Signup")),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          TextField(
-              controller: _email,
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(hintText: "Enter email")),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _password,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: "Enter password"),
+        appBar: AppBar(title: const Text("Signup")),
+        body: FutureBuilder(
+          future: Supabase.initialize(
+            url: dotenv.get('SUPABASE_URL'),
+            anonKey: dotenv.get('SUPABASE_ANNON_KEY'),
           ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () async {},
-            child: const Text("Register"),
-          ),
-        ],
-      ),
-    );
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextField(
+                        controller: _email,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration:
+                            const InputDecoration(hintText: "Enter email")),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _password,
+                      obscureText: true,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      decoration:
+                          const InputDecoration(hintText: "Enter password"),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {},
+                      child: const Text("Register"),
+                    ),
+                  ],
+                );
+              default:
+                return const Text("Loding..");
+            }
+          },
+        ));
   }
 }
