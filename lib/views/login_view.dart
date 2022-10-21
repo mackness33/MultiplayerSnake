@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:multiplayersnake/utils/constants.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key, required this.title});
-
-  final String title;
+  const LoginView({super.key});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -32,7 +31,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Signup")),
+      appBar: AppBar(title: const Text("Login")),
       body: FutureBuilder(
         future: Supabase.initialize(
           url: dotenv.get('SUPABASE_URL'),
@@ -63,7 +62,20 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      String email = _email.text;
+                      String password = _password.text;
+
+                      final supabase = Supabase.instance.client;
+                      try {
+                        final userCred = await supabase.auth.signInWithPassword(
+                            email: email, password: password);
+
+                        print(userCred);
+                      } on AuthException catch (e) {
+                        context.showErrorSnackBar(message: e.message);
+                      }
+                    },
                     child: const Text("Login"),
                   ),
                 ],

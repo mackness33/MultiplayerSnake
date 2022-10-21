@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:multiplayersnake/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key, required this.title});
-
-  final String title;
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignupViewState extends State<SignupView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -63,7 +62,21 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: () async {},
+                      onPressed: () async {
+                        String email = _email.text;
+                        String password = _password.text;
+
+                        final supabase = Supabase.instance.client;
+                        try {
+                          final AuthResponse userCred = await supabase.auth
+                              .signUp(email: email, password: password);
+
+                          print(userCred.session);
+                        } on AuthException catch (e) {
+                          context.showErrorSnackBar(message: e.message);
+                          print(e);
+                        }
+                      },
                       child: const Text("Register"),
                     ),
                   ],
