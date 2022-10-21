@@ -2,34 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await dotenv.load(fileName: ".env");
-
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData.from(
-        colorScheme: const ColorScheme.dark(),
-        useMaterial3: true,
-      ),
-      home: const RegisterView(title: 'MultiplayerPage'),
-    ),
-  );
-}
-
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key, required this.title});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key, required this.title});
 
   final String title;
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -81,13 +63,7 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: () async {
-                        String email = _email.text;
-                        String password = _password.text;
-
-                        final supabase = Supabase.instance.client;
-                        supabase.auth.signUp(email: email, password: password);
-                      },
+                      onPressed: () async {},
                       child: const Text("Register"),
                     ),
                   ],
