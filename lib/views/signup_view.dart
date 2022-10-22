@@ -61,7 +61,10 @@ class _SignupViewState extends State<SignupView> {
                 final response = await supabase.auth
                     .signUp(email: email, password: password);
 
-                return (response.user?.confirmationSentAt == null)
+                final confirmationSentAt =
+                    response.user?.confirmationSentAt?.split('.')[0];
+                final createdAt = response.user?.createdAt.split('.')[0];
+                return (confirmationSentAt == createdAt)
                     ? showVerifyEmailDialog(context)
                     : context.showErrorSnackBar(
                         message: 'This email has already been used.');
