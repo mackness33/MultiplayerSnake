@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:multiplayersnake/utils/constants.dart';
-import 'dart:developer' as devtools show log;
+// import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -58,10 +58,10 @@ class _LoginViewState extends State<LoginView> {
 
               final supabase = Supabase.instance.client;
               try {
-                final userCred = await supabase.auth
+                await supabase.auth
                     .signInWithPassword(email: email, password: password);
-
-                devtools.log(userCred.toString());
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/menu/', (_) => false);
               } on AuthException catch (e) {
                 context.showErrorSnackBar(message: e.message);
               }
@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
             onPressed: () {
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/signup/', (route) => false);
+                  .pushNamedAndRemoveUntil('/signup/', (_) => false);
             },
             child: const Text('Not registered yet? Register here!'),
           ),

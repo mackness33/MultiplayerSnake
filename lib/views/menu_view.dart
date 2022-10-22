@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:multiplayersnake/utils/constants.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -24,11 +25,19 @@ class _MenuViewState extends State<MenuView> {
                 switch (value) {
                   case MenuAction.logout:
                     final shouldLogout = await showLogOutDialog(context);
-                    devtools.log(shouldLogout.toString());
                     if (shouldLogout) {
-                      await Supabase.instance.client.auth.signOut();
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/login/', (_) => false);
+                      try {
+                        await Supabase.instance.client.auth.signOut();
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil('/login/', (_) => false);
+                      } on AuthException catch (e) {
+                        context.showErrorSnackBar(message: e.message);
+
+                        if (Supabase.instance.client.auth.currentUser == null) {
+                          Navigator.of(context)
+                              .pushNamedAndRemoveUntil('/login/', (_) => false);
+                        }
+                      }
                     }
                 }
               },
@@ -54,7 +63,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('Sign out'),
+        title: const Text('Log out'),
         content: const Text('Are you sure youwant to log out?'),
         actions: [
           TextButton(

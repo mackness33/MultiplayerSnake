@@ -23,6 +23,7 @@ Future<void> main() async {
         routes: {
           '/login/': (context) => const LoginView(),
           '/signup/': (context) => const SignupView(),
+          '/menu/': (context) => const MenuView(),
         }),
   );
 }
@@ -40,28 +41,16 @@ class HomePage extends StatelessWidget {
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            // final session = SupabaseAuth.instance.initialSession;
-            // final emailVerified = session;
             return FutureBuilder(
               future: SupabaseAuth.instance.initialSession,
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.done:
-                    // final session = SupabaseAuth.instance.initialSession;
-                    // final emailVerified = session;
                     final session = snapshot.data;
-                    if (session?.user == null) {
-                      return const LoginView();
-                    } else {
-                      if (session?.user.emailConfirmedAt != null) {
-                        return const MenuView();
-                      } else {
-                        context.showErrorSnackBar(
-                            message:
-                                'You\'re not a verified user! Check your email');
-                        return const LoginView();
-                      }
-                    }
+
+                    return (session?.user != null)
+                        ? const MenuView()
+                        : const LoginView();
                   default:
                     return const CircularProgressIndicator();
                 }

@@ -18,3 +18,26 @@ extension ShowSnackBar on BuildContext {
     showSnackBar(message: message, backgroundColor: Colors.red);
   }
 }
+
+Future<void> showVerifyEmailDialog(BuildContext context) {
+  return showDialog<void>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Confirmation Email'),
+        content: const Text(
+          'A email verification has been sent to you. Make sure to open the link before try to log in.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/login/', (_) => false);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}

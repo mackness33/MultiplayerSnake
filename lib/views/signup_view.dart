@@ -58,13 +58,15 @@ class _SignupViewState extends State<SignupView> {
 
               final supabase = Supabase.instance.client;
               try {
-                final AuthResponse userCred = await supabase.auth
+                final response = await supabase.auth
                     .signUp(email: email, password: password);
 
-                devtools.log(userCred.session.toString());
+                return (response.user?.confirmationSentAt == null)
+                    ? showVerifyEmailDialog(context)
+                    : context.showErrorSnackBar(
+                        message: 'This email has already been used.');
               } on AuthException catch (e) {
                 context.showErrorSnackBar(message: e.message);
-                devtools.log(e.message, error: e);
               }
             },
             child: const Text("Register"),
@@ -72,7 +74,7 @@ class _SignupViewState extends State<SignupView> {
           TextButton(
             onPressed: () {
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/login/', (route) => false);
+                  .pushNamedAndRemoveUntil('/login/', (_) => false);
             },
             child: const Text('Alredy registered? Login here!'),
           ),
