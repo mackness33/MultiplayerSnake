@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import 'dart:developer' as devtools show log;
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 enum MenuAction { logout }
 
 class MenuView extends StatefulWidget {
@@ -23,7 +25,11 @@ class _MenuViewState extends State<MenuView> {
                   case MenuAction.logout:
                     final shouldLogout = await showLogOutDialog(context);
                     devtools.log(shouldLogout.toString());
-                    break;
+                    if (shouldLogout) {
+                      await Supabase.instance.client.auth.signOut();
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/login/', (_) => false);
+                    }
                 }
               },
               itemBuilder: (context) {
@@ -49,7 +55,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
     builder: (context) {
       return AlertDialog(
         title: const Text('Sign out'),
-        content: const Text('Are you sure youwant to sign out?'),
+        content: const Text('Are you sure youwant to log out?'),
         actions: [
           TextButton(
             onPressed: () {
