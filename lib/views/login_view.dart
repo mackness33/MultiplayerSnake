@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 
 class LoginView extends StatefulWidget {
