@@ -64,12 +64,14 @@ class _SignupViewState extends State<SignupView> {
                 final confirmationSentAt =
                     response.user?.confirmationSentAt?.split('.')[0];
                 final createdAt = response.user?.createdAt.split('.')[0];
+                devtools.log(response.toString());
                 return (confirmationSentAt == createdAt)
                     ? showVerifyEmailDialog(context)
                     : context.showErrorSnackBar(
                         message: 'This email has already been used.');
               } on AuthException catch (e) {
                 context.showErrorSnackBar(message: e.message);
+                devtools.log(e.toString());
               }
             },
             child: const Text("Register"),
