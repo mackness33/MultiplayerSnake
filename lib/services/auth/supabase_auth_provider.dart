@@ -5,6 +5,7 @@ import 'package:multiplayersnake/services/auth/auth_session.dart';
 import 'package:multiplayersnake/services/auth/auth_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
     show AuthException, Supabase, SupabaseAuth;
+import 'dart:developer' as devtools show log;
 
 final supabase = Supabase.instance.client;
 
@@ -71,11 +72,14 @@ class SupabaseAuthProvider implements AuthProvider {
 
       throw GenericAuthException();
     } on AuthException catch (e) {
-      if (e.statusCode == '422') {
+      devtools.log(e.message);
+      if (e.message.contains('credentials')) {
         throw InvalidCredentialsException();
+      } else if (e.message.contains('confirmed')) {
+        throw UserNotVerifiedException();
+      } else {
+        throw GenericAuthException();
       }
-
-      throw GenericAuthException();
     } catch (_) {
       throw GenericAuthException();
     }

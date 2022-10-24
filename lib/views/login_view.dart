@@ -64,6 +64,9 @@ class _LoginViewState extends State<LoginView> {
               } on InvalidCredentialsException {
                 context.showErrorSnackBar(
                     message: 'Invalid login credentials!');
+              } on UserNotVerifiedException {
+                context.showErrorSnackBar(
+                    message: 'User is not verified. Check the email!');
               } on GenericAuthException {
                 context.showErrorSnackBar(message: 'Authentication error');
               }
