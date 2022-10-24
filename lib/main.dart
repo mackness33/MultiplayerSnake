@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:multiplayersnake/services/auth/auth_service.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
+import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/views/login_view.dart';
 import 'package:multiplayersnake/views/menu_view.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
@@ -18,7 +22,10 @@ Future<void> main() async {
           colorScheme: const ColorScheme.dark(),
           useMaterial3: true,
         ),
-        home: const HomePage(),
+        home: BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc(SupabaseAuthProvider()),
+          child: const HomePage(),
+        ),
         routes: {
           '/login/': (context) => const LoginView(),
           '/signup/': (context) => const SignupView(),
@@ -32,28 +39,18 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: AuthService.supabase().initialize(),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.done:
-            return FutureBuilder(
-              future: AuthService.supabase().initialSession,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.done:
-                    final session = snapshot.data;
+    context.read<AuthBloc>().add(const AuthEventInitialize());
 
-                    return (session?.user != null)
-                        ? const MenuView()
-                        : const LoginView();
-                  default:
-                    return const CircularProgressIndicator();
-                }
-              },
-            );
-          default:
-            return const CircularProgressIndicator();
+    return BlocBuilder(
+      builder: (context, state) {
+        if (state is AuthStateLoggedIn) {
+          return const MenuView();
+        } else if (state is AuthStateNeedsVerification) {
+          return const LoginView();
+        } else if (state is AuthStateLoggedOut) {
+          return const LoginView();
+        } else {
+          return const Scaffold(body: CircularProgressIndicator());
         }
       },
     );

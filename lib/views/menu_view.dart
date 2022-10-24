@@ -1,7 +1,10 @@
 import "package:flutter/material.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/enums/menu_action.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/auth_service.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,8 +18,7 @@ class MenuView extends StatefulWidget {
 class _MenuViewState extends State<MenuView> {
   void logout() async {
     try {
-      await AuthService.supabase().logout();
-      Navigator.of(context).pushNamedAndRemoveUntil('/login/', (_) => false);
+      context.read<AuthBloc>().add(const AuthEventLogout());
     } on UserNotLoggedInException {
       context.showErrorSnackBar(message: 'The user is not logged in');
 

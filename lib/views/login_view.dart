@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/auth_service.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -57,10 +60,9 @@ class _LoginViewState extends State<LoginView> {
               String password = _password.text;
 
               try {
-                await AuthService.supabase()
-                    .login(email: email, password: password);
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/menu/', (_) => false);
+                context.read<AuthBloc>().add(
+                      AuthEventLogin(email, password),
+                    );
               } on InvalidCredentialsException {
                 context.showErrorSnackBar(
                     message: 'Invalid login credentials!');
