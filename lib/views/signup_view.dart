@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/utils/constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:developer' as devtools show log;
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});

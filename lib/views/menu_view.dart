@@ -17,7 +17,7 @@ class _MenuViewState extends State<MenuView> {
     try {
       await AuthService.supabase().logout();
       Navigator.of(context).pushNamedAndRemoveUntil('/login/', (_) => false);
-    } on UserNotLoggedInException catch (e) {
+    } on UserNotLoggedInException {
       context.showErrorSnackBar(message: 'The user is not logged in');
 
       if (Supabase.instance.client.auth.currentUser == null) {
