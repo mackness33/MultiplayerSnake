@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
+import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:multiplayersnake/utils/constants.dart';
-import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -56,14 +57,16 @@ class _LoginViewState extends State<LoginView> {
               String email = _email.text;
               String password = _password.text;
 
-              final supabase = Supabase.instance.client;
               try {
-                await supabase.auth
-                    .signInWithPassword(email: email, password: password);
+                await AuthService.supabase()
+                    .login(email: email, password: password);
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil('/menu/', (_) => false);
-              } on AuthException catch (e) {
-                context.showErrorSnackBar(message: e.message);
+              } on InvalidCredentialsException {
+                context.showErrorSnackBar(
+                    message: 'Invalid login credentials!');
+              } on GenericAuthException {
+                context.showErrorSnackBar(message: 'Authentication error');
               }
             },
             child: const Text("Login"),

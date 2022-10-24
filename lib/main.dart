@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:multiplayersnake/utils/constants.dart';
+import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/views/login_view.dart';
 import 'package:multiplayersnake/views/menu_view.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,15 +33,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Supabase.initialize(
-        url: dotenv.get('SUPABASE_URL'),
-        anonKey: dotenv.get('SUPABASE_ANNON_KEY'),
-      ),
+      future: AuthService.supabase().initialize(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             return FutureBuilder(
-              future: SupabaseAuth.instance.initialSession,
+              future: AuthService.supabase().initialSession,
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.done:

@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
+import 'package:multiplayersnake/enums/menu_action.dart';
+import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
+import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/utils/constants.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-enum MenuAction { logout }
 
 class MenuView extends StatefulWidget {
   const MenuView({super.key});
@@ -14,6 +13,21 @@ class MenuView extends StatefulWidget {
 }
 
 class _MenuViewState extends State<MenuView> {
+  void logout() async {
+    try {
+      await AuthService.supabase().logout();
+      Navigator.of(context).pushNamedAndRemoveUntil('/login/', (_) => false);
+    } on UserNotLoggedInException catch (e) {
+      context.showErrorSnackBar(message: 'The user is not logged in');
+
+      if (Supabase.instance.client.auth.currentUser == null) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/login/', (_) => false);
+      }
+    } on GenericAuthException {
+      context.showErrorSnackBar(message: 'Authentication Error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,20 +39,8 @@ class _MenuViewState extends State<MenuView> {
                 switch (value) {
                   case MenuAction.logout:
                     final shouldLogout = await showLogOutDialog(context);
-                    if (shouldLogout) {
-                      try {
-                        await Supabase.instance.client.auth.signOut();
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil('/login/', (_) => false);
-                      } on AuthException catch (e) {
-                        context.showErrorSnackBar(message: e.message);
-
-                        if (Supabase.instance.client.auth.currentUser == null) {
-                          Navigator.of(context)
-                              .pushNamedAndRemoveUntil('/login/', (_) => false);
-                        }
-                      }
-                    }
+                    if (shouldLogout) logout();
+                    break;
                 }
               },
               itemBuilder: (context) {

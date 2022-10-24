@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
+import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:developer' as devtools show log;
@@ -56,22 +58,22 @@ class _SignupViewState extends State<SignupView> {
               String email = _email.text;
               String password = _password.text;
 
-              final supabase = Supabase.instance.client;
               try {
-                final response = await supabase.auth
-                    .signUp(email: email, password: password);
+                await AuthService.supabase()
+                    .createUser(email: email, password: password);
 
-                final confirmationSentAt =
-                    response.user?.confirmationSentAt?.split('.')[0];
-                final createdAt = response.user?.createdAt.split('.')[0];
-                devtools.log(response.toString());
-                return (confirmationSentAt == createdAt)
-                    ? showVerifyEmailDialog(context)
-                    : context.showErrorSnackBar(
-                        message: 'This email has already been used.');
-              } on AuthException catch (e) {
-                context.showErrorSnackBar(message: e.message);
-                devtools.log(e.toString());
+                return showVerifyEmailDialog(context);
+              } on EmailAlreadyInUseException {
+                context.showErrorSnackBar(
+                    message: 'This email has already been used.');
+              } on InvalidEmailFormatException {
+                context.showErrorSnackBar(message: 'Invalid email format');
+              } on WeakPasswordException {
+                context.showErrorSnackBar(
+                    message:
+                        'The password is too weak. The length must be at least of 6 characters');
+              } on GenericAuthException {
+                context.showErrorSnackBar(message: 'Authentication error');
               }
             },
             child: const Text("Register"),
