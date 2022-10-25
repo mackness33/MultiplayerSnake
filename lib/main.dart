@@ -16,21 +16,17 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData.from(
-          colorScheme: const ColorScheme.dark(),
-          useMaterial3: true,
-        ),
-        home: BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(SupabaseAuthProvider()),
-          child: const HomePage(),
-        ),
-        routes: {
-          '/login/': (context) => const LoginView(),
-          '/signup/': (context) => const SignupView(),
-          '/menu/': (context) => const MenuView(),
-        }),
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData.from(
+        colorScheme: const ColorScheme.dark(),
+        useMaterial3: true,
+      ),
+      home: BlocProvider<AuthBloc>(
+        create: (context) => AuthBloc(SupabaseAuthProvider()),
+        child: const HomePage(),
+      ),
+    ),
   );
 }
 
@@ -47,6 +43,8 @@ class HomePage extends StatelessWidget {
           return const MenuView();
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
+        } else if (state is AuthStateRegistering) {
+          return const SignupView();
         } else {
           return const Scaffold(body: CircularProgressIndicator());
         }

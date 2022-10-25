@@ -4,7 +4,22 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(AuthProvider provider) : super(const AuthStateLoading()) {
+  AuthBloc(AuthProvider provider) : super(const AuthStateUninitialized()) {
+    // signup
+    on<AuthEventSignup>((event, emit) async {
+      final email = event.email;
+      final password = event.password;
+
+      try {
+        await provider.createUser(email: email, password: password);
+
+        emit(const AuthEventNeedsVerification());
+      } on Exception catch (e) {
+        emit(AuthStateRegistering(e));
+      }
+    });
+
+    // initialize
     on<AuthEventInitialize>(((_, emit) async {
       await provider.initialize();
       await provider.initialSession;
@@ -12,31 +27,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = provider.currentUser;
 
       if (user == null) {
-        emit(const AuthStateLoggedOut(null));
+        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } else {
         emit(AuthStateLoggedIn(user));
       }
     }));
 
+    // login
     on<AuthEventLogin>(((event, emit) async {
+      emit(const AuthStateLoggedOut(exception: null, isLoading: true));
       final email = event.email;
       final password = event.password;
 
       try {
         final user = await provider.login(email: email, password: password);
+
+        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+        if (!user.isEmailVerified) {
+          emit(const AuthEventNeedsVerification());
+        } else {
+          emit(AuthStateLoggedIn(user));
+        }
+
         emit(AuthStateLoggedIn(user));
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(e));
+        emit(AuthStateLoggedOut(exception: e, isLoading: false));
       }
     }));
 
+    // logout
     on<AuthEventLogout>(((event, emit) async {
       try {
-        emit(const AuthStateLoading());
         await provider.logout();
-        emit(const AuthStateLoggedOut(null));
+        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } on Exception catch (e) {
-        emit(AuthStateLogoutFailure(e));
+        emit(AuthStateLoggedOut(exception: e, isLoading: false));
       }
     }));
   }
