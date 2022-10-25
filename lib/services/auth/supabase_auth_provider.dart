@@ -72,7 +72,6 @@ class SupabaseAuthProvider implements AuthProvider {
 
       throw GenericAuthException();
     } on AuthException catch (e) {
-      devtools.log(e.message);
       if (e.message.contains('credentials')) {
         throw InvalidCredentialsException();
       } else if (e.message.contains('confirmed')) {

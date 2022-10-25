@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
+import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 
@@ -54,26 +55,29 @@ class _LoginViewState extends State<LoginView> {
             decoration: const InputDecoration(hintText: "Enter password"),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () async {
-              String email = _email.text;
-              String password = _password.text;
-
-              try {
-                context.read<AuthBloc>().add(
-                      AuthEventLogin(email, password),
-                    );
-              } on InvalidCredentialsException {
-                context.showErrorSnackBar(
-                    message: 'Invalid login credentials!');
-              } on UserNotVerifiedException {
-                context.showErrorSnackBar(
-                    message: 'User is not verified. Check the email!');
-              } on GenericAuthException {
-                context.showErrorSnackBar(message: 'Authentication error');
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthStateLoggedOut) {
+                if (state.exception is InvalidCredentialsException) {
+                  context.showErrorSnackBar(
+                      message: 'Invalid login credentials!');
+                } else if (state.exception is UserNotVerifiedException) {
+                  context.showErrorSnackBar(
+                      message: 'User is not verified. Check the email!');
+                } else if (state.exception is GenericAuthException) {
+                  context.showErrorSnackBar(message: 'Authentication error');
+                }
               }
             },
-            child: const Text("Login"),
+            child: ElevatedButton(
+              onPressed: () async {
+                String email = _email.text;
+                String password = _password.text;
+
+                context.read<AuthBloc>().add(AuthEventLogin(email, password));
+              },
+              child: const Text("Login"),
+            ),
           ),
           TextButton(
             onPressed: () {
