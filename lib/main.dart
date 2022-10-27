@@ -5,6 +5,7 @@ import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
+import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
 import 'package:multiplayersnake/views/menu_view.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
@@ -26,6 +27,9 @@ Future<void> main() async {
         create: (context) => AuthBloc(SupabaseAuthProvider()),
         child: const HomePage(),
       ),
+      routes: {
+        '/game/': (context) => const GamePage(),
+      },
     ),
   );
 }
