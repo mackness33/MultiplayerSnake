@@ -4,6 +4,8 @@ import 'package:multiplayersnake/enums/menu_action.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/game_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -63,7 +65,7 @@ class _MenuViewState extends State<MenuView> {
             children: [
               ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/game/');
+                    context.read<GameBloc>().add(const GameEventStart());
                   },
                   child: const Text('Let\'s play')),
             ],

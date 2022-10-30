@@ -75,7 +75,7 @@ class _SignupViewState extends State<SignupView> {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () async {
+              onPressed: () {
                 String email = _email.text;
                 String password = _password.text;
 

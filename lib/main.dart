@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
+import 'package:multiplayersnake/views/main_view.dart';
 import 'package:multiplayersnake/views/menu_view.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
 
@@ -28,7 +31,7 @@ Future<void> main() async {
         child: const HomePage(),
       ),
       routes: {
-        '/game/': (context) => const GamePage(),
+        '/game/': (context) => const GameView(),
       },
     ),
   );
@@ -44,7 +47,10 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
-          return const MenuView();
+          return BlocProvider<GameBloc>(
+            create: (context) => GameBloc(MultiplayerSnakeGame()),
+            child: const MainPage(),
+          );
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
         } else if (state is AuthStateRegistering) {

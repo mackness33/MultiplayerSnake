@@ -52,10 +52,12 @@ class SupabaseAuthProvider implements AuthProvider {
 
   @override
   Future<void> initialize() async {
-    await Supabase.initialize(
-      url: dotenv.get('SUPABASE_URL'),
-      anonKey: dotenv.get('SUPABASE_ANNON_KEY'),
-    );
+    try {
+      await Supabase.initialize(
+        url: dotenv.get('SUPABASE_URL'),
+        anonKey: dotenv.get('SUPABASE_ANNON_KEY'),
+      );
+    } on AssertionError catch (_) {}
   }
 
   @override

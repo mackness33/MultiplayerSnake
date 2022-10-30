@@ -7,8 +7,8 @@ abstract class GameState {
   const GameState();
 }
 
-class GameStateUninitialized extends GameState {
-  const GameStateUninitialized();
+class GameStateReady extends GameState {
+  const GameStateReady();
 }
 
 class GameStateFailed extends GameState {
@@ -18,6 +18,22 @@ class GameStateFailed extends GameState {
 
 class GameStateStarted extends GameState {
   const GameStateStarted();
+}
+
+class GameStateLoading extends GameState {
+  const GameStateLoading();
+}
+
+class GameStateMounting extends GameState {
+  const GameStateMounting();
+}
+
+class GameStatePlaying extends GameState {
+  const GameStatePlaying();
+}
+
+class GameStateResuming extends GameState {
+  const GameStateResuming();
 }
 
 class GameStateEnded extends GameState {

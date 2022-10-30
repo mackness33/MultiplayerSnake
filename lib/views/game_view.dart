@@ -1,15 +1,18 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/game/game.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 
-class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+class GameView extends StatefulWidget {
+  const GameView({super.key});
 
   @override
-  State createState() => _GamePageState();
+  State createState() => _GameViewState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _GameViewState extends State<GameView> {
   late final MultiplayerSnakeGame _game;
 
   @override
@@ -20,6 +23,7 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<GameBloc>().add(const GameEventPlay());
     return GameWidget(game: _game);
   }
 }
