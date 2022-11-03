@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:multiplayersnake/game/components/body_component.dart';
 import 'package:multiplayersnake/game/views/play_view.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
