@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 /// The board where the snake can move itself.
-class EntitySize extends Equatable {
+class BoardController extends Equatable {
   /// Convenient constructor.
-  EntitySize(this.width, this.height)
+  BoardController(this.width, this.height)
       : assert(width > 0),
         assert(height > 0);
 

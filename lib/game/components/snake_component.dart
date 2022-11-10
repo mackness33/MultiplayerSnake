@@ -1,26 +1,37 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:multiplayersnake/game/components/body_component.dart';
 import 'package:multiplayersnake/game/game.dart';
-import 'package:multiplayersnake/game/models/board.dart';
+import 'package:multiplayersnake/game/models/board_controller.dart';
+import 'package:multiplayersnake/game/models/snake_controller.dart';
 
-class SnakeComponent extends SpriteComponent
+class SnakeComponent extends PositionComponent
     with HasGameRef<MultiplayerSnakeGame> {
-  SnakeComponent(this.screen, this.board, this.tileSize);
+  SnakeComponent(this.screen, this.board, this.tileSize) : snake = Snake();
 
   final Rect screen;
-  final EntitySize board;
+  final BoardController board;
   final double tileSize;
+  final Snake snake;
 
   @override
   Future<void>? onLoad() async {
-    print('in head loading');
-    sprite = await gameRef.loadSprite('snake/head.png');
-    width = tileSize;
-    height = tileSize;
-    anchor = Anchor.center;
-    print('in head loaded');
+    print('in snake loading');
+    await snake.initialize(tileSize);
+    await addAll(snake.body);
+    print('in snake loaded');
   }
 
-  // List<PositionComponent> _snakeBody;
+  @override
+  void render(Canvas canvas) {
+    // if (_snakeBody != null) {
+    //   for (var part in _snakeBody.skip(1)) {
+    //     part.render(canvas);
+    //   }
+
+    //   _snakeBody.first.render(canvas);
+    // }
+    super.render(canvas);
+  }
 }

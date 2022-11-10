@@ -6,7 +6,7 @@ import 'package:flame/game.dart';
 import 'package:multiplayersnake/game/components/background_component.dart';
 import 'package:multiplayersnake/game/components/body_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
-import 'package:multiplayersnake/game/models/board.dart';
+import 'package:multiplayersnake/game/models/board_controller.dart';
 import 'package:multiplayersnake/game/views/play_view.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
@@ -14,12 +14,12 @@ class MultiplayerSnakeGame extends FlameGame
     with HasTappableComponents, SingleGameInstance, GameProvider {
   // late final RouterComponent router;
   final Rect screen;
-  late final EntitySize board;
+  late final BoardController board;
   late final double tileSize;
 
   MultiplayerSnakeGame(this.screen) {
-    tileSize = screen.width / 25;
-    board = EntitySize(
+    tileSize = screen.width / 30;
+    board = BoardController(
       screen.width ~/ tileSize,
       screen.height ~/ tileSize,
     );
@@ -27,14 +27,14 @@ class MultiplayerSnakeGame extends FlameGame
 
   MultiplayerSnakeGame.empty()
       : screen = Rect.zero,
-        board = EntitySize(1, 1),
+        board = BoardController(1, 1),
         tileSize = 0;
 
   @override
   Future<void> onLoad() async {
     print('IsLoading');
-    add(Background(screen, board, tileSize));
-    add(SnakeComponent(screen, board, tileSize));
+    await add(Background(screen, board, tileSize));
+    await add(SnakeComponent(screen, board, tileSize));
     print('IsLoaded');
   }
 
@@ -42,7 +42,9 @@ class MultiplayerSnakeGame extends FlameGame
   void onRemove() {
     print('IsRemoving');
     super.onRemove();
-    _endedCompleter.complete();
+    if (!_endedCompleter.isCompleted) {
+      _endedCompleter.complete();
+    }
     print('IsRemoved');
   }
 

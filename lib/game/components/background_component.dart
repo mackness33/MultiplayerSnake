@@ -1,13 +1,13 @@
 import 'package:flame/components.dart';
 import 'package:flutter/rendering.dart';
-import 'package:multiplayersnake/game/models/board.dart';
+import 'package:multiplayersnake/game/models/board_controller.dart';
 import 'package:multiplayersnake/game/ui/colors.dart';
 
 class Background extends Component {
   Background(this.screen, this.board, this.tileSize);
 
   final Rect screen;
-  final EntitySize board;
+  final BoardController board;
   final double tileSize;
 
   @override

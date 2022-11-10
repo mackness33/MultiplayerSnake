@@ -5,13 +5,12 @@ class SettingsService {
   static Rect screenSize(MediaQueryData mediaQuery) {
     final width = mediaQuery.size.width;
     final height = mediaQuery.size.height;
-    final topPadding = mediaQuery.padding.top;
 
     return Rect.fromLTWH(
-      mediaQuery.padding.left,
-      topPadding,
+      0,
+      0,
       width - mediaQuery.padding.right,
-      height - topPadding,
+      height,
     );
   }
 }
