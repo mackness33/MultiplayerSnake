@@ -1,31 +1,40 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:multiplayersnake/game/components/background_component.dart';
 import 'package:multiplayersnake/game/components/body_component.dart';
+import 'package:multiplayersnake/game/components/snake_component.dart';
+import 'package:multiplayersnake/game/models/board.dart';
 import 'package:multiplayersnake/game/views/play_view.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
 class MultiplayerSnakeGame extends FlameGame
     with HasTappableComponents, SingleGameInstance, GameProvider {
-  late final RouterComponent router;
+  // late final RouterComponent router;
+  final Rect screen;
+  late final EntitySize board;
+  late final double tileSize;
+
+  MultiplayerSnakeGame(this.screen) {
+    tileSize = screen.width / 25;
+    board = EntitySize(
+      screen.width ~/ tileSize,
+      screen.height ~/ tileSize,
+    );
+  }
+
+  MultiplayerSnakeGame.empty()
+      : screen = Rect.zero,
+        board = EntitySize(1, 1),
+        tileSize = 0;
 
   @override
   Future<void> onLoad() async {
     print('IsLoading');
-    add(
-      router = RouterComponent(
-        routes: {
-          // 'splash-screen': Route(SplashScreenView.new),
-          'play': Route(PlayView.new),
-          // 'resume': Route(ResumeView.new),
-          // 'level-selector': Route(LevelSelectorPage.new),
-          // 'settings': Route(SettingsPage.new, transparent: true),
-          // 'confirm-dialog': OverlayRoute.existing(),
-        },
-        initialRoute: 'play',
-      ),
-    );
+    add(Background(screen, board, tileSize));
+    add(SnakeComponent(screen, board, tileSize));
     print('IsLoaded');
   }
 

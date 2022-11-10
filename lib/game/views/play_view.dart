@@ -26,7 +26,7 @@ class PlayView extends Component
     //   ),
     // ]);
     // add(BodyComponent());
-    add(SnakeComponent());
+    // add(SnakeComponent());
   }
 
   @override

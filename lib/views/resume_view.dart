@@ -15,11 +15,6 @@ class ResumeView extends StatefulWidget {
 
 class _ResumeViewState extends State<ResumeView> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Resume')),

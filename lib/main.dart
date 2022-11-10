@@ -1,3 +1,4 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,6 +8,8 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/game_service.dart';
+import 'package:multiplayersnake/services/settings/settings_service.dart';
 import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
 import 'package:multiplayersnake/views/main_view.dart';
@@ -47,8 +50,10 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
+          final Rect screen =
+              SettingsService.screenSize(MediaQuery.of(context));
           return BlocProvider<GameBloc>(
-            create: (context) => GameBloc(MultiplayerSnakeGame()),
+            create: (context) => GameBloc(GameService.snake(screen)),
             child: const MainPage(),
           );
         } else if (state is AuthStateLoggedOut) {
