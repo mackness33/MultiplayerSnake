@@ -4,15 +4,12 @@ import 'dart:ui';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:multiplayersnake/game/components/background_component.dart';
-import 'package:multiplayersnake/game/components/body_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
-import 'package:multiplayersnake/game/views/play_view.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
 class MultiplayerSnakeGame extends FlameGame
     with HasTappableComponents, SingleGameInstance, GameProvider {
-  // late final RouterComponent router;
   final Rect screen;
   late final BoardController board;
   late final double tileSize;
@@ -33,6 +30,7 @@ class MultiplayerSnakeGame extends FlameGame
   @override
   Future<void> onLoad() async {
     print('IsLoading');
+    await super.onLoad();
     await add(Background(screen, board, tileSize));
     await add(SnakeComponent(screen, board, tileSize));
     print('IsLoaded');

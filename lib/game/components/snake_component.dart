@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:multiplayersnake/game/components/body_component.dart';
+import 'package:multiplayersnake/game/components/internal_component.dart';
 import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
 import 'package:multiplayersnake/game/models/snake_controller.dart';
@@ -9,9 +9,10 @@ import 'package:multiplayersnake/game/models/snake_controller.dart';
 class SnakeComponent extends PositionComponent
     with HasGameRef<MultiplayerSnakeGame> {
   SnakeComponent(this.screen, this.board, this.tileSize)
-      : snake = Snake(),
+      : snake = Snake(tileSize * 2),
         speed = 1,
-        delta = 0;
+        delta = 0,
+        movements = 0;
 
   final Rect screen;
   final BoardController board;
@@ -19,6 +20,7 @@ class SnakeComponent extends PositionComponent
   final Snake snake;
   final double speed;
   double delta;
+  int movements;
 
   @override
   Future<void>? onLoad() async {
@@ -44,8 +46,12 @@ class SnakeComponent extends PositionComponent
   void update(double dt) {
     delta += dt;
     if (delta > speed) {
-      snake.moveStraight();
+      if (movements % 3 == 0) {
+        snake.moveLeft();
+      }
+      snake.move();
       delta %= speed;
+      movements++;
     }
     super.update(dt);
   }
