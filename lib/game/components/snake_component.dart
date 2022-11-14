@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'dart:developer' as devtools;
 
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -17,18 +18,18 @@ class SnakeComponent extends PositionComponent
     with HasGameRef<MultiplayerSnakeGame> {
   SnakeComponent(double tilesize)
       : _body = List.empty(growable: true),
+        _stir = List.empty(growable: true),
         tileSize = tilesize * 2,
-        speed = 1,
+        speed = 0.2,
         delta = 0,
-        movements = 0,
         direction = RangeWithHistory(2, 4);
 
   final List<PositionComponent> _body;
+  final List<bool> _stir;
   RangeWithHistory direction;
   final double tileSize;
   final double speed;
   double delta;
-  int movements;
 
   @override
   Future<void>? onLoad() async {
@@ -93,6 +94,15 @@ class SnakeComponent extends PositionComponent
 
   // direction: 0: buttom, 1: left, 2: top, 3: right, default: nothing
   void move() {
+    if (_stir.isNotEmpty) {
+      devtools.log(_stir.length.toString());
+      if (_stir.first) {
+        direction.absIncrease();
+      } else {
+        direction.absDecrease();
+      }
+      _stir.remove(_stir.first);
+    }
     switch (direction.current) {
       case 0:
         _move(Vector2(0, tileSize));
@@ -120,19 +130,16 @@ class SnakeComponent extends PositionComponent
     return difference;
   }
 
-  void moveRight() => direction.absDecrease();
-  void moveLeft() => direction.absIncrease();
+  void moveRight() => _stir.add(true);
+
+  void moveLeft() => _stir.add(false);
 
   @override
   void update(double dt) {
     delta += dt;
     if (delta > speed) {
-      if (movements % 3 == 0) {
-        moveLeft();
-      }
       move();
       delta %= speed;
-      movements++;
     }
     super.update(dt);
   }
