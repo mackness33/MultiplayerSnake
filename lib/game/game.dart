@@ -40,20 +40,12 @@ class MultiplayerSnakeGame extends FlameGame
     await add(
       FlameBlocProvider<GameBloc, GameState>.value(value: gameBloc),
     );
-    await add(
-      FlameBlocListener<GameBloc, GameState>(
-        onNewState: (state) {
-          if (state is )
-          (state);
-        },
-      ),
-    );
     await add(Background(screen, board, tileSize));
     await add(SnakeComponent(screen, board, tileSize));
     print('IsLoaded');
   }
 
-  void end () => gameBloc.add(const GameEventPlayed());
+  void end() => gameBloc.add(const GameEventPlayed());
 
   @override
   void onRemove() {
