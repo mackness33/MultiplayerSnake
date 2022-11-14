@@ -22,7 +22,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         emit(GameStateLoad(manager.game!));
         devtools.log('after Loadedstate');
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 30));
         manager.game!.end();
       } catch (e) {
         devtools.log(e.toString());

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 /// The board where the snake can move itself.
 class BoardController extends Equatable {
   /// Convenient constructor.
-  BoardController(this.width, this.height)
+  const BoardController(this.width, this.height)
       : assert(width > 0),
         assert(height > 0);
 

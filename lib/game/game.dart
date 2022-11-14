@@ -5,7 +5,7 @@ import 'dart:developer' as devtools;
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
-import 'package:multiplayersnake/game/components/background_component.dart';
+import 'package:multiplayersnake/game/components/board_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
@@ -40,7 +40,7 @@ class MultiplayerSnakeGame extends FlameGame
     await add(
       FlameBlocProvider<GameBloc, GameState>.value(value: gameBloc),
     );
-    await add(Background(screen, board, tileSize));
+    await add(BoardComponent(screen, board, tileSize));
     await add(SnakeComponent(screen, board, tileSize));
     print('IsLoaded');
   }
