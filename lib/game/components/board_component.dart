@@ -15,8 +15,8 @@ class BoardComponent extends Component {
   @override
   Future<void>? onLoad() async {
     await addAll([
-      TapBoardComponent(screen),
       ChessBoardComponent(screen, board, tileSize),
+      TapBoardComponent(screen, tileSize),
     ]);
     await super.onLoad();
   }
