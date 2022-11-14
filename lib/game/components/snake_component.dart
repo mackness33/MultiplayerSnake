@@ -7,6 +7,7 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:multiplayersnake/game/components/curve_component.dart';
 import 'package:multiplayersnake/game/components/external_component.dart';
+import 'package:multiplayersnake/game/components/head_component.dart';
 import 'package:multiplayersnake/game/components/internal_component.dart';
 import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
@@ -41,17 +42,32 @@ class SnakeComponent extends PositionComponent
   }
 
   Future<void>? _initialize() async {
-    final ExternalComponent head = ExternalComponent(
+    double y = 200;
+    final ExternalComponent head = HeadComponent(
       'head',
       sprite: Sprite(await Flame.images.load('snake/head.png')),
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, 200 - tileSize),
       anchor: Anchor.center,
-      paint: Paint()..color = const Color.fromARGB(255, 40, 25, 200),
     );
     final InternalComponent body = InternalComponent(
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, 200),
+      anchor: Anchor.center,
+    );
+    final InternalComponent body1 = InternalComponent(
+      size: Vector2(tileSize, tileSize),
+      position: Vector2(200, y += tileSize),
+      anchor: Anchor.center,
+    );
+    final InternalComponent body2 = InternalComponent(
+      size: Vector2(tileSize, tileSize),
+      position: Vector2(200, y += tileSize),
+      anchor: Anchor.center,
+    );
+    final InternalComponent body3 = InternalComponent(
+      size: Vector2(tileSize, tileSize),
+      position: Vector2(200, y += tileSize),
       anchor: Anchor.center,
     );
     final ExternalComponent tail = ExternalComponent(
@@ -60,10 +76,9 @@ class SnakeComponent extends PositionComponent
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, 200 + tileSize),
       anchor: Anchor.center,
-      paint: Paint()..color = Color.fromARGB(255, 200, 101, 25),
     );
 
-    _body.addAll([head, body, tail]);
+    _body.addAll([head, body, body1, body2, body3, tail]);
   }
 
   void _move(Vector2 trasition) {

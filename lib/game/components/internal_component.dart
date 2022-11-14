@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
 import 'package:multiplayersnake/game/components/curve_component.dart';
@@ -41,6 +42,9 @@ class InternalComponent extends SpriteGroupComponent<int>
     };
 
     current = 0;
+
+    await add(RectangleHitbox(size: size - Vector2(2, 2))
+      ..collisionType = CollisionType.passive);
     print('in body loaded');
   }
 

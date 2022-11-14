@@ -1,13 +1,9 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/widgets.dart';
 import 'package:multiplayersnake/game/components/curve_component.dart';
-import 'package:multiplayersnake/game/ui/colors.dart';
-import 'package:multiplayersnake/game/utils/range.dart';
 import 'dart:developer' as devtools;
 
-class ExternalComponent extends SpriteComponent
-    with CurveComponent, CollisionCallbacks {
+class ExternalComponent extends SpriteComponent with CurveComponent {
   ExternalComponent(
     this.name, {
     super.sprite,
@@ -22,21 +18,18 @@ class ExternalComponent extends SpriteComponent
     super.priority,
   }) {
     curve = 0;
+    colltype = CollisionType.passive;
   }
 
   final String name;
+  late CollisionType colltype;
 
   @override
   Future<void>? onLoad() async {
-    // need to sub V2(1,1) because otherwise while turning the head/tail it will hit
-    // the angle of the part after the adjacent part of the head/tail
-    await add(RectangleHitbox(size: size - Vector2(1, 1)));
+    // need to sub V2(2,2) because otherwise while making a U turn a collision
+    // will take place with the internal and external parts
+    await add(
+        RectangleHitbox(size: size - Vector2(2, 2))..collisionType = colltype);
     await super.onLoad();
-  }
-
-  @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    devtools.log('On collision of $name: $other at $intersectionPoints');
-    super.onCollision(intersectionPoints, other);
   }
 }

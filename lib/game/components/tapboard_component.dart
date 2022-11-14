@@ -17,7 +17,7 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
   @override
   Future<void>? onLoad() async {
     player = SnakeComponent(tileSize);
-    await add(RectangleHitbox());
+    await add(RectangleHitbox()..collisionType = CollisionType.active);
     await add(player);
     await super.onLoad();
   }
