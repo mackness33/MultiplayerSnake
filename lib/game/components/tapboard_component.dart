@@ -1,3 +1,4 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
@@ -16,6 +17,7 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
   @override
   Future<void>? onLoad() async {
     player = SnakeComponent(tileSize);
+    await add(RectangleHitbox());
     await add(player);
     await super.onLoad();
   }
@@ -23,11 +25,11 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    devtools.log('A TAPDOWN EVENT HAS HAPPEND!!!');
-    devtools.log('Tap at local: ${event.localPosition}');
-    devtools.log('Tap at canvas: ${event.canvasPosition}');
-    devtools.log('Tap at device: ${event.devicePosition}');
-    devtools.log('Tap at parent: ${event.parentPosition}');
+    // devtools.log('A TAPDOWN EVENT HAS HAPPEND!!!');
+    // devtools.log('Tap at local: ${event.localPosition}');
+    // devtools.log('Tap at canvas: ${event.canvasPosition}');
+    // devtools.log('Tap at device: ${event.devicePosition}');
+    // devtools.log('Tap at parent: ${event.parentPosition}');
 
     if (event.localPosition.x > screen.width / 2) {
       player.moveLeft();

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'dart:developer' as devtools;
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:multiplayersnake/game/components/curve_component.dart';
@@ -41,10 +42,12 @@ class SnakeComponent extends PositionComponent
 
   Future<void>? _initialize() async {
     final ExternalComponent head = ExternalComponent(
+      'head',
       sprite: Sprite(await Flame.images.load('snake/head.png')),
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, 200 - tileSize),
       anchor: Anchor.center,
+      paint: Paint()..color = const Color.fromARGB(255, 40, 25, 200),
     );
     final InternalComponent body = InternalComponent(
       size: Vector2(tileSize, tileSize),
@@ -52,10 +55,12 @@ class SnakeComponent extends PositionComponent
       anchor: Anchor.center,
     );
     final ExternalComponent tail = ExternalComponent(
+      'tail',
       sprite: Sprite(await Flame.images.load('snake/tail.png')),
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, 200 + tileSize),
       anchor: Anchor.center,
+      paint: Paint()..color = Color.fromARGB(255, 200, 101, 25),
     );
 
     _body.addAll([head, body, tail]);

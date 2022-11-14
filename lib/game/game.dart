@@ -16,7 +16,11 @@ import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
 class MultiplayerSnakeGame extends FlameGame
-    with HasTappableComponents, SingleGameInstance, GameProvider {
+    with
+        HasTappableComponents,
+        HasCollisionDetection,
+        SingleGameInstance,
+        GameProvider {
   final Rect screen;
   late final BoardController board;
   late final double tileSize;
