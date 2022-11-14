@@ -22,7 +22,7 @@ class _ResumeViewState extends State<ResumeView> {
         child: ElevatedButton(
             onPressed: () {
               print('in resume');
-              context.read<GameBloc>().add(const GameEventEnd());
+              context.read<GameBloc>().add(const GameEventEnded());
             },
             child: const Text('End')),
       ),

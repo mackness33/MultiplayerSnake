@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
+import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
 import 'package:multiplayersnake/services/settings/settings_service.dart';
 
@@ -15,19 +16,26 @@ class GameView extends StatefulWidget {
 }
 
 class _GameViewState extends State<GameView> {
-  late final GameService _game;
-
   @override
   void initState() {
-    _game = GameService.empty();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    context.read<GameBloc>().add(const GameEventPlay());
+    // context.read<GameBloc>().add(const GameEventPlayed());
     final screen = SettingsService.screenSize(MediaQuery.of(context));
-    _game.newGame(screen);
-    return GameWidget(game: _game.getGame);
+    return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previous, current) => current is GameStateLoad,
+      builder: (context, state) {
+        if (state is GameStateLoad) {
+          print('after loading in the play view');
+          return GameWidget(game: state.game);
+        }
+        return Scaffold(
+          body: Center(child: Text('Error on the BLoC. State: $state')),
+        );
+      },
+    );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -5,26 +7,28 @@ abstract class GameEvent {
   const GameEvent();
 }
 
-class GameEventInitialize extends GameEvent {
-  const GameEventInitialize();
+class GameEventRemoved extends GameEvent {
+  const GameEventRemoved();
 }
 
-class GameEventStart extends GameEvent {
-  const GameEventStart();
+class GameEventStarted extends GameEvent {
+  const GameEventStarted();
 }
 
-class GameEventLoad extends GameEvent {
-  const GameEventLoad();
+class GameEventConfigured extends GameEvent {
+  final Rect screen;
+  const GameEventConfigured(this.screen);
 }
 
-class GameEventPlay extends GameEvent {
-  const GameEventPlay();
+class GameEventPlayed extends GameEvent {
+  const GameEventPlayed();
 }
 
-class GameEventEnd extends GameEvent {
-  const GameEventEnd();
+class GameEventEnded extends GameEvent {
+  const GameEventEnded();
 }
 
-class GameEventFail extends GameEvent {
-  const GameEventFail();
+class GameEventFailed extends GameEvent {
+  final Exception? exception;
+  const GameEventFailed(this.exception);
 }

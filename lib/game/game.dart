@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:ui';
+import 'dart:developer' as devtools;
 
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:multiplayersnake/game/components/background_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/blocs/game_event.dart';
+import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
 class MultiplayerSnakeGame extends FlameGame
@@ -13,8 +18,9 @@ class MultiplayerSnakeGame extends FlameGame
   final Rect screen;
   late final BoardController board;
   late final double tileSize;
+  final GameBloc gameBloc;
 
-  MultiplayerSnakeGame(this.screen) {
+  MultiplayerSnakeGame(this.screen, this.gameBloc) {
     tileSize = screen.width / 30;
     board = BoardController(
       screen.width ~/ tileSize,
@@ -22,22 +28,37 @@ class MultiplayerSnakeGame extends FlameGame
     );
   }
 
-  MultiplayerSnakeGame.empty()
-      : screen = Rect.zero,
-        board = BoardController(1, 1),
-        tileSize = 0;
+  // MultiplayerSnakeGame.empty()
+  //     : screen = Rect.zero,
+  //       board = BoardController(1, 1),
+  //       tileSize = 0;
 
   @override
   Future<void> onLoad() async {
     print('IsLoading');
     await super.onLoad();
+    await add(
+      FlameBlocProvider<GameBloc, GameState>.value(value: gameBloc),
+    );
+    await add(
+      FlameBlocListener<GameBloc, GameState>(
+        onNewState: (state) {
+          if (state is )
+          (state);
+        },
+      ),
+    );
     await add(Background(screen, board, tileSize));
     await add(SnakeComponent(screen, board, tileSize));
     print('IsLoaded');
   }
 
+  void end () => gameBloc.add(const GameEventPlayed());
+
   @override
   void onRemove() {
+    // gameBloc.add(const GameEventEnded());
+    // gameBloc.add(const GameEventRemoved());
     print('IsRemoving');
     super.onRemove();
     if (!_endedCompleter.isCompleted) {
@@ -48,6 +69,7 @@ class MultiplayerSnakeGame extends FlameGame
 
   @override
   void onDetach() {
+    // gameBloc.add(const GameEventPlayed());
     _endingCompleter.complete();
     print('isDetaching');
     super.onDetach();

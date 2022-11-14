@@ -1,5 +1,6 @@
 // import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:multiplayersnake/game/game.dart';
 // import 'package:multiplayersnake/services/auth/auth_user.dart';
 
 @immutable
@@ -20,23 +21,23 @@ class GameStateStarted extends GameState {
   const GameStateStarted();
 }
 
-class GameStateLoading extends GameState {
-  const GameStateLoading();
+class GameStateConfigure extends GameState {
+  const GameStateConfigure();
 }
 
-class GameStateMounting extends GameState {
-  const GameStateMounting();
+class GameStateCreate extends GameState {
+  const GameStateCreate();
 }
 
-class GameStatePlaying extends GameState {
-  const GameStatePlaying();
+class GameStateLoad extends GameState {
+  final MultiplayerSnakeGame game;
+  const GameStateLoad(this.game);
 }
 
-class GameStateResuming extends GameState {
-  const GameStateResuming();
+class GameStateResume extends GameState {
+  const GameStateResume();
 }
 
-class GameStateEnded extends GameState {
-  final Exception? exception;
-  const GameStateEnded(this.exception);
+class GameStateEnd extends GameState {
+  const GameStateEnd();
 }

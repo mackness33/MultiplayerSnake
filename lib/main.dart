@@ -8,6 +8,7 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/game_manager.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
 import 'package:multiplayersnake/services/settings/settings_service.dart';
 import 'package:multiplayersnake/views/game_view.dart';
@@ -50,10 +51,8 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
-          final Rect screen =
-              SettingsService.screenSize(MediaQuery.of(context));
           return BlocProvider<GameBloc>(
-            create: (context) => GameBloc(GameService.snake(screen)),
+            create: (context) => GameBloc(GameManager()),
             child: const MainPage(),
           );
         } else if (state is AuthStateLoggedOut) {
