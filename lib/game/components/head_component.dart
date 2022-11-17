@@ -23,9 +23,8 @@ class HeadComponent extends ExternalComponent
     super.anchor,
     super.children,
     super.priority,
-  }) {
+  }) : super(colltype: CollisionType.active) {
     curve = 0;
-    colltype = CollisionType.active;
   }
 
   @override

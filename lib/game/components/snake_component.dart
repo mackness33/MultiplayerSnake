@@ -74,7 +74,7 @@ class SnakeComponent extends PositionComponent
       position: Vector2(200, y += tileSize),
       anchor: Anchor.center,
     );
-    final ExternalComponent tail = ExternalComponent(
+    final ExternalComponent tail = ExternalComponent.tail(
       'tail',
       sprite: Sprite(await Flame.images.load('snake/tail.png')),
       size: Vector2(tileSize, tileSize),
