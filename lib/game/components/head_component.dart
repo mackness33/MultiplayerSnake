@@ -1,14 +1,9 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:multiplayersnake/game/components/external_component.dart';
 import 'package:multiplayersnake/game/components/food_component.dart';
 import 'package:multiplayersnake/game/game.dart';
 import 'dart:developer' as devtools;
-
-import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
-import 'package:multiplayersnake/services/game/blocs/game_event.dart';
-import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 
 class HeadComponent extends ExternalComponent
     with HasGameRef<MultiplayerSnakeGame>, CollisionCallbacks {
