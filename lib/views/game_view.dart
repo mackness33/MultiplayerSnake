@@ -1,12 +1,8 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
-import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
-import 'package:multiplayersnake/services/game/game_service.dart';
-import 'package:multiplayersnake/services/settings/settings_service.dart';
 
 class GameView extends StatefulWidget {
   const GameView({super.key});
@@ -24,7 +20,6 @@ class _GameViewState extends State<GameView> {
   @override
   Widget build(BuildContext context) {
     // context.read<GameBloc>().add(const GameEventPlayed());
-    final screen = SettingsService.screenSize(MediaQuery.of(context));
     return BlocBuilder<GameBloc, GameState>(
       buildWhen: (previous, current) => current is GameStateLoad,
       builder: (context, state) {

@@ -5,8 +5,6 @@ import 'dart:developer' as devtools;
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame_bloc/flame_bloc.dart';
-import 'package:multiplayersnake/game/blocs/snake/snake_bloc.dart';
-import 'package:multiplayersnake/game/blocs/snake/snake_state.dart';
 import 'package:multiplayersnake/game/components/board_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';

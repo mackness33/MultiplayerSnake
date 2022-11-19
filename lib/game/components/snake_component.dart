@@ -1,21 +1,14 @@
 import 'dart:math';
-import 'dart:ui';
 import 'dart:developer' as devtools;
 
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:multiplayersnake/game/components/curve_component.dart';
 import 'package:multiplayersnake/game/components/external_component.dart';
 import 'package:multiplayersnake/game/components/head_component.dart';
 import 'package:multiplayersnake/game/components/internal_component.dart';
 import 'package:multiplayersnake/game/game.dart';
-import 'package:multiplayersnake/game/models/board_controller.dart';
-import 'package:multiplayersnake/game/models/snake_controller.dart';
 import 'package:multiplayersnake/game/utils/range.dart';
-import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
-import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 
 enum CurveState { left, straight, right }
 
@@ -38,11 +31,9 @@ class SnakeComponent extends PositionComponent
 
   @override
   Future<void> onLoad() async {
-    print('in snake loading');
     await _initialize();
     await addAll(_body);
     await super.onLoad();
-    print('in snake loaded');
   }
 
   Future<void>? _initialize() async {

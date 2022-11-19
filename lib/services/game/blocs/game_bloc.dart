@@ -1,9 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game/game_manager.dart';
-import 'package:multiplayersnake/services/game/game_provider.dart';
 import 'dart:developer' as devtools;
 
 class GameBloc extends Bloc<GameEvent, GameState> {

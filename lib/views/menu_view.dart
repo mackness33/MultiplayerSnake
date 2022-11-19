@@ -7,7 +7,6 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
-import 'package:multiplayersnake/views/game_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MenuView extends StatefulWidget {

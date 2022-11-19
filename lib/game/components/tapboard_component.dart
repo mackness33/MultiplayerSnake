@@ -6,7 +6,6 @@ import 'package:multiplayersnake/game/components/food_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'dart:ui';
 import 'dart:developer' as devtools;
-import 'package:multiplayersnake/game/ui/colors.dart';
 
 class TapBoardComponent extends PositionComponent with TapCallbacks {
   TapBoardComponent(this.screen, this.tileSize)

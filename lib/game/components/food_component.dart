@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:multiplayersnake/game/components/collidable_component.dart';
-import 'package:multiplayersnake/game/components/curve_component.dart';
 import 'dart:developer' as devtools;
 
 class FoodComponent extends CollidableComponent {

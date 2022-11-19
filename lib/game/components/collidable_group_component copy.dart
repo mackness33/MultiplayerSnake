@@ -1,12 +1,5 @@
-import 'dart:ui';
-
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/input.dart';
-import 'package:multiplayersnake/game/components/curve_component.dart';
-import 'package:multiplayersnake/game/game.dart';
-import 'package:multiplayersnake/game/utils/range.dart';
-import 'package:multiplayersnake/game/views/play_view.dart';
 
 enum BodyState { left, straight, right }
 

@@ -1,6 +1,5 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'dart:developer' as devtools;
 
 class CollidableComponent extends SpriteComponent {
   CollidableComponent({
