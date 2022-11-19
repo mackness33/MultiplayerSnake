@@ -9,7 +9,8 @@ import 'dart:developer' as devtools;
 
 class FoodComponent extends CollidableComponent {
   FoodComponent(
-    this.name, {
+    this.name,
+    this._point, {
     required Rect board,
     super.sprite,
     super.position,
@@ -36,7 +37,8 @@ class FoodComponent extends CollidableComponent {
     super.anchor,
     super.children,
     super.priority,
-  }) : super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive) {
+  })  : _point = 100,
+        super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive) {
     final random = Random();
     position = Vector2(
         random.nextDouble() * board.width, random.nextDouble() * board.height);
@@ -55,7 +57,8 @@ class FoodComponent extends CollidableComponent {
     super.anchor,
     super.children,
     super.priority,
-  }) : super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive) {
+  })  : _point = 300,
+        super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive) {
     final random = Random();
 
     switch (random.nextInt(4)) {
@@ -75,4 +78,7 @@ class FoodComponent extends CollidableComponent {
   }
 
   final String name;
+  final int _point;
+
+  int get point => _point;
 }

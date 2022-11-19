@@ -2,6 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:multiplayersnake/game/components/external_component.dart';
+import 'package:multiplayersnake/game/components/food_component.dart';
 import 'package:multiplayersnake/game/game.dart';
 import 'dart:developer' as devtools;
 
@@ -31,6 +32,10 @@ class HeadComponent extends ExternalComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     devtools.log('On collision of $name: $other at $intersectionPoints');
     super.onCollision(intersectionPoints, other);
-    gameRef.end();
+    if (other is FoodComponent) {
+      devtools.log('You got ${other.point}');
+    } else {
+      gameRef.end();
+    }
   }
 }
