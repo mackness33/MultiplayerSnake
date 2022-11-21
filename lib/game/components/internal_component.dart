@@ -48,13 +48,6 @@ class InternalComponent extends SpriteGroupComponent<int>
           ..isSolid = true
           ..collisionType = CollisionType.passive;
     await add(hitbox);
-
-    devtools.log('$name position: $position');
-    devtools.log('$name positionHit: ${hitbox.position}');
-    devtools.log('$name absolutePosition: $absolutePosition');
-    devtools.log('$name absoluteposHit: ${hitbox.absolutePosition}');
-    devtools.log('$name size: $size');
-    devtools.log('$name sizeHit: ${hitbox.size}');
     await super.onLoad();
   }
 

@@ -59,21 +59,25 @@ class FoodComponent extends CollidableComponent {
   })  : _point = 300,
         super.passive() {
     final random = Random();
+    final width = board.width - size.x;
+    final height = board.height - size.y;
 
     switch (random.nextInt(4)) {
       case 0:
-        position = Vector2(0, random.nextDouble() * board.height);
+        position = Vector2(0, random.nextDouble() * height);
         break;
       case 1:
-        position = Vector2(board.width, random.nextDouble() * board.height);
+        position = Vector2(width, random.nextDouble() * height);
         break;
       case 2:
-        position = Vector2(random.nextDouble() * board.width, 0);
+        position = Vector2(random.nextDouble() * width, 0);
         break;
       case 3:
-        position = Vector2(random.nextDouble() * board.width, board.height);
+        position = Vector2(random.nextDouble() * width, height);
         break;
     }
+
+    devtools.log('position: $position');
   }
 
   final String name;
