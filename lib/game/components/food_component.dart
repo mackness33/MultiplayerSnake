@@ -21,7 +21,7 @@ class FoodComponent extends CollidableComponent {
     super.anchor,
     super.children,
     super.priority,
-  }) : super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive);
+  }) : super.passive();
 
   FoodComponent.random(
     this.name, {
@@ -37,7 +37,7 @@ class FoodComponent extends CollidableComponent {
     super.children,
     super.priority,
   })  : _point = 100,
-        super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive) {
+        super.passive() {
     final random = Random();
     position = Vector2(
         random.nextDouble() * board.width, random.nextDouble() * board.height);
@@ -57,7 +57,7 @@ class FoodComponent extends CollidableComponent {
     super.children,
     super.priority,
   })  : _point = 300,
-        super(hitOffset: Vector2(0, 0), colltype: CollisionType.passive) {
+        super.passive() {
     final random = Random();
 
     switch (random.nextInt(4)) {

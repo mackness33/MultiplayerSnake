@@ -46,21 +46,25 @@ class SnakeComponent extends PositionComponent
       anchor: Anchor.center,
     );
     final InternalComponent body = InternalComponent(
+      'body0',
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, 200),
       anchor: Anchor.center,
     );
     final InternalComponent body1 = InternalComponent(
+      'body1',
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, y += tileSize),
       anchor: Anchor.center,
     );
     final InternalComponent body2 = InternalComponent(
+      'body2',
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, y += tileSize),
       anchor: Anchor.center,
     );
     final InternalComponent body3 = InternalComponent(
+      'body3',
       size: Vector2(tileSize, tileSize),
       position: Vector2(200, y += tileSize),
       anchor: Anchor.center,

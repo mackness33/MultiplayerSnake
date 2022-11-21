@@ -8,6 +8,23 @@ class ExternalComponent extends CollidableComponent with CurveComponent {
   ExternalComponent(
     this.name, {
     required super.colltype,
+    required super.sizeHit,
+    super.sprite,
+    super.paint,
+    super.position,
+    super.size,
+    super.scale,
+    super.angle,
+    super.nativeAngle,
+    super.anchor,
+    super.children,
+    super.priority,
+  }) {
+    curve = 0;
+  }
+
+  ExternalComponent.head(
+    this.name, {
     super.sprite,
     super.paint,
     super.position,
@@ -19,7 +36,8 @@ class ExternalComponent extends CollidableComponent with CurveComponent {
     super.children,
     super.priority,
   }) : super(
-          hitOffset: Vector2(-2, -2),
+          colltype: CollisionType.active,
+          sizeHit: (size != null) ? size - Vector2(1, 1) : Vector2(0, 0),
         ) {
     curve = 0;
   }
@@ -36,10 +54,7 @@ class ExternalComponent extends CollidableComponent with CurveComponent {
     super.anchor,
     super.children,
     super.priority,
-  }) : super(
-          colltype: CollisionType.passive,
-          hitOffset: Vector2(-2, -2),
-        ) {
+  }) : super.passive() {
     curve = 0;
   }
 

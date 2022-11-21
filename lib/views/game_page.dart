@@ -10,8 +10,8 @@ import 'package:multiplayersnake/views/menu_view.dart';
 import '../services/game/blocs/game_bloc.dart';
 import '../services/game/blocs/game_state.dart';
 
-class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+class GamePage extends StatelessWidget {
+  const GamePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,22 +20,23 @@ class MainPage extends StatelessWidget {
         if (state is GameStateFailed) {
           if (state.exception is GameGeneralException) {
             context.showErrorSnackBar(
-                message: 'The game failed to start. Contact the developers!');
+                message: 'The game failed. Contact the developers!');
           }
         }
       },
       builder: (context, state) {
-        print(state);
         if (state is GameStateConfigure) {
           return const LoadingView();
         } else if (state is GameStateLoad) {
           return const GameView();
         } else if (state is GameStateResume) {
           return const ResumeView();
-        } else if (state is GameStateReady || state is GameStateFailed) {
-          return const MenuView();
         } else {
-          return const Scaffold(body: CircularProgressIndicator());
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );

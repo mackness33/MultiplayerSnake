@@ -9,7 +9,7 @@ import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/game_manager.dart';
 import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
-import 'package:multiplayersnake/views/main_view.dart';
+import 'package:multiplayersnake/views/main_page.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
 
 Future<void> main() async {

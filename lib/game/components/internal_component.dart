@@ -1,14 +1,15 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:multiplayersnake/game/components/collidable_group_component%20copy.dart';
 import 'package:multiplayersnake/game/components/curve_component.dart';
 import 'package:multiplayersnake/game/game.dart';
+import 'dart:developer' as devtools;
 
 enum BodyState { left, straight, right }
 
-class InternalComponent extends CollidableGroupComponent<int>
+class InternalComponent extends SpriteGroupComponent<int>
     with CurveComponent, HasGameRef<MultiplayerSnakeGame> {
-  InternalComponent({
+  InternalComponent(
+    this.name, {
     super.sprites,
     super.current,
     super.paint,
@@ -20,9 +21,13 @@ class InternalComponent extends CollidableGroupComponent<int>
     super.anchor,
     super.children,
     super.priority,
-  }) : super(hitOffset: Vector2(-2, -2)) {
+  }) {
     curve = 0;
   }
+
+  final String name;
+
+  late final RectangleHitbox hitbox;
 
   @override
   Future<void>? onLoad() async {
@@ -38,8 +43,19 @@ class InternalComponent extends CollidableGroupComponent<int>
 
     current = 0;
 
-    await add(RectangleHitbox(size: size - Vector2(2, 2))
-      ..collisionType = CollisionType.passive);
+    hitbox =
+        RectangleHitbox(size: size, position: size / 2, anchor: Anchor.center)
+          ..isSolid = true
+          ..collisionType = CollisionType.passive;
+    await add(hitbox);
+
+    devtools.log('$name position: $position');
+    devtools.log('$name positionHit: ${hitbox.position}');
+    devtools.log('$name absolutePosition: $absolutePosition');
+    devtools.log('$name absoluteposHit: ${hitbox.absolutePosition}');
+    devtools.log('$name size: $size');
+    devtools.log('$name sizeHit: ${hitbox.size}');
+    await super.onLoad();
   }
 
   @override
