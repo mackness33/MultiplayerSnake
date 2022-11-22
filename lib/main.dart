@@ -6,7 +6,8 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
-import 'package:multiplayersnake/services/game/game_manager.dart';
+import 'package:multiplayersnake/services/game/game_orchestrator.dart';
+import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
 import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
 import 'package:multiplayersnake/views/main_page.dart';
@@ -46,10 +47,20 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
-          return BlocProvider<GameBloc>(
-            create: (context) => GameBloc(GameManager()),
+          final GameOrchestrator gameManager = GameOrchestrator();
+          return MultiBlocProvider(
+            providers: [
+              // BlocProvider<SocketBloc>(create: ((context) => SocketBloc(gameManager))),
+              BlocProvider<GameBloc>(
+                  create: ((context) => GameBloc(gameManager)))
+            ],
+            // create: (context) => AuthBloc(SupabaseAuthProvider()),
             child: const MainPage(),
           );
+          // BlocProvider<GameBloc>(
+          //   create: (context) => GameBloc(GameManager()),
+          //   child: const MainPage(),
+          // );
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
         } else if (state is AuthStateRegistering) {

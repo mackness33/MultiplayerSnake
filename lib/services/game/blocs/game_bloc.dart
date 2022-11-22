@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
-import 'package:multiplayersnake/services/game/game_manager.dart';
+import 'package:multiplayersnake/services/game/game_orchestrator.dart';
 import 'dart:developer' as devtools;
 
+import 'package:multiplayersnake/services/game/game_provider.dart';
+
 class GameBloc extends Bloc<GameEvent, GameState> {
-  GameBloc(GameManager manager) : super(const GameStateReady()) {
+  GameBloc(GameProvider manager) : super(const GameStateReady()) {
     // start
     on<GameEventStarted>((event, emit) async {
       emit(const GameStateConfigure());

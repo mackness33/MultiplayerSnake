@@ -1,33 +1,39 @@
-// import 'package:flutter/material.dart';
-// import 'package:multiplayersnake/game/game.dart';
-// import 'package:multiplayersnake/services/game/game_provider.dart';
-// import 'package:multiplayersnake/services/settings/settings_service.dart';
+import 'dart:ui';
 
-// class GameService implements GameProvider {
-//   late MultiplayerSnakeGame _game;
-//   GameService(this._game);
-//   GameService.empty() {
-//     this._game = MultiplayerSnakeGame.empty();
-//   }
+import 'package:multiplayersnake/game/game.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/game_provider.dart';
 
-//   factory GameService.snake(Rect screen) =>
-//       GameService(MultiplayerSnakeGame(screen));
+class GameService implements GameProvider {
+  late MultiplayerSnakeGame? _game;
 
-//   void newGame(Rect screen) {
-//     if (_game.isLoaded) {
-//       _game.onRemove();
-//     }
-//     _game = MultiplayerSnakeGame(screen);
-//   }
+  GameService() : _game = null;
 
-//   MultiplayerSnakeGame get getGame => _game;
+  Future<void> newGame(Rect screen, GameBloc gameBloc) async {
+    if (_game != null) {
+      if (_game!.isLoaded) {
+        _game!.onRemove();
+      }
+    }
+    _game = MultiplayerSnakeGame(screen, gameBloc);
+  }
 
-//   @override
-//   Future<void> get loaded => _game.loaded;
-//   @override
-//   Future<void> get mounted => _game.mounted;
-//   @override
-//   Future<void> get ended => _game.ended;
-//   @override
-//   Future<void> get ending => _game.ending;
-// }
+  MultiplayerSnakeGame? get game => _game;
+
+  @override
+  Future<void> get loaded async =>
+      (_game != null) ? _game!.loaded : throw GameNotIstantietedException();
+  @override
+  Future<void> get mounted async =>
+      (_game != null) ? _game!.mounted : throw GameNotIstantietedException();
+  @override
+  Future<void> get ended async =>
+      (_game != null) ? _game!.ended : throw GameNotIstantietedException();
+  @override
+  Future<void> get ending async =>
+      (_game != null) ? _game!.ending : throw GameNotIstantietedException();
+}
+
+class GameGeneralException implements Exception {}
+
+class GameNotIstantietedException implements Exception {}
