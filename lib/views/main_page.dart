@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multiplayersnake/services/game/game_orchestrator.dart';
+import 'package:multiplayersnake/services/game/game_service.dart';
+import 'package:multiplayersnake/services/game_orchestrator.dart';
+import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
+import 'package:multiplayersnake/services/socket/socket_manager.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/game_page.dart';
 import 'package:multiplayersnake/views/resume_view.dart';
@@ -11,8 +14,28 @@ import 'package:multiplayersnake/views/menu_view.dart';
 import '../services/game/blocs/game_bloc.dart';
 import '../services/game/blocs/game_state.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  late SocketManager socketManager;
+
+  @override
+  void initState() {
+    super.initState();
+    socketManager = SocketManager();
+  }
+
+  @override
+  void dispose() {
+    // TODO: the socketManager must have a dispose method
+    // socketManager.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +50,17 @@ class MainPage extends StatelessWidget {
       },
       builder: (context, state) {
         print(state);
-        // if (state is GameStateConfigure) {
-        //   return const LoadingView();
-        // } else if (state is GameStateLoad) {
-        //   return const GameView();
-        // } else if (state is GameStateResume) {
-        //   return const ResumeView();
-        // } else
         if (state is GameStateReady || state is GameStateFailed) {
           return const MenuView();
         } else {
-          return const GamePage();
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<SocketBloc>(
+                  create: ((context) => SocketBloc(GameOrchestrator()))),
+            ],
+            child: const GamePage(),
+          );
+          // return const GamePage();
         }
       },
     );

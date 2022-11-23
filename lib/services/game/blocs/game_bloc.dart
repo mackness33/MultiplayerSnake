@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
-import 'package:multiplayersnake/services/game/game_orchestrator.dart';
+import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'dart:developer' as devtools;
 
 import 'package:multiplayersnake/services/game/game_provider.dart';
@@ -16,12 +16,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // configure
     on<GameEventConfigured>((event, emit) async {
       try {
-        devtools.log('Pre create');
         await manager.newGame(event.screen, this);
-        devtools.log('after new Game');
-
         emit(GameStateLoad(manager.game!));
-        devtools.log('after Loadedstate');
         await Future.delayed(const Duration(seconds: 30));
         manager.game!.end();
       } catch (e) {

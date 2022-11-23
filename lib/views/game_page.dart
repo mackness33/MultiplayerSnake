@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multiplayersnake/services/game/game_orchestrator.dart';
+import 'package:multiplayersnake/services/game/game_service.dart';
+import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/resume_view.dart';
 import 'package:multiplayersnake/views/game_view.dart';
@@ -25,6 +26,7 @@ class GamePage extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        print(state);
         if (state is GameStateConfigure) {
           return const LoadingView();
         } else if (state is GameStateLoad) {
