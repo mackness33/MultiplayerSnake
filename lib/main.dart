@@ -30,9 +30,6 @@ Future<void> main() async {
         create: (context) => AuthBloc(SupabaseAuthProvider()),
         child: const HomePage(),
       ),
-      routes: {
-        '/game/': (context) => const GameView(),
-      },
     ),
   );
 }

@@ -8,36 +8,80 @@ abstract class GameState {
   const GameState();
 }
 
+class GameStateUnactive extends GameState {
+  const GameStateUnactive();
+}
+
+@immutable
+abstract class GameStateViewer {}
+
 class GameStateReady extends GameState {
   const GameStateReady();
 }
 
-class GameStateFailed extends GameState {
-  final Exception? exception;
-  const GameStateFailed(this.exception);
+class GameStateReadyDisconnected extends GameStateReady {
+  const GameStateReadyDisconnected();
 }
 
-class GameStateStarted extends GameState {
-  const GameStateStarted();
+class GameStateReadyConnecting extends GameStateUnactive {
+  const GameStateReadyConnecting();
+}
+
+class GameStateReadyConnected extends GameStateUnactive {
+  const GameStateReadyConnected();
 }
 
 class GameStateConfigure extends GameState {
   const GameStateConfigure();
 }
 
-class GameStateCreate extends GameState {
-  const GameStateCreate();
+class GameStateConfigureInitialized extends GameStateConfigure
+    with GameStateViewer {
+  const GameStateConfigureInitialized();
 }
 
-class GameStateLoad extends GameState {
+class GameStateConfigureCreated extends GameStateConfigure {
+  const GameStateConfigureCreated();
+}
+
+class GameStatePlay extends GameState {
+  const GameStatePlay();
+}
+
+class GameStateStartLoading extends GameStateUnactive {
+  const GameStateStartLoading();
+}
+
+class GameStateStartLoaded extends GameStatePlay with GameStateViewer {
   final MultiplayerSnakeGame game;
-  const GameStateLoad(this.game);
+  const GameStateStartLoaded(this.game);
 }
 
-class GameStateResume extends GameState {
-  const GameStateResume();
+class GameStateStartWaiting extends GameStatePlay {
+  const GameStateStartWaiting();
+}
+
+class GameStatePlayListening extends GameStatePlay {
+  const GameStatePlayListening();
 }
 
 class GameStateEnd extends GameState {
   const GameStateEnd();
+}
+
+class GameStateEndWaiting extends GameStateUnactive {
+  const GameStateEndWaiting();
+}
+
+class GameStateEndResults extends GameStateEnd with GameStateViewer {
+  const GameStateEndResults();
+}
+
+class GameStateEndRemoving extends GameStateUnactive {
+  const GameStateEndRemoving();
+}
+
+class GameStateFailed extends GameState {
+  final Exception? exception;
+  const GameStateFailed(this.exception);
 }

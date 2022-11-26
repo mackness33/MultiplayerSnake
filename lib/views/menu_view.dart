@@ -64,7 +64,7 @@ class _MenuViewState extends State<MenuView> {
             children: [
               ElevatedButton(
                   onPressed: () {
-                    context.read<GameBloc>().add(const GameEventStarted());
+                    context.read<GameBloc>().add(const GameEventConnection());
                   },
                   child: const Text('Let\'s play')),
             ],

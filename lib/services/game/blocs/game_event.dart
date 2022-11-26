@@ -11,13 +11,18 @@ class GameEventRemoved extends GameEvent {
   const GameEventRemoved();
 }
 
-class GameEventStarted extends GameEvent {
-  const GameEventStarted();
+class GameEventConnection extends GameEvent {
+  const GameEventConnection();
 }
 
 class GameEventConfigured extends GameEvent {
   final Rect screen;
   const GameEventConfigured(this.screen);
+}
+
+class GameEventCreated extends GameEvent {
+  final Rect screen;
+  const GameEventCreated(this.screen);
 }
 
 class GameEventPlayed extends GameEvent {

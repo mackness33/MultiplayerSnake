@@ -17,29 +17,18 @@ class LoadingView extends StatefulWidget {
 class _LoadingViewState extends State<LoadingView> {
   @override
   Widget build(BuildContext context) {
-    context.read<SocketBloc>().add(const SocketEventConnection());
-
     return Scaffold(
       appBar: AppBar(title: const Text('Loading')),
       body: Center(
-        child: BlocConsumer<SocketBloc, SocketState>(
-          builder: ((context, state) {
-            print(state);
-            if (state is SocketStateReady) {
-              return ElevatedButton(
-                onPressed: () {
-                  final Rect screen =
-                      SettingsService.screenSize(MediaQuery.of(context));
-                  context.read<GameBloc>().add(GameEventConfigured(screen));
-                },
-                child: const Text('Start'),
-              );
-            } else {
-              return const Text(
-                  'The socket is not connected, check your connection');
-            }
-          }),
-          listener: ((context, state) {}),
+        child: ElevatedButton(
+          onPressed: () {
+            context.read<GameBloc>().add(
+                  GameEventCreated(
+                    SettingsService.screenSize(MediaQuery.of(context)),
+                  ),
+                );
+          },
+          child: const Text('Start'),
         ),
       ),
     );

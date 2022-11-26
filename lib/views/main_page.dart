@@ -40,6 +40,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
+      listenWhen: (previous, current) => current is GameStateFailed,
       listener: (context, state) {
         if (state is GameStateFailed) {
           if (state.exception is GameGeneralException) {
@@ -48,19 +49,19 @@ class _MainPageState extends State<MainPage> {
           }
         }
       },
+      buildWhen: (previous, current) {
+        // print('In MenuPageWhen: $current');
+        return (previous is GameStateEndRemoving &&
+                current is GameStateReadyDisconnected) ||
+            current is GameStateFailed ||
+            current is GameStateConfigureInitialized;
+      },
       builder: (context, state) {
-        print(state);
-        if (state is GameStateReady || state is GameStateFailed) {
+        print('In MenuPageBuilder: $state');
+        if (state is GameStateReadyDisconnected || state is GameStateFailed) {
           return const MenuView();
         } else {
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider<SocketBloc>(
-                  create: ((context) => SocketBloc(GameOrchestrator()))),
-            ],
-            child: const GamePage(),
-          );
-          // return const GamePage();
+          return const GamePage();
         }
       },
     );

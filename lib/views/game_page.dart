@@ -16,22 +16,18 @@ class GamePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GameBloc, GameState>(
-      listener: (context, state) {
-        if (state is GameStateFailed) {
-          if (state.exception is GameGeneralException) {
-            context.showErrorSnackBar(
-                message: 'The game failed. Contact the developers!');
-          }
-        }
+    return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previous, current) {
+        // print('In GamePage: $current');
+        return current is GameStateUnactive || current is GameStateViewer;
       },
       builder: (context, state) {
-        print(state);
-        if (state is GameStateConfigure) {
+        print('In GamePageBuilder: $state');
+        if (state is GameStateConfigureInitialized) {
           return const LoadingView();
-        } else if (state is GameStateLoad) {
-          return const GameView();
-        } else if (state is GameStateResume) {
+        } else if (state is GameStateStartLoaded) {
+          return GameView(game: state.game);
+        } else if (state is GameStateEndResults) {
           return const ResumeView();
         } else {
           return const Scaffold(
