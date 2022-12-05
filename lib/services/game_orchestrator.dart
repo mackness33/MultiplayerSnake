@@ -13,7 +13,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   GameOrchestrator()
       : gameService = GameService(),
-        socketManager = SocketManager();
+        socketManager = SocketManager()..init();
 
   Future<void> newGame(Rect screen, GameBloc gameBloc) async =>
       gameService.newGame(screen, gameBloc);
