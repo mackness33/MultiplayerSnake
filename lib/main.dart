@@ -45,20 +45,10 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
           final GameOrchestrator gameManager = GameOrchestrator();
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider<SocketBloc>(
-                  create: ((context) => SocketBloc(gameManager))),
-              BlocProvider<GameBloc>(
-                  create: ((context) => GameBloc(gameManager)))
-            ],
-            // create: (context) => AuthBloc(SupabaseAuthProvider()),
+          return BlocProvider<GameBloc>(
+            create: ((context) => GameBloc(gameManager)),
             child: const MainPage(),
           );
-          // BlocProvider<GameBloc>(
-          //   create: (context) => GameBloc(GameManager()),
-          //   child: const MainPage(),
-          // );
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
         } else if (state is AuthStateRegistering) {

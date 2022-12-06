@@ -32,8 +32,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
-    // TODO: the socketManager must have a dispose method
-    // socketManager.dispose();
     super.dispose();
   }
 
