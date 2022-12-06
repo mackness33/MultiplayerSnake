@@ -27,6 +27,10 @@ class GameStateReadyConnecting extends GameStateUnactive {
   const GameStateReadyConnecting();
 }
 
+class GameStateReadyError extends GameStateUnactive {
+  const GameStateReadyError();
+}
+
 class GameStateReadyConnected extends GameStateUnactive {
   const GameStateReadyConnected();
 }

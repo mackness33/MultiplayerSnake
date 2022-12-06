@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
 import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
-import 'package:multiplayersnake/services/socket/socket_manager.dart';
+import 'package:multiplayersnake/services/socket/socket_service.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/game_page.dart';
 import 'package:multiplayersnake/views/resume_view.dart';
@@ -22,12 +22,12 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  late SocketManager socketManager;
+  late SocketService socketManager;
 
   @override
   void initState() {
     super.initState();
-    socketManager = SocketManager();
+    socketManager = SocketService();
   }
 
   @override
@@ -46,6 +46,10 @@ class _MainPageState extends State<MainPage> {
           if (state.exception is GameGeneralException) {
             context.showErrorSnackBar(
                 message: 'The game failed to start. Contact the developers!');
+          } else if (state.exception is ConnectionTimeoutException) {
+            context.showErrorSnackBar(
+                message:
+                    'The game failed to connect to the server. Check your connection or contact the developers!');
           }
         }
       },

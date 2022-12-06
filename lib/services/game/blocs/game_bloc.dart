@@ -5,6 +5,7 @@ import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'dart:developer' as devtools;
 
 import 'package:multiplayersnake/services/game/game_provider.dart';
+import 'package:multiplayersnake/services/socket/socket_service.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc(GameOrchestrator manager)
@@ -12,9 +13,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // start
     on<GameEventConnection>((event, emit) async {
       emit(const GameStateReadyConnecting());
-      manager.connect();
-      emit(const GameStateReadyConnected());
-      emit(const GameStateConfigureInitialized());
+      try {
+        await manager.connect();
+        emit(const GameStateReadyConnected());
+        emit(const GameStateConfigureInitialized());
+      } catch (e) {
+        emit(GameStateFailed(e as Exception));
+      }
     });
 
     // configure
@@ -39,7 +44,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         manager.game!.end();
       } catch (e) {
         devtools.log(e.toString());
-        GameStateFailed(e as Exception);
+        emit(GameStateFailed(e as Exception));
       }
     });
 

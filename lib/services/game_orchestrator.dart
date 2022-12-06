@@ -4,16 +4,16 @@ import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
-import 'package:multiplayersnake/services/socket/socket_manager.dart';
+import 'package:multiplayersnake/services/socket/socket_service.dart';
 import 'package:multiplayersnake/services/socket/socket_provider.dart';
 
 class GameOrchestrator implements GameProvider, SocketProvider {
   GameService gameService;
-  SocketManager socketManager;
+  SocketService socketService;
 
   GameOrchestrator()
       : gameService = GameService(),
-        socketManager = SocketManager()..init();
+        socketService = SocketService()..init();
 
   Future<void> newGame(Rect screen, GameBloc gameBloc) async =>
       gameService.newGame(screen, gameBloc);
@@ -30,8 +30,8 @@ class GameOrchestrator implements GameProvider, SocketProvider {
   Future<void> get ending async => gameService.ending;
 
   @override
-  Future<void> connect() => socketManager.connect();
+  Future<void> connect() => socketService.connect();
 
   @override
-  Future<void> disconnect() => socketManager.disconnect();
+  void disconnect() => socketService.disconnect();
 }
