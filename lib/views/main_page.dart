@@ -57,6 +57,7 @@ class _MainPageState extends State<MainPage> {
         // print('In MenuPageWhen: $current');
         return (previous is GameStateEndRemoving &&
                 current is GameStateReadyDisconnected) ||
+            current is GameStateReadyConnecting ||
             current is GameStateFailed ||
             current is GameStateConfigureInitialized;
       },
