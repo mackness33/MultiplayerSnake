@@ -3,9 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/settings/settings_service.dart';
-import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
-import 'package:multiplayersnake/services/socket/blocs/socket_event.dart';
-import 'package:multiplayersnake/services/socket/blocs/socket_state.dart';
 
 class LoadingView extends StatefulWidget {
   const LoadingView({super.key});
@@ -29,200 +26,223 @@ class _LoadingViewState extends State<LoadingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(title: const Text('Loading')),
-      body: Column(
-        children: [
-          const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                height: 75,
-                width: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  shape: BoxShape.rectangle,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 75,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    shape: BoxShape.rectangle,
+                  ),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      create = true;
+                      print(create);
+                    },
+                    child: const Text('Create'),
+                  ),
                 ),
-                child: OutlinedButton(
-                  onPressed: () {
-                    create = true;
-                    print(create);
-                  },
-                  child: const Text('Create'),
+                Container(
+                  height: 75,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    shape: BoxShape.rectangle,
+                  ),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      create = false;
+                      print(create);
+                    },
+                    child: const Text('Join'),
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            const Text("Name: "),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _name,
+              obscureText: false,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(hintText: "Enter name"),
+              onChanged: (String name) {
+                setState(() {
+                  _gameSetting.name = name;
+                });
+              },
+            ),
+            const SizedBox(height: 30),
+            const Text("Max players: "),
+            const SizedBox(height: 10),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: List.generate(
+                3,
+                (index) {
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        _gameSetting.indexPlayers = index;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        color: _gameSetting.indexPlayers == index
+                            ? Colors.white
+                            : Colors.blue,
+                      ),
+                      child: Center(
+                        child: Text(
+                          (index + 1).toString(),
+                          style: TextStyle(
+                              color: (_gameSetting.indexPlayers == index)
+                                  ? Colors.red
+                                  : Colors.amber),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-              Container(
-                height: 75,
-                width: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  shape: BoxShape.rectangle,
-                ),
-                child: OutlinedButton(
-                  onPressed: () {
-                    create = false;
-                    print(create);
-                  },
-                  child: const Text('Join'),
-                ),
+            ),
+            const SizedBox(height: 30),
+            const Text("Max time: "),
+            const SizedBox(height: 10),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: List.generate(
+                3,
+                (index) {
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        _gameSetting.indexTime = index;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        color: _gameSetting.indexTime == index
+                            ? Colors.white
+                            : Colors.blue,
+                      ),
+                      child: Center(
+                        child: Text(
+                          (index + 1).toString(),
+                          style: TextStyle(
+                              color: (_gameSetting.indexTime == index)
+                                  ? Colors.red
+                                  : Colors.amber),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          const Text("Max players: "),
-          const SizedBox(height: 10),
-          Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: List.generate(
-              3,
-              (index) {
-                return InkWell(
-                  onTap: () {
+            ),
+            const SizedBox(height: 30),
+            const Text("Max points: "),
+            const SizedBox(height: 10),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: List.generate(
+                3,
+                (index) {
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        _gameSetting.indexPoints = index;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        color: _gameSetting.indexPoints == index
+                            ? Colors.white
+                            : Colors.blue,
+                      ),
+                      child: Center(
+                        child: Text(
+                          (index + 1).toString(),
+                          style: TextStyle(
+                              color: (_gameSetting.indexPoints == index)
+                                  ? Colors.red
+                                  : Colors.amber),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                const Text("Public: "),
+                const SizedBox(width: 10),
+                Switch(
+                  value: _gameSetting.public,
+                  onChanged: (bool newValue) {
                     setState(() {
-                      _gameSetting.maxPlayers = index;
+                      _gameSetting.public = newValue;
                     });
                   },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                      color: _gameSetting.maxPlayers == index
-                          ? Colors.white
-                          : Colors.blue,
-                    ),
-                    child: Center(
-                      child: Text(
-                        (index + 1).toString(),
-                        style: TextStyle(
-                            color: (_gameSetting.maxPlayers == index)
-                                ? Colors.red
-                                : Colors.amber),
-                      ),
-                    ),
-                  ),
-                );
-              },
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 30),
-          const Text("Max time: "),
-          const SizedBox(height: 10),
-          Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: List.generate(
-              3,
-              (index) {
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      _gameSetting.maxTime = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1.0,
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                context.read<GameBloc>().add(
+                      GameEventCreated(
+                        SettingsService.screenSize(MediaQuery.of(context)),
                       ),
-                      borderRadius: BorderRadius.circular(15),
-                      color: _gameSetting.maxTime == index
-                          ? Colors.white
-                          : Colors.blue,
-                    ),
-                    child: Center(
-                      child: Text(
-                        (index + 1).toString(),
-                        style: TextStyle(
-                            color: (_gameSetting.maxTime == index)
-                                ? Colors.red
-                                : Colors.amber),
-                      ),
-                    ),
-                  ),
-                );
+                    );
               },
+              child: const Text('Create'),
             ),
-          ),
-          const SizedBox(height: 30),
-          const Text("Max points: "),
-          const SizedBox(height: 10),
-          Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: List.generate(
-              3,
-              (index) {
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      _gameSetting.maxPoints = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                      color: _gameSetting.maxPoints == index
-                          ? Colors.white
-                          : Colors.blue,
-                    ),
-                    child: Center(
-                      child: Text(
-                        (index + 1).toString(),
-                        style: TextStyle(
-                            color: (_gameSetting.maxPoints == index)
-                                ? Colors.red
-                                : Colors.amber),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 30),
-          const Text("Name: "),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _name,
-            obscureText: false,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: "Enter name"),
-          ),
-
-          // ElevatedButton(
-          //   onPressed: () {
-          //     context.read<GameBloc>().add(
-          //           GameEventCreated(
-          //             SettingsService.screenSize(MediaQuery.of(context)),
-          //           ),
-          //         );
-          //   },
-          //   child: const Text('Start'),
-          // ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class GameSettings {
-  int _indexPlayers;
-  int _indexTime;
-  int _indexPoints;
+  int indexPlayers;
+  int indexTime;
+  int indexPoints;
   String name;
   bool public;
   final List<int> players = [1, 2, 3];
@@ -230,17 +250,13 @@ class GameSettings {
   final List<int> points = [100, 200, 400, 1000];
 
   GameSettings()
-      : _indexPlayers = 0,
-        _indexTime = 0,
-        _indexPoints = 0,
+      : indexPlayers = 0,
+        indexTime = 0,
+        indexPoints = 0,
         name = '',
         public = false;
 
-  int get maxPlayers => players[_indexPlayers];
-  int get maxTime => time[_indexTime];
-  int get maxPoints => points[_indexPoints];
-
-  set maxPlayers(index) => _indexPlayers = index;
-  set maxTime(index) => _indexTime = index;
-  set maxPoints(index) => _indexPoints = index;
+  int get maxPlayers => players[indexPlayers];
+  int get maxTime => time[indexTime];
+  int get maxPoints => points[indexPoints];
 }
