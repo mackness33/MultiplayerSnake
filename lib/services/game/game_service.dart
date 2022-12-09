@@ -1,23 +1,27 @@
 import 'dart:ui';
 
 import 'package:multiplayersnake/game/game.dart';
+import 'package:multiplayersnake/models/game_settings.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 
 class GameService implements GameProvider {
-  late MultiplayerSnakeGame? _game;
+  MultiplayerSnakeGame? _game;
 
   GameService() : _game = null;
 
-  Future<void> newGame(Rect screen, GameBloc gameBloc) async {
+  @override
+  Future<void> newGame(
+      Rect screen, GameSettings gameSettings, GameBloc gameBloc) async {
     if (_game != null) {
       if (_game!.isLoaded) {
         _game!.onRemove();
       }
     }
-    _game = MultiplayerSnakeGame(screen, gameBloc);
+    _game = MultiplayerSnakeGame(screen, gameSettings, gameBloc);
   }
 
+  @override
   MultiplayerSnakeGame? get game => _game;
 
   @override

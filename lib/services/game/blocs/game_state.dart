@@ -15,6 +15,7 @@ class GameStateUnactive extends GameState {
 @immutable
 abstract class GameStateViewer {}
 
+// READY
 class GameStateReady extends GameState {
   const GameStateReady();
 }
@@ -35,6 +36,7 @@ class GameStateReadyConnected extends GameStateUnactive {
   const GameStateReadyConnected();
 }
 
+// CONFIGURE
 class GameStateConfigure extends GameState {
   const GameStateConfigure();
 }
@@ -48,6 +50,7 @@ class GameStateConfigureCreated extends GameStateConfigure {
   const GameStateConfigureCreated();
 }
 
+// PLAY
 class GameStatePlay extends GameState {
   const GameStatePlay();
 }
@@ -61,7 +64,7 @@ class GameStateStartLoaded extends GameStatePlay with GameStateViewer {
   const GameStateStartLoaded(this.game);
 }
 
-class GameStateStartWaiting extends GameStatePlay {
+class GameStateStartWaiting extends GameStatePlay with GameStateViewer {
   const GameStateStartWaiting();
 }
 
@@ -69,6 +72,7 @@ class GameStatePlayListening extends GameStatePlay {
   const GameStatePlayListening();
 }
 
+// END
 class GameStateEnd extends GameState {
   const GameStateEnd();
 }
@@ -85,7 +89,13 @@ class GameStateEndRemoving extends GameStateUnactive {
   const GameStateEndRemoving();
 }
 
+// FAIL
 class GameStateFailed extends GameState {
   final Exception? exception;
   const GameStateFailed(this.exception);
+}
+
+class GameStateCreationFailed extends GameState {
+  final Exception? exception;
+  const GameStateCreationFailed(this.exception);
 }

@@ -4,4 +4,6 @@ abstract class SocketProvider {
   Future<void> connect();
 
   void disconnect();
+
+  Future<void> create(Map<String, dynamic> data);
 }

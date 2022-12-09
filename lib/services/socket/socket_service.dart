@@ -1,12 +1,14 @@
 import 'dart:async';
 
+import 'package:multiplayersnake/services/socket/socket_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'dart:developer' as devtools;
 
-class SocketService {
+class SocketService implements SocketProvider {
   final IO.Socket socket;
   Completer<bool> _connectionCompleter;
+  Completer<bool> _createCompleter;
 
   SocketService()
       : socket = IO.io(
@@ -15,7 +17,8 @@ class SocketService {
               .disableAutoConnect()
               .setTransports(['websocket']).build(),
         ),
-        _connectionCompleter = Completer()..complete(false);
+        _connectionCompleter = Completer()..complete(false),
+        _createCompleter = Completer()..complete(false);
 
   void init() {
     socket.onConnect((_) async {
@@ -38,6 +41,7 @@ class SocketService {
     });
   }
 
+  @override
   Future<void> connect() async {
     if (socket.connected) {
       socket.disconnect();
@@ -66,9 +70,30 @@ class SocketService {
     }
   }
 
+  @override
   void disconnect() {
     socket.disconnect();
+  }
+
+  @override
+  Future<void> create(Map<String, dynamic> data) async {
+    _createCompleter = Completer();
+
+    socket.emitWithAck('create', data, ack: (bool isCreated) async {
+      print('ack: $isCreated');
+      _createCompleter.complete(isCreated);
+      // if (isCreated) {
+      // } else {
+      //   throw RoomAlreadyExistedException();
+      // }
+    });
+
+    if (!await _createCompleter.future) {
+      throw RoomAlreadyExistedException();
+    }
   }
 }
 
 class ConnectionTimeoutException implements Exception {}
+
+class RoomAlreadyExistedException implements Exception {}

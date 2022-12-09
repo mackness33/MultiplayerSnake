@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:multiplayersnake/game/game.dart';
+import 'package:multiplayersnake/models/game_settings.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
@@ -15,9 +16,12 @@ class GameOrchestrator implements GameProvider, SocketProvider {
       : gameService = GameService(),
         socketService = SocketService()..init();
 
-  Future<void> newGame(Rect screen, GameBloc gameBloc) async =>
-      gameService.newGame(screen, gameBloc);
+  @override
+  Future<void> newGame(
+          Rect screen, GameSettings gameSettings, GameBloc gameBloc) async =>
+      gameService.newGame(screen, gameSettings, gameBloc);
 
+  @override
   MultiplayerSnakeGame? get game => gameService.game;
 
   @override
@@ -34,4 +38,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   void disconnect() => socketService.disconnect();
+
+  @override
+  Future<void> create(Map<String, dynamic> data) => socketService.create(data);
 }

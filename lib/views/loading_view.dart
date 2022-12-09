@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multiplayersnake/models/game_settings.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/settings/settings_service.dart';
@@ -227,6 +228,7 @@ class _LoadingViewState extends State<LoadingView> {
                 context.read<GameBloc>().add(
                       GameEventCreated(
                         SettingsService.screenSize(MediaQuery.of(context)),
+                        _gameSetting,
                       ),
                     );
               },
@@ -237,26 +239,4 @@ class _LoadingViewState extends State<LoadingView> {
       ),
     );
   }
-}
-
-class GameSettings {
-  int indexPlayers;
-  int indexTime;
-  int indexPoints;
-  String name;
-  bool public;
-  final List<int> players = [1, 2, 3];
-  final List<int> time = [1, 2, 5];
-  final List<int> points = [100, 200, 400, 1000];
-
-  GameSettings()
-      : indexPlayers = 0,
-        indexTime = 0,
-        indexPoints = 0,
-        name = '',
-        public = false;
-
-  int get maxPlayers => players[indexPlayers];
-  int get maxTime => time[indexTime];
-  int get maxPoints => points[indexPoints];
 }
