@@ -4,12 +4,13 @@ import 'package:supabase/supabase.dart' as supabase show User;
 @immutable
 class AuthUser {
   final bool isEmailVerified;
+  final String email;
 
-  const AuthUser(this.isEmailVerified);
+  const AuthUser(this.isEmailVerified, this.email);
 
   factory AuthUser.fromSupabase(supabase.User user) {
     final confirmationSentAt = user.confirmationSentAt?.split('.')[0];
     final createdAt = user.createdAt.split('.')[0];
-    return AuthUser(confirmationSentAt == createdAt);
+    return AuthUser(confirmationSentAt == createdAt, user.email ?? '');
   }
 }
