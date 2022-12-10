@@ -18,13 +18,16 @@ class GameEventConnection extends GameEvent {
 
 class GameEventConfigured extends GameEvent {
   final Rect screen;
-  const GameEventConfigured(this.screen);
+  final GameSettings data;
+  final bool create;
+  const GameEventConfigured(this.screen, this.data, this.create);
 }
 
 class GameEventCreated extends GameEvent {
   final Rect screen;
   final GameSettings data;
-  const GameEventCreated(this.screen, this.data);
+  final bool create;
+  const GameEventCreated(this.screen, this.data, this.create);
 }
 
 class GameEventStarted extends GameEvent {

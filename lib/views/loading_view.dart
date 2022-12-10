@@ -219,13 +219,48 @@ class _LoadingViewState extends State<LoadingView> {
         ElevatedButton(
           onPressed: () {
             context.read<GameBloc>().add(
-                  GameEventCreated(
+                  GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),
                     _gameSettings,
+                    create!,
                   ),
                 );
           },
           child: const Text('Create'),
+        ),
+      ],
+    );
+  }
+
+  Widget joinForm() {
+    return Column(
+      children: [
+        const Text("Name: "),
+        const SizedBox(height: 10),
+        TextField(
+          controller: _name,
+          obscureText: false,
+          enableSuggestions: false,
+          autocorrect: false,
+          decoration: const InputDecoration(hintText: "Enter name"),
+          onChanged: (String name) {
+            setState(() {
+              _gameSettings.name = name;
+            });
+          },
+        ),
+        const SizedBox(height: 30),
+        ElevatedButton(
+          onPressed: () {
+            context.read<GameBloc>().add(
+                  GameEventConfigured(
+                    SettingsService.screenSize(MediaQuery.of(context)),
+                    _gameSettings,
+                    create!,
+                  ),
+                );
+          },
+          child: const Text('Join'),
         ),
       ],
     );
@@ -269,8 +304,9 @@ class _LoadingViewState extends State<LoadingView> {
                   ),
                   child: OutlinedButton(
                     onPressed: () {
-                      create = false;
-                      print(create);
+                      setState(() {
+                        create = false;
+                      });
                     },
                     child: const Text('Join'),
                   ),
@@ -280,14 +316,13 @@ class _LoadingViewState extends State<LoadingView> {
             const SizedBox(height: 30),
             Builder(
               builder: ((context) {
-                return create == null
-                    ? Container()
-                    : create!
-                        ? createForm()
-                        : Container(
-                            child: Center(
-                            child: Text('Join'),
-                          ));
+                return Container(
+                  child: create == null
+                      ? null
+                      : create!
+                          ? createForm()
+                          : joinForm(),
+                );
               }),
             ),
           ],
