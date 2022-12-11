@@ -6,7 +6,6 @@ import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/settings/settings_service.dart';
-import 'package:supabase/supabase.dart';
 
 class LoadingView extends StatefulWidget {
   const LoadingView({super.key});
@@ -187,6 +186,7 @@ class _LoadingViewState extends State<LoadingView> {
         const SizedBox(height: 30),
         ElevatedButton(
           onPressed: () {
+            _gameRules.isAdmin = true;
             context.read<GameBloc>().add(
                   GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),
@@ -221,6 +221,7 @@ class _LoadingViewState extends State<LoadingView> {
         const SizedBox(height: 30),
         ElevatedButton(
           onPressed: () {
+            _gameRules.isAdmin = false;
             context.read<GameBloc>().add(
                   GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),
