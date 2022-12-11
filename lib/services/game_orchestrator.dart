@@ -40,9 +40,20 @@ class GameOrchestrator implements GameProvider, SocketProvider {
   void disconnect() => socketService.disconnect();
 
   @override
-  Future<void> create(Map<String, dynamic> data) => socketService.create(data);
+  Future<Map<String, dynamic>> create(Map<String, dynamic> data) =>
+      socketService.create(data);
 
   @override
   Future<Map<String, dynamic>> join(Map<String, dynamic> data) =>
       socketService.join(data);
+
+  @override
+  Stream<Map<String, dynamic>> streamPlayers() => socketService.streamPlayers();
+
+  @override
+  void ready(String email, String room) => socketService.ready(email, room);
+
+  @override
+  void deletePlayer(String email, String room) =>
+      socketService.deletePlayer(email, room);
 }

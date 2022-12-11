@@ -19,8 +19,8 @@ class GameEventConnection extends GameEvent {
 class GameEventConfigured extends GameEvent {
   final Rect screen;
   final GameRules data;
-  final bool create;
-  const GameEventConfigured(this.screen, this.data, this.create);
+  final bool isCreating;
+  const GameEventConfigured(this.screen, this.data, this.isCreating);
 }
 
 class GameEventStarted extends GameEvent {

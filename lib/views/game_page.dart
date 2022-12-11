@@ -36,7 +36,7 @@ class GamePage extends StatelessWidget {
           } else if (state.exception is GeneralSocketException) {
             context.showErrorSnackBar(
                 message:
-                    'There has been an error with the server. Please retry. If the problem consist, contact the developers');
+                    'There has been an error with the server. Please retry. If the problem consist contact the developers');
           }
         }
       },

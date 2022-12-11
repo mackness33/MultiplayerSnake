@@ -1,6 +1,7 @@
 // import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:multiplayersnake/game/game.dart';
+import 'package:multiplayersnake/models/game_rules.dart';
 // import 'package:multiplayersnake/services/auth/auth_user.dart';
 
 @immutable
@@ -65,7 +66,9 @@ class GameStateStartLoaded extends GameStatePlay with GameStateViewer {
 }
 
 class GameStateStartWaiting extends GameStatePlay with GameStateViewer {
-  const GameStateStartWaiting();
+  final GameRules rules;
+  final Stream<Map<String, dynamic>> streamPlayers;
+  const GameStateStartWaiting(this.rules, this.streamPlayers);
 }
 
 class GameStatePlayListening extends GameStatePlay {

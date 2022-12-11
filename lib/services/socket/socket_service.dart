@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:core';
 
 import 'package:multiplayersnake/services/socket/socket_provider.dart';
+// ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'dart:developer' as devtools;
@@ -8,8 +10,8 @@ import 'dart:developer' as devtools;
 class SocketService implements SocketProvider {
   final IO.Socket socket;
   Completer<bool> _connectionCompleter;
-  Completer<bool> _createdCompleter;
-  Completer<Map<String, dynamic>?> _joinedCompleter;
+  Completer<void> _readyCompleter;
+  Completer<Map<String, dynamic>> _playersCompleter;
 
   SocketService()
       : socket = IO.io(
@@ -19,11 +21,11 @@ class SocketService implements SocketProvider {
               .setTransports(['websocket']).build(),
         ),
         _connectionCompleter = Completer()..complete(false),
-        _createdCompleter = Completer()..complete(false),
-        _joinedCompleter = Completer()..complete(null);
+        _readyCompleter = Completer()..complete(),
+        _playersCompleter = Completer()..complete({});
 
   void init() {
-    socket.onConnect((_) async {
+    socket.onConnect((_) {
       devtools.log('Connected to: ${socket.id}');
       if (!_connectionCompleter.isCompleted) {
         _connectionCompleter.complete(true);
@@ -40,6 +42,20 @@ class SocketService implements SocketProvider {
     });
     socket.onError((data) {
       devtools.log('Error on ${socket.id}: $data');
+    });
+
+    socket.on('ready', (_) {
+      _readyCompleter.complete();
+      if (_playersCompleter.isCompleted) {
+        _playersCompleter = Completer();
+      }
+      _playersCompleter.complete({});
+    });
+
+    socket.on('player', (data) {
+      if (!_playersCompleter.isCompleted) {
+        _playersCompleter.complete(data);
+      }
     });
   }
 
@@ -78,29 +94,31 @@ class SocketService implements SocketProvider {
   }
 
   @override
-  Future<void> create(Map<String, dynamic> data) async {
-    _createdCompleter = Completer();
-
+  Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
+    Completer<bool> createdCompleter = Completer();
+    devtools.log(data.toString());
     socket.emitWithAck('create', data,
-        ack: (bool isCreated) => _createdCompleter.complete(isCreated));
+        ack: (bool isCreated) => createdCompleter.complete(isCreated));
 
-    if (!await _createdCompleter.future) {
+    if (!await createdCompleter.future) {
       throw RoomAlreadyExistedException();
     }
+
+    return data;
   }
 
   @override
   Future<Map<String, dynamic>> join(Map<String, dynamic> data) async {
-    _joinedCompleter = Completer();
+    Completer<Map<String, dynamic>?> joinedCompleter = Completer();
 
     socket.emitWithAck(
       'join',
       data,
       ack: (Map<String, dynamic> response) =>
-          _joinedCompleter.complete(response),
+          joinedCompleter.complete(response),
     );
 
-    Map<String, dynamic>? response = await _joinedCompleter.future;
+    Map<String, dynamic>? response = await joinedCompleter.future;
 
     if (response?['isFull'] != null && response?['isFull'] is bool) {
       if (response!['isFull']) {
@@ -110,14 +128,47 @@ class SocketService implements SocketProvider {
       }
     }
 
-    devtools.log(response?['rules']);
-
     if (response?['rules'] == null) {
       throw GeneralSocketException();
     }
 
     return response!['rules'];
   }
+
+  @override
+  Stream<Map<String, dynamic>> streamPlayers() async* {
+    _readyCompleter = Completer();
+
+    while (_readyCompleter.isCompleted) {
+      _playersCompleter = Completer();
+
+      /**
+       * {
+       *    String player,
+       *    bool isDeleted,
+       * }
+       */
+      final Map<String, dynamic> response = await _playersCompleter.future;
+
+      // it will be empty only if the ready compleater is compleated
+      if (response.isNotEmpty) {
+        yield await _playersCompleter.future;
+      }
+    }
+
+    // make sure the chatMessages is done.
+    if (!_playersCompleter.isCompleted) {
+      _playersCompleter.complete({});
+    }
+  }
+
+  @override
+  void ready(String email, String room) =>
+      socket.emit('ready', {'player': email, 'room': room});
+
+  @override
+  void deletePlayer(String email, String room) =>
+      socket.emit('removePlayer', {'player': email, 'room': room});
 }
 
 abstract class SocketException implements Exception {}
