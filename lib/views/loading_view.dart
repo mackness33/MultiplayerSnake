@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multiplayersnake/models/game_settings.dart';
+import 'package:multiplayersnake/models/game_rules.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
@@ -17,47 +17,16 @@ class LoadingView extends StatefulWidget {
 
 class _LoadingViewState extends State<LoadingView> {
   bool? create;
-  late final GameSettings _gameSettings;
+  late final GameRules _gameRules;
   late final TextEditingController _name;
 
   @override
   void initState() {
     String email =
         (context.read<AuthBloc>().state as AuthStateLoggedIn).user.email;
-    _gameSettings = GameSettings();
-    _gameSettings.addPlayer(email);
+    _gameRules = GameRules(email);
     _name = TextEditingController();
     super.initState();
-  }
-
-  void setName(String newState) {
-    setState(() {
-      _gameSettings.name = newState;
-    });
-  }
-
-  void setIndexPlayers(int newState) {
-    setState(() {
-      _gameSettings.indexPlayers = newState;
-    });
-  }
-
-  void setIndexTime(int newState) {
-    setState(() {
-      _gameSettings.indexTime = newState;
-    });
-  }
-
-  void setIndexPoints(int newState) {
-    setState(() {
-      _gameSettings.indexPoints = newState;
-    });
-  }
-
-  void setPublic(bool newState) {
-    setState(() {
-      _gameSettings.public = newState;
-    });
   }
 
   Widget createForm() {
@@ -73,7 +42,7 @@ class _LoadingViewState extends State<LoadingView> {
           decoration: const InputDecoration(hintText: "Enter name"),
           onChanged: (String name) {
             setState(() {
-              _gameSettings.name = name;
+              _gameRules.name = name;
             });
           },
         ),
@@ -88,7 +57,7 @@ class _LoadingViewState extends State<LoadingView> {
               return InkWell(
                 onTap: () {
                   setState(() {
-                    _gameSettings.indexPlayers = index;
+                    _gameRules.indexPlayers = index;
                   });
                 },
                 child: Container(
@@ -100,7 +69,7 @@ class _LoadingViewState extends State<LoadingView> {
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(15),
-                    color: _gameSettings.indexPlayers == index
+                    color: _gameRules.indexPlayers == index
                         ? Colors.white
                         : Colors.blue,
                   ),
@@ -108,7 +77,7 @@ class _LoadingViewState extends State<LoadingView> {
                     child: Text(
                       (index + 1).toString(),
                       style: TextStyle(
-                          color: (_gameSettings.indexPlayers == index)
+                          color: (_gameRules.indexPlayers == index)
                               ? Colors.red
                               : Colors.amber),
                     ),
@@ -129,7 +98,7 @@ class _LoadingViewState extends State<LoadingView> {
               return InkWell(
                 onTap: () {
                   setState(() {
-                    _gameSettings.indexTime = index;
+                    _gameRules.indexTime = index;
                   });
                 },
                 child: Container(
@@ -141,7 +110,7 @@ class _LoadingViewState extends State<LoadingView> {
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(15),
-                    color: _gameSettings.indexTime == index
+                    color: _gameRules.indexTime == index
                         ? Colors.white
                         : Colors.blue,
                   ),
@@ -149,7 +118,7 @@ class _LoadingViewState extends State<LoadingView> {
                     child: Text(
                       (index + 1).toString(),
                       style: TextStyle(
-                          color: (_gameSettings.indexTime == index)
+                          color: (_gameRules.indexTime == index)
                               ? Colors.red
                               : Colors.amber),
                     ),
@@ -170,7 +139,7 @@ class _LoadingViewState extends State<LoadingView> {
               return InkWell(
                 onTap: () {
                   setState(() {
-                    _gameSettings.indexPoints = index;
+                    _gameRules.indexPoints = index;
                   });
                 },
                 child: Container(
@@ -182,7 +151,7 @@ class _LoadingViewState extends State<LoadingView> {
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(15),
-                    color: _gameSettings.indexPoints == index
+                    color: _gameRules.indexPoints == index
                         ? Colors.white
                         : Colors.blue,
                   ),
@@ -190,7 +159,7 @@ class _LoadingViewState extends State<LoadingView> {
                     child: Text(
                       (index + 1).toString(),
                       style: TextStyle(
-                          color: (_gameSettings.indexPoints == index)
+                          color: (_gameRules.indexPoints == index)
                               ? Colors.red
                               : Colors.amber),
                     ),
@@ -206,10 +175,10 @@ class _LoadingViewState extends State<LoadingView> {
             const Text("Public: "),
             const SizedBox(width: 10),
             Switch(
-              value: _gameSettings.public,
+              value: _gameRules.public,
               onChanged: (bool newValue) {
                 setState(() {
-                  _gameSettings.public = newValue;
+                  _gameRules.public = newValue;
                 });
               },
             ),
@@ -221,7 +190,7 @@ class _LoadingViewState extends State<LoadingView> {
             context.read<GameBloc>().add(
                   GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),
-                    _gameSettings,
+                    _gameRules,
                     create!,
                   ),
                 );
@@ -245,7 +214,7 @@ class _LoadingViewState extends State<LoadingView> {
           decoration: const InputDecoration(hintText: "Enter name"),
           onChanged: (String name) {
             setState(() {
-              _gameSettings.name = name;
+              _gameRules.name = name;
             });
           },
         ),
@@ -255,7 +224,7 @@ class _LoadingViewState extends State<LoadingView> {
             context.read<GameBloc>().add(
                   GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),
-                    _gameSettings,
+                    _gameRules,
                     create!,
                   ),
                 );

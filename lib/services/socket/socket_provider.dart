@@ -6,4 +6,6 @@ abstract class SocketProvider {
   void disconnect();
 
   Future<void> create(Map<String, dynamic> data);
+
+  Future<Map<String, dynamic>> join(Map<String, dynamic> data);
 }

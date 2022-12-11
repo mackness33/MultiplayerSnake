@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:multiplayersnake/models/game_settings.dart';
+import 'package:multiplayersnake/models/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game_orchestrator.dart';
@@ -23,25 +23,32 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     });
 
     // configure
-    on<GameEventConfigured>((event, emit) async {
-      try {
-        emit(const GameStateConfigureCreated());
-      } catch (e) {
-        devtools.log(e.toString());
-        GameStateFailed(e as Exception);
-      }
-    });
+    // on<GameEventConfigured>((event, emit) async {
+    //   try {
+    //     emit(const GameStateConfigureCreated());
+    //   } catch (e) {
+    //     devtools.log(e.toString());
+    //     GameStateFailed(e as Exception);
+    //   }
+    // });
 
     // configure
-    on<GameEventCreated>((event, emit) async {
+    on<GameEventConfigured>((event, emit) async {
       try {
-        await manager.create(event.data.toJson());
-        manager.newGame(event.screen, event.data, this);
+        GameRules rules;
+        if (event.create) {
+          await manager.create(event.data.createSettingsToJson());
+          rules = event.data;
+        } else {
+          rules = GameRules.fromJson(
+              await manager.join(event.data.joinSettingsToJson()));
+        }
+        manager.newGame(event.screen, rules, this);
         emit(const GameStateStartWaiting());
       } on Exception catch (e) {
         devtools.log(e.toString());
-        if (e is RoomAlreadyExistedException) {
-          emit(GameStateCreationFailed(e));
+        if (e is SocketException) {
+          emit(GameStateConfigurationFailed(e));
         } else {
           emit(GameStateFailed(e));
         }

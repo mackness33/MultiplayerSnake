@@ -20,11 +20,23 @@ class GamePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
-        if (state is GameStateCreationFailed) {
+        if (state is GameStateConfigurationFailed) {
           if (state.exception is RoomAlreadyExistedException) {
             context.showErrorSnackBar(
                 message:
                     'The room already existed. Change the name and retry!');
+          } else if (state.exception is RoomisFullException) {
+            context.showErrorSnackBar(
+                message:
+                    'The room is full. Create a new room or join another room!');
+          } else if (state.exception is RoomDoNotExistException) {
+            context.showErrorSnackBar(
+                message:
+                    'The room doesn\'t exist. Create a new room or join another room!');
+          } else if (state.exception is GeneralSocketException) {
+            context.showErrorSnackBar(
+                message:
+                    'There has been an error with the server. Please retry. If the problem consist, contact the developers');
           }
         }
       },

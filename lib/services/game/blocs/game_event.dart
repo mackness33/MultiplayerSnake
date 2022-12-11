@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:multiplayersnake/models/game_settings.dart';
+import 'package:multiplayersnake/models/game_rules.dart';
 
 @immutable
 abstract class GameEvent {
@@ -18,16 +18,9 @@ class GameEventConnection extends GameEvent {
 
 class GameEventConfigured extends GameEvent {
   final Rect screen;
-  final GameSettings data;
+  final GameRules data;
   final bool create;
   const GameEventConfigured(this.screen, this.data, this.create);
-}
-
-class GameEventCreated extends GameEvent {
-  final Rect screen;
-  final GameSettings data;
-  final bool create;
-  const GameEventCreated(this.screen, this.data, this.create);
 }
 
 class GameEventStarted extends GameEvent {

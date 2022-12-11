@@ -95,7 +95,7 @@ class GameStateFailed extends GameState {
   const GameStateFailed(this.exception);
 }
 
-class GameStateCreationFailed extends GameState {
+class GameStateConfigurationFailed extends GameState {
   final Exception? exception;
-  const GameStateCreationFailed(this.exception);
+  const GameStateConfigurationFailed(this.exception);
 }

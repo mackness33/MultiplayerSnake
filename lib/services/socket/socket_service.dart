@@ -8,7 +8,8 @@ import 'dart:developer' as devtools;
 class SocketService implements SocketProvider {
   final IO.Socket socket;
   Completer<bool> _connectionCompleter;
-  Completer<bool> _createCompleter;
+  Completer<bool> _createdCompleter;
+  Completer<Map<String, dynamic>?> _joinedCompleter;
 
   SocketService()
       : socket = IO.io(
@@ -18,7 +19,8 @@ class SocketService implements SocketProvider {
               .setTransports(['websocket']).build(),
         ),
         _connectionCompleter = Completer()..complete(false),
-        _createCompleter = Completer()..complete(false);
+        _createdCompleter = Completer()..complete(false),
+        _joinedCompleter = Completer()..complete(null);
 
   void init() {
     socket.onConnect((_) async {
@@ -77,23 +79,55 @@ class SocketService implements SocketProvider {
 
   @override
   Future<void> create(Map<String, dynamic> data) async {
-    _createCompleter = Completer();
+    _createdCompleter = Completer();
 
-    socket.emitWithAck('create', data, ack: (bool isCreated) async {
-      print('ack: $isCreated');
-      _createCompleter.complete(isCreated);
-      // if (isCreated) {
-      // } else {
-      //   throw RoomAlreadyExistedException();
-      // }
-    });
+    socket.emitWithAck('create', data,
+        ack: (bool isCreated) => _createdCompleter.complete(isCreated));
 
-    if (!await _createCompleter.future) {
+    if (!await _createdCompleter.future) {
       throw RoomAlreadyExistedException();
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> join(Map<String, dynamic> data) async {
+    _joinedCompleter = Completer();
+
+    socket.emitWithAck(
+      'join',
+      data,
+      ack: (Map<String, dynamic> response) =>
+          _joinedCompleter.complete(response),
+    );
+
+    Map<String, dynamic>? response = await _joinedCompleter.future;
+
+    if (response?['isFull'] != null && response?['isFull'] is bool) {
+      if (response!['isFull']) {
+        throw RoomDoNotExistException();
+      } else {
+        throw RoomisFullException();
+      }
+    }
+
+    devtools.log(response?['rules']);
+
+    if (response?['rules'] == null) {
+      throw GeneralSocketException();
+    }
+
+    return response!['rules'];
+  }
 }
 
-class ConnectionTimeoutException implements Exception {}
+abstract class SocketException implements Exception {}
 
-class RoomAlreadyExistedException implements Exception {}
+class GeneralSocketException implements SocketException {}
+
+class ConnectionTimeoutException implements SocketException {}
+
+class RoomAlreadyExistedException implements SocketException {}
+
+class RoomisFullException implements SocketException {}
+
+class RoomDoNotExistException implements SocketException {}
