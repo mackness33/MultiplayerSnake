@@ -78,6 +78,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
     });
 
+    on<GameEventDeletePlayer>(((event, emit) {
+      manager.deletePlayer(event.email, event.room);
+    }));
+
     // end
     on<GameEventPlayed>(((event, emit) async {
       emit(const GameStateEndWaiting());

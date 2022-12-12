@@ -85,6 +85,18 @@ class _WaitingViewState extends State<WaitingView> {
                               color:
                                   player.isAdmin ? Colors.pink : Colors.blue),
                         ),
+                        trailing: !player.isAdmin
+                            ? TextButton.icon(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  context.read<GameBloc>().add(
+                                        GameEventDeletePlayer(
+                                            player.email, rules.name),
+                                      );
+                                },
+                                label: Container(),
+                              )
+                            : null,
                       );
                     },
                   );
@@ -98,7 +110,7 @@ class _WaitingViewState extends State<WaitingView> {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<GameBloc>().add(
-                              const GameEventStarted([]),
+                              GameEventStarted(rules.players),
                             );
                       },
                       child: const Text('Play'),
