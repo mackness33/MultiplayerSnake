@@ -5,7 +5,7 @@ class GameRules {
   String name;
   bool public;
   final Player _player;
-  final List<Player> _others = [];
+  final List<Player> _playersInTheRoom;
   final List<int> _valuePlayers = [1, 2, 3];
   final List<int> _valueTime = [1, 2, 5];
   final List<int> _valuePoints = [100, 200, 400, 1000];
@@ -16,20 +16,37 @@ class GameRules {
         indexPoints = 0,
         name = '',
         public = false,
-        _player = Player.basic(email);
+        _player = Player.member(email),
+        _playersInTheRoom = [];
 
-  GameRules.fromJson(Map<String, dynamic> json, Player player)
-      : name = json['name'],
-        indexPlayers = json['indexPlayers'],
-        indexTime = json['indexTime'],
-        indexPoints = json['indexPoints'],
-        public = json['public'],
-        _player = player;
+  GameRules.fromJson(Map<String, dynamic> rules, List<String> playersEmail,
+      String admin, Player player)
+      : name = rules['name'],
+        indexPlayers = rules['indexPlayers'],
+        indexTime = rules['indexTime'],
+        indexPoints = rules['indexPoints'],
+        public = rules['public'],
+        _player = player,
+        _playersInTheRoom = [] {
+    for (final email in playersEmail) {
+      _playersInTheRoom
+          .add(email == admin ? Player.admin(email) : Player.member(email));
+    }
+  }
+
+  GameRules.forAdmin(GameRules rules, Player admin)
+      : name = rules.name,
+        indexPlayers = rules.indexPlayers,
+        indexTime = rules.indexTime,
+        indexPoints = rules.indexPoints,
+        public = rules.public,
+        _player = admin,
+        _playersInTheRoom = [admin];
 
   int get maxPlayers => _valuePlayers[indexPlayers];
   int get maxTime => _valueTime[indexTime];
   int get maxPoints => _valuePoints[indexPoints];
-  List<Player> get others => _others;
+  List<Player> get players => _playersInTheRoom;
   List<int> get valuePlayers => _valuePlayers;
   List<int> get valueTime => _valueTime;
   List<int> get valuePoints => _valuePoints;
@@ -60,9 +77,9 @@ class GameRules {
   }
 
   void addPlayer(String email, bool isAdmin) =>
-      _others.add(Player(email: email, isAdmin: isAdmin));
+      _playersInTheRoom.add(Player(email: email, isAdmin: isAdmin));
   void removePlayer(String email) =>
-      _others.removeWhere((Player player) => player.email == email);
+      _playersInTheRoom.removeWhere((Player player) => player.email == email);
 }
 
 // Define how a player looks like
@@ -74,7 +91,8 @@ class Player {
       : email = json['player'],
         isAdmin = false;
 
-  Player.basic(this.email) : isAdmin = false;
+  Player.member(this.email) : isAdmin = false;
+  Player.admin(this.email) : isAdmin = true;
 
   @override
   int get hashCode => email.hashCode;

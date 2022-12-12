@@ -187,6 +187,7 @@ class _LoadingViewState extends State<LoadingView> {
         ElevatedButton(
           onPressed: () {
             _gameRules.isAdmin = true;
+            print("create: $create");
             context.read<GameBloc>().add(
                   GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),

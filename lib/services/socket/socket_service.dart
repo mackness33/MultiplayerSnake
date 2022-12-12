@@ -128,11 +128,11 @@ class SocketService implements SocketProvider {
       }
     }
 
-    if (response?['rules'] == null) {
+    if (response?['infos'] == null) {
       throw GeneralSocketException();
     }
 
-    return response!['rules'];
+    return response!['infos'];
   }
 
   @override
@@ -152,7 +152,7 @@ class SocketService implements SocketProvider {
 
       // it will be empty only if the ready compleater is compleated
       if (response.isNotEmpty) {
-        yield await _playersCompleter.future;
+        yield response;
       }
     }
 

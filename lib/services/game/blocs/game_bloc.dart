@@ -35,13 +35,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // configure
     on<GameEventConfigured>((event, emit) async {
       try {
-        print('wow');
-        GameRules rules = GameRules.fromJson(
-          event.isCreating
-              ? await manager.create(event.data.createSettingsToJson())
-              : await manager.join(event.data.joinSettingsToJson()),
-          event.data.player,
-        );
+        GameRules rules;
+        if (event.isCreating) {
+          await manager.create(event.data.createSettingsToJson());
+          rules = event.data;
+          devtools.log("players: ${rules.players.toString()}");
+          rules.addPlayer(rules.player.email, true);
+        } else {
+          Map<String, dynamic>? roomInfos =
+              await manager.join(event.data.joinSettingsToJson());
+          rules = GameRules.fromJson(
+            roomInfos['rules'],
+            roomInfos['players'],
+            roomInfos['admin'],
+            event.data.player,
+          );
+        }
+        devtools.log("isCreating: ${event.isCreating}");
+        devtools.log("players2: ${rules.players.toString()}");
         manager.newGame(event.screen, rules, this);
         Stream<Map<String, dynamic>> stream = manager.streamPlayers();
         emit(GameStateStartWaiting(rules, stream));

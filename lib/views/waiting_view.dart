@@ -16,39 +16,57 @@ class WaitingView extends StatefulWidget {
 class _WaitingViewState extends State<WaitingView> {
   // This list holds the conversation
   // the ChatMessage class was declared above
-  final List<Player> _players = [];
-  GameRules? rules;
+  late final GameRules rules;
+  late final Stream<Map<String, dynamic>> streamPlayers;
 
   @override
   void initState() {
+    final state = (context.read<GameBloc>().state as GameStateStartWaiting);
+    streamPlayers = state.streamPlayers;
+    rules = state.rules;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = (context.read<GameBloc>().state as GameStateStartWaiting);
-    final Stream<Map<String, dynamic>> streamPlayers = state.streamPlayers;
-    rules = state.rules;
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(title: const Text('Waiting')),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 30),
+            const Text('RULES'),
+            // Column(
+            //   children: [
+            Text('Max Players: ${rules.maxPlayers}'),
+            const SizedBox(height: 10),
+            Text('Max Time: ${rules.maxTime}'),
+            const SizedBox(height: 10),
+            Text('Max Points: ${rules.maxPoints}'),
+            const SizedBox(height: 10),
+            Text('Public: ${rules.public}'),
+            //   ],
+            // ),
+            const SizedBox(height: 30),
             StreamBuilder(
               stream: streamPlayers,
+              initialData: const <String, dynamic>{"initial": null},
               builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data!['isDeleted']) {
-                    _players.add(Player.basic(snapshot.data!['player']));
-                  } else {
-                    _players.remove(Player.basic(snapshot.data!['player']));
+                  if (snapshot.data?["initial"] != null) {
+                    if (snapshot.data!['isDeleted']) {
+                      rules.addPlayer(snapshot.data!['player'], false);
+                    } else {
+                      rules.removePlayer(snapshot.data!['player']);
+                    }
                   }
 
                   return ListView.builder(
-                    itemCount: _players.length,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: rules.players.length,
                     itemBuilder: (context, index) {
-                      final Player player = _players[index];
+                      final Player player = rules.players[index];
                       return ListTile(
                         // user name
                         leading: player.isAdmin
@@ -74,7 +92,8 @@ class _WaitingViewState extends State<WaitingView> {
                 return const LinearProgressIndicator();
               },
             ),
-            (rules!.player.isAdmin)
+            const SizedBox(height: 30),
+            (rules.player.isAdmin)
                 ? Center(
                     child: ElevatedButton(
                       onPressed: () {
