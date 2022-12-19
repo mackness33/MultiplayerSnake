@@ -21,7 +21,7 @@ class SocketService implements SocketProvider {
               .setTransports(['websocket']).build(),
         ),
         _connectionCompleter = Completer()..complete(false),
-        _readyCompleter = Completer()..complete(),
+        _readyCompleter = Completer(),
         _playersCompleter = Completer()..complete({});
 
   void init() {
@@ -92,6 +92,9 @@ class SocketService implements SocketProvider {
   void disconnect() {
     socket.disconnect();
   }
+
+  @override
+  Future<void> get start => _readyCompleter.future;
 
   @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {

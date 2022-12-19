@@ -56,4 +56,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
   @override
   void deletePlayer(String email, String room) =>
       socketService.deletePlayer(email, room);
+
+  @override
+  Future<void> get start => socketService.start;
 }

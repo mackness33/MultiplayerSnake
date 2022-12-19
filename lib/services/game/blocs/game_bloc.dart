@@ -56,6 +56,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         manager.newGame(event.screen, rules, this);
         Stream<Map<String, dynamic>> stream = manager.streamPlayers();
         emit(GameStateStartWaiting(rules, stream));
+        await manager.start;
+        emit(const GameStateStartLoading());
+        emit(GameStateStartLoaded(manager.game!));
+        emit(const GameStatePlayListening());
       } on Exception catch (e) {
         devtools.log(e.toString());
         if (e is SocketException) {

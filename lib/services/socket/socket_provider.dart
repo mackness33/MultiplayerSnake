@@ -12,4 +12,6 @@ abstract class SocketProvider {
   void ready(String email, String room);
 
   void deletePlayer(String email, String room);
+
+  Future<void> get start;
 }
