@@ -17,31 +17,31 @@ class LoadingView extends StatefulWidget {
 class _LoadingViewState extends State<LoadingView> {
   bool? create;
   late final GameRules _gameRules;
-  late final TextEditingController _name;
+  late final TextEditingController _room;
 
   @override
   void initState() {
     String email =
         (context.read<AuthBloc>().state as AuthStateLoggedIn).user.email;
     _gameRules = GameRules(email);
-    _name = TextEditingController();
+    _room = TextEditingController();
     super.initState();
   }
 
   Widget createForm() {
     return Column(
       children: [
-        const Text("Name: "),
+        const Text("Room: "),
         const SizedBox(height: 10),
         TextField(
-          controller: _name,
+          controller: _room,
           obscureText: false,
           enableSuggestions: false,
           autocorrect: false,
-          decoration: const InputDecoration(hintText: "Enter name"),
-          onChanged: (String name) {
+          decoration: const InputDecoration(hintText: "Enter room"),
+          onChanged: (String room) {
             setState(() {
-              _gameRules.name = name;
+              _gameRules.room = room;
             });
           },
         ),
@@ -205,17 +205,17 @@ class _LoadingViewState extends State<LoadingView> {
   Widget joinForm() {
     return Column(
       children: [
-        const Text("Name: "),
+        const Text("Room: "),
         const SizedBox(height: 10),
         TextField(
-          controller: _name,
+          controller: _room,
           obscureText: false,
           enableSuggestions: false,
           autocorrect: false,
-          decoration: const InputDecoration(hintText: "Enter name"),
-          onChanged: (String name) {
+          decoration: const InputDecoration(hintText: "Enter room"),
+          onChanged: (String room) {
             setState(() {
-              _gameRules.name = name;
+              _gameRules.room = room;
             });
           },
         ),

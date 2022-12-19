@@ -2,7 +2,7 @@ class GameRules {
   int indexPlayers;
   int indexTime;
   int indexPoints;
-  String name;
+  String room;
   bool public;
   final Player _player;
   final List<Player> _playersInTheRoom;
@@ -14,14 +14,14 @@ class GameRules {
       : indexPlayers = 0,
         indexTime = 0,
         indexPoints = 0,
-        name = '',
+        room = '',
         public = false,
         _player = Player.member(email),
         _playersInTheRoom = [];
 
   GameRules.fromJson(Map<String, dynamic> rules, List<String> playersEmail,
       String admin, Player player)
-      : name = rules['name'],
+      : room = rules['room'],
         indexPlayers = rules['indexPlayers'],
         indexTime = rules['indexTime'],
         indexPoints = rules['indexPoints'],
@@ -35,7 +35,7 @@ class GameRules {
   }
 
   GameRules.forAdmin(GameRules rules, Player admin)
-      : name = rules.name,
+      : room = rules.room,
         indexPlayers = rules.indexPlayers,
         indexTime = rules.indexTime,
         indexPoints = rules.indexPoints,
@@ -57,7 +57,7 @@ class GameRules {
   Map<String, dynamic> createSettingsToJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
 
-    data['name'] = name;
+    data['room'] = room;
     data['indexPlayers'] = indexPlayers;
     data['indexTime'] = indexTime;
     data['indexPoints'] = indexPoints;
@@ -70,7 +70,7 @@ class GameRules {
   Map<String, dynamic> joinSettingsToJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
 
-    data['name'] = name;
+    data['room'] = room;
     data['player'] = _player.email;
 
     return data;

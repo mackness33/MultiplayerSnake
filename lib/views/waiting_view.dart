@@ -68,7 +68,7 @@ class _WaitingViewState extends State<WaitingView> {
                     itemBuilder: (context, index) {
                       final Player player = rules.players[index];
                       return ListTile(
-                        // user name
+                        // user room
                         leading: player.isAdmin
                             ? const Text(
                                 'Admin',
@@ -91,7 +91,7 @@ class _WaitingViewState extends State<WaitingView> {
                                 onPressed: () {
                                   context.read<GameBloc>().add(
                                         GameEventDeletePlayer(
-                                            player.email, rules.name),
+                                            player.email, rules.room),
                                       );
                                 },
                                 label: Container(),
