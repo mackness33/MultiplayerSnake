@@ -39,7 +39,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         if (event.isCreating) {
           await manager.create(event.data.createSettingsToJson());
           rules = event.data;
-          devtools.log("players: ${rules.players.toString()}");
           rules.addPlayer(rules.player.email, true);
         } else {
           Map<String, dynamic>? roomInfos =
@@ -51,8 +50,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             event.data.player,
           );
         }
-        devtools.log("isCreating: ${event.isCreating}");
-        devtools.log("players2: ${rules.players.toString()}");
         manager.newGame(event.screen, rules, this);
         Stream<Map<String, dynamic>> stream = manager.streamPlayers();
         emit(GameStateStartWaiting(rules, stream));
@@ -83,7 +80,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     });
 
     on<GameEventDeletePlayer>(((event, emit) {
-      manager.deletePlayer(event.email, event.room);
+      manager.deletePlayer();
     }));
 
     // end

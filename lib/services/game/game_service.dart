@@ -7,8 +7,11 @@ import 'package:multiplayersnake/services/game/game_provider.dart';
 
 class GameService implements GameProvider {
   MultiplayerSnakeGame? _game;
+  GameRules? _rules;
 
-  GameService() : _game = null;
+  GameService()
+      : _game = null,
+        _rules = null;
 
   @override
   Future<void> newGame(
@@ -19,10 +22,14 @@ class GameService implements GameProvider {
       }
     }
     _game = MultiplayerSnakeGame(screen, gameSettings, gameBloc);
+    _rules = gameSettings;
   }
 
   @override
   MultiplayerSnakeGame? get game => _game;
+
+  @override
+  GameRules? get rules => _rules;
 
   @override
   Future<void> get loaded async =>

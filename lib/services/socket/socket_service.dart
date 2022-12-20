@@ -9,6 +9,8 @@ import 'dart:developer' as devtools;
 
 class SocketService implements SocketProvider {
   final IO.Socket socket;
+  String? room;
+  String? player;
   Completer<bool> _connectionCompleter;
   Completer<void> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
@@ -107,6 +109,9 @@ class SocketService implements SocketProvider {
       throw RoomAlreadyExistedException();
     }
 
+    room = data['room'];
+    player = data['player'];
+
     return data;
   }
 
@@ -131,11 +136,14 @@ class SocketService implements SocketProvider {
       }
     }
 
-    if (response?['infos'] == null) {
+    if (response!['infos'] == null) {
       throw GeneralSocketException();
     }
 
-    return response!['infos'];
+    room = response['infos']['room'];
+    player = response['infos']['player'];
+
+    return response['infos'];
   }
 
   @override
@@ -166,12 +174,11 @@ class SocketService implements SocketProvider {
   }
 
   @override
-  void ready(String email, String room) =>
-      socket.emit('ready', {'player': email, 'room': room});
+  void ready() => socket.emit('ready', {'player': player, 'room': room});
 
   @override
-  void deletePlayer(String email, String room) =>
-      socket.emit('removePlayer', {'player': email, 'room': room});
+  void deletePlayer() =>
+      socket.emit('removePlayer', {'player': player, 'room': room});
 }
 
 abstract class SocketException implements Exception {}

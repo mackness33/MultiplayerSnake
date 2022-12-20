@@ -23,6 +23,8 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   MultiplayerSnakeGame? get game => gameService.game;
+  @override
+  GameRules? get rules => gameService.rules;
 
   @override
   Future<void> get loaded async => gameService.loaded;
@@ -51,11 +53,10 @@ class GameOrchestrator implements GameProvider, SocketProvider {
   Stream<Map<String, dynamic>> streamPlayers() => socketService.streamPlayers();
 
   @override
-  void ready(String email, String room) => socketService.ready(email, room);
+  void ready() => socketService.ready();
 
   @override
-  void deletePlayer(String email, String room) =>
-      socketService.deletePlayer(email, room);
+  void deletePlayer() => socketService.deletePlayer();
 
   @override
   Future<void> get start => socketService.start;

@@ -7,6 +7,7 @@ import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 abstract class GameProvider {
   Future<void> newGame(Rect screen, GameRules gameSettings, GameBloc gameBloc);
   MultiplayerSnakeGame? get game;
+  GameRules? get rules;
   Future<void> get ending;
   Future<void> get ended;
   Future<void> get loaded;

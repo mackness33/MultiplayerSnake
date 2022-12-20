@@ -9,9 +9,9 @@ abstract class SocketProvider {
 
   Stream<Map<String, dynamic>> streamPlayers();
 
-  void ready(String email, String room);
+  void ready();
 
-  void deletePlayer(String email, String room);
+  void deletePlayer();
 
   Future<void> get start;
 }
