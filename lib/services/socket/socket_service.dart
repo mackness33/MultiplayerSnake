@@ -140,8 +140,8 @@ class SocketService implements SocketProvider {
       throw GeneralSocketException();
     }
 
-    room = response['infos']['room'];
-    player = response['infos']['player'];
+    room = data['room'];
+    player = data['player'];
 
     return response['infos'];
   }

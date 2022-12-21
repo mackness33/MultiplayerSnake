@@ -20,14 +20,12 @@ class GameRules {
         _playersInTheRoom = [];
 
   GameRules.fromJson(Map<String, dynamic> rules, List<String> playersEmail,
-      String admin, Player player)
-      : room = rules['room'],
-        indexPlayers = rules['indexPlayers'],
+      String admin, this._player, this.room)
+      : indexPlayers = rules['indexPlayers'],
         indexTime = rules['indexTime'],
         indexPoints = rules['indexPoints'],
         public = rules['public'],
-        _player = player,
-        _playersInTheRoom = [] {
+        _playersInTheRoom = <Player>[] {
     for (final email in playersEmail) {
       _playersInTheRoom
           .add(email == admin ? Player.admin(email) : Player.member(email));
