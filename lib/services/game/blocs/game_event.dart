@@ -42,6 +42,10 @@ class GameEventEnded extends GameEvent {
   const GameEventEnded();
 }
 
+class GameEventLeft extends GameEvent {
+  const GameEventLeft();
+}
+
 class GameEventFailed extends GameEvent {
   final Exception? exception;
   const GameEventFailed(this.exception);

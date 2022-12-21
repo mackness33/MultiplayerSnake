@@ -30,7 +30,16 @@ class _WaitingViewState extends State<WaitingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Waiting')),
+      appBar: AppBar(
+        title: const Text('Waiting'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                context.read<GameBloc>().add(const GameEventLeft());
+              },
+              icon: const Icon(Icons.exit_to_app)),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

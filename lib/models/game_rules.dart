@@ -59,6 +59,7 @@ class GameRules {
     data['indexPlayers'] = indexPlayers;
     data['indexTime'] = indexTime;
     data['indexPoints'] = indexPoints;
+    data['maxPlayers'] = maxPlayers;
     data['public'] = public;
     data['player'] = _player.email;
 

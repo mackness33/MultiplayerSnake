@@ -43,13 +43,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         } else {
           Map<String, dynamic>? roomInfos =
               await manager.join(event.data.joinSettingsToJson());
-          devtools.log(
-              'rules rules: ${roomInfos['rules'] is Map<String, dynamic>}');
-          devtools
-              .log('rules players: ${roomInfos['players'] is List<String>} ');
           rules = GameRules.fromJson(
             roomInfos['rules'],
-            roomInfos['players'],
+            (roomInfos['players'] as List).cast<String>(),
             roomInfos['admin'],
             event.data.player,
             event.data.room,
@@ -86,6 +82,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     on<GameEventDeletePlayer>(((event, emit) {
       manager.deletePlayer();
+    }));
+
+    // remove
+    on<GameEventLeft>(((event, emit) async {
+      emit(const GameStateEndRemoving());
+      await manager.ended;
+      emit(const GameStateReadyDisconnected());
     }));
 
     // end
