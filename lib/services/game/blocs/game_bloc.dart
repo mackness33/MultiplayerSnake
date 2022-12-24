@@ -62,6 +62,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         devtools.log(e.toString());
         if (e is SocketException) {
           emit(GameStateConfigurationFailed(e));
+        } else if (e is AdminLeftGameException) {
+          emit(const GameStateLeaving());
+          manager.leave();
+          emit(const GameStateLeft());
+          manager.disconnect();
+          emit(const GameStateReadyDisconnected());
         } else {
           emit(GameStateFailed(e));
         }

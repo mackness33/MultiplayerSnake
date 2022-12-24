@@ -60,6 +60,30 @@ class SocketService implements SocketProvider {
         _playersCompleter.complete(data);
       }
     });
+
+    socket.on('abort', (data) {
+      devtools.log('resetting');
+      reset();
+      throw AdminLeftGameException();
+    });
+  }
+
+  void reset() {
+    if (!_connectionCompleter.isCompleted) {
+      _connectionCompleter.complete(false);
+    }
+
+    if (!_readyCompleter.isCompleted) {
+      _readyCompleter = Completer();
+    }
+
+    if (!_playersCompleter.isCompleted) {
+      _playersCompleter.complete({});
+    }
+
+    room = null;
+    player = null;
+    isAdmin = null;
   }
 
   @override
@@ -185,8 +209,6 @@ class SocketService implements SocketProvider {
 
   @override
   void leave() {
-    print('in leave');
-    print('isAdmin $isAdmin');
     if (isAdmin != null) {
       socket.emit(
           (isAdmin!) ? 'abort' : 'leave', {'player': player, 'room': room});
@@ -195,7 +217,6 @@ class SocketService implements SocketProvider {
     room = null;
     player = null;
     isAdmin = null;
-    print('end leave');
   }
 }
 
@@ -210,3 +231,5 @@ class RoomAlreadyExistedException implements SocketException {}
 class RoomisFullException implements SocketException {}
 
 class RoomDoNotExistException implements SocketException {}
+
+class AdminLeftGameException implements SocketException {}
