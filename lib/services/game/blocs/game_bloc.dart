@@ -80,14 +80,17 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
     });
 
+    // delete player
     on<GameEventDeletePlayer>(((event, emit) {
       manager.deletePlayer();
     }));
 
-    // remove
+    // leave
     on<GameEventLeft>(((event, emit) async {
-      emit(const GameStateEndRemoving());
-      await manager.ended;
+      emit(const GameStateLeaving());
+      manager.leave();
+      emit(const GameStateLeft());
+      manager.disconnect();
       emit(const GameStateReadyDisconnected());
     }));
 

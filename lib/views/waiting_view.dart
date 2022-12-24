@@ -31,7 +31,7 @@ class _WaitingViewState extends State<WaitingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Waiting'),
+        title: Text(rules.room),
         actions: [
           IconButton(
               onPressed: () {

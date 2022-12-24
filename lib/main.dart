@@ -1,4 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    show
+        BuildContext,
+        CircularProgressIndicator,
+        ColorScheme,
+        MaterialApp,
+        Scaffold,
+        StatelessWidget,
+        ThemeData,
+        Widget,
+        WidgetsFlutterBinding,
+        runApp;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';

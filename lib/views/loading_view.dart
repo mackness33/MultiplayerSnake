@@ -241,7 +241,16 @@ class _LoadingViewState extends State<LoadingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: const Text('Loading')),
+      appBar: AppBar(
+        title: const Text('Loading'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                context.read<GameBloc>().add(const GameEventLeft());
+              },
+              icon: const Icon(Icons.exit_to_app)),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

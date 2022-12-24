@@ -13,5 +13,7 @@ abstract class SocketProvider {
 
   void deletePlayer();
 
+  void leave();
+
   Future<void> get start;
 }

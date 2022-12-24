@@ -60,4 +60,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   Future<void> get start => socketService.start;
+
+  @override
+  void leave() => socketService.leave();
 }

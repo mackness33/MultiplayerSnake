@@ -102,3 +102,16 @@ class GameStateConfigurationFailed extends GameState {
   final Exception? exception;
   const GameStateConfigurationFailed(this.exception);
 }
+
+// LEAVE
+class GameStateLeaving extends GameStateUnactive {
+  const GameStateLeaving();
+}
+
+class GameStateLeft extends GameState {
+  const GameStateLeft();
+}
+
+class GameStateDisconnecting extends GameState {
+  const GameStateDisconnecting();
+}

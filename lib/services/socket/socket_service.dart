@@ -11,6 +11,7 @@ class SocketService implements SocketProvider {
   final IO.Socket socket;
   String? room;
   String? player;
+  bool? isAdmin;
   Completer<bool> _connectionCompleter;
   Completer<void> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
@@ -111,6 +112,7 @@ class SocketService implements SocketProvider {
 
     room = data['room'];
     player = data['player'];
+    isAdmin = true;
 
     return data;
   }
@@ -142,6 +144,7 @@ class SocketService implements SocketProvider {
 
     room = data['room'];
     player = data['player'];
+    isAdmin = false;
 
     return response['infos'];
   }
@@ -179,6 +182,21 @@ class SocketService implements SocketProvider {
   @override
   void deletePlayer() =>
       socket.emit('removePlayer', {'player': player, 'room': room});
+
+  @override
+  void leave() {
+    print('in leave');
+    print('isAdmin $isAdmin');
+    if (isAdmin != null) {
+      socket.emit(
+          (isAdmin!) ? 'abort' : 'leave', {'player': player, 'room': room});
+    }
+
+    room = null;
+    player = null;
+    isAdmin = null;
+    print('end leave');
+  }
 }
 
 abstract class SocketException implements Exception {}
