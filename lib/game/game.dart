@@ -26,10 +26,6 @@ class MultiplayerSnakeGame extends FlameGame
 
   MultiplayerSnakeGame(this.screen, this.gameRules, this.gameBloc) {
     tileSize = screen.width / 30;
-    board = BoardController(
-      screen.width ~/ tileSize,
-      screen.height ~/ tileSize,
-    );
   }
 
   @override
@@ -39,7 +35,7 @@ class MultiplayerSnakeGame extends FlameGame
     await add(
       FlameBlocProvider<GameBloc, GameState>.value(value: gameBloc),
     );
-    await add(BoardComponent(screen, board, tileSize));
+    await add(BoardComponent(screen, tileSize));
     print('IsLoaded');
   }
 

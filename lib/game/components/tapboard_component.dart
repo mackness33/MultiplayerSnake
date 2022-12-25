@@ -8,10 +8,10 @@ import 'dart:ui';
 import 'dart:developer' as devtools;
 
 class TapBoardComponent extends PositionComponent with TapCallbacks {
-  TapBoardComponent(this.screen, this.tileSize)
-      : super(size: Vector2(screen.width, screen.height));
+  TapBoardComponent(this.board, this.tileSize)
+      : super(size: Vector2(board.width, board.height));
 
-  final Rect screen;
+  final Rect board;
   final double tileSize;
   late final SnakeComponent player;
   late final FoodComponent basicFood;
@@ -19,17 +19,19 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
 
   @override
   Future<void>? onLoad() async {
+    size = Vector2(board.width, board.height);
+    position = Vector2(0, board.top);
     player = SnakeComponent(tileSize);
     basicFood = FoodComponent.random(
       'basic',
       sprite: Sprite(await Flame.images.load('food/food.png')),
-      board: screen,
+      board: board,
       size: Vector2(tileSize, tileSize),
     );
     specialFood = FoodComponent.specialRandom(
       'special',
       sprite: Sprite(await Flame.images.load('food/red_food.png')),
-      board: screen,
+      board: board,
       size: Vector2(tileSize, tileSize),
     );
     await add(RectangleHitbox()..collisionType = CollisionType.active);
@@ -48,7 +50,7 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
     // devtools.log('Tap at device: ${event.devicePosition}');
     // devtools.log('Tap at parent: ${event.parentPosition}');
 
-    if (event.localPosition.x > screen.width / 2) {
+    if (event.localPosition.x > board.width / 2) {
       player.moveLeft();
     } else {
       player.moveRight();
