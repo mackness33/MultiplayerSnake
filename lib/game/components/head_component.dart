@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:multiplayersnake/game/components/external_component.dart';
 import 'package:multiplayersnake/game/components/food_component.dart';
 import 'package:multiplayersnake/game/game.dart';
@@ -23,12 +24,15 @@ class HeadComponent extends ExternalComponent
     curve = 0;
   }
 
+  @mustCallSuper
   @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
     devtools.log('On collision of $name: $other at $intersectionPoints');
-    super.onCollision(intersectionPoints, other);
+    super.onCollisionStart(intersectionPoints, other);
     if (other is FoodComponent) {
       devtools.log('You got ${other.point}');
+      other.changePosition();
     } else {
       gameRef.end();
     }

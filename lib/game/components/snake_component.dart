@@ -37,7 +37,6 @@ class SnakeComponent extends PositionComponent
   }
 
   Future<void>? _initialize() async {
-    double y = 200;
     final ExternalComponent head = HeadComponent(
       'head',
       sprite: Sprite(await Flame.images.load('snake/head.png')),
@@ -51,24 +50,6 @@ class SnakeComponent extends PositionComponent
       position: Vector2(200, 200),
       anchor: Anchor.center,
     );
-    final InternalComponent body1 = InternalComponent(
-      'body1',
-      size: Vector2(tileSize, tileSize),
-      position: Vector2(200, y += tileSize),
-      anchor: Anchor.center,
-    );
-    final InternalComponent body2 = InternalComponent(
-      'body2',
-      size: Vector2(tileSize, tileSize),
-      position: Vector2(200, y += tileSize),
-      anchor: Anchor.center,
-    );
-    final InternalComponent body3 = InternalComponent(
-      'body3',
-      size: Vector2(tileSize, tileSize),
-      position: Vector2(200, y += tileSize),
-      anchor: Anchor.center,
-    );
     final ExternalComponent tail = ExternalComponent.tail(
       'tail',
       sprite: Sprite(await Flame.images.load('snake/tail.png')),
@@ -77,7 +58,7 @@ class SnakeComponent extends PositionComponent
       anchor: Anchor.center,
     );
 
-    _body.addAll([head, body, body1, body2, body3, tail]);
+    _body.addAll([head, body, tail]);
   }
 
   void _move(Vector2 trasition) {
