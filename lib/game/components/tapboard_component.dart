@@ -19,8 +19,8 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
 
   @override
   Future<void>? onLoad() async {
-    size = Vector2(board.width, board.height);
-    position = Vector2(0, board.top);
+    size = Vector2(board.width, board.height) + Vector2(tileSize, tileSize);
+    position = Vector2(0, board.top) - Vector2(tileSize / 2, tileSize / 2);
     player = SnakeComponent(tileSize);
     basicFood = FoodComponent.random(
       'basic',
@@ -38,6 +38,44 @@ class TapBoardComponent extends PositionComponent with TapCallbacks {
     await add(player);
     await add(basicFood);
     await add(specialFood);
+    await addAll([
+      FoodComponent.specialRandom(
+        'special',
+        sprite: Sprite(await Flame.images.load('food/red_food.png')),
+        board: board,
+        size: Vector2(tileSize, tileSize),
+      ),
+      FoodComponent.specialRandom(
+        'special',
+        sprite: Sprite(await Flame.images.load('food/red_food.png')),
+        board: board,
+        size: Vector2(tileSize, tileSize),
+      ),
+      FoodComponent.specialRandom(
+        'special',
+        sprite: Sprite(await Flame.images.load('food/red_food.png')),
+        board: board,
+        size: Vector2(tileSize, tileSize),
+      ),
+      FoodComponent.specialRandom(
+        'special',
+        sprite: Sprite(await Flame.images.load('food/red_food.png')),
+        board: board,
+        size: Vector2(tileSize, tileSize),
+      ),
+      FoodComponent.specialRandom(
+        'special',
+        sprite: Sprite(await Flame.images.load('food/red_food.png')),
+        board: board,
+        size: Vector2(tileSize, tileSize),
+      ),
+      FoodComponent.specialRandom(
+        'special',
+        sprite: Sprite(await Flame.images.load('food/red_food.png')),
+        board: board,
+        size: Vector2(tileSize, tileSize),
+      ),
+    ]);
     await super.onLoad();
   }
 

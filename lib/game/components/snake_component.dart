@@ -17,7 +17,7 @@ class SnakeComponent extends PositionComponent
   SnakeComponent(double tilesize)
       : _body = List.empty(growable: true),
         _stir = List.empty(growable: true),
-        tileSize = tilesize * 2,
+        tileSize = tilesize * 1.5,
         speed = 0.2,
         delta = 0,
         direction = RangeWithHistory(2, 4);

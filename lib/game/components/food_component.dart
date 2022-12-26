@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:multiplayersnake/game/components/collidable_component.dart';
 import 'dart:developer' as devtools;
@@ -43,7 +42,7 @@ class FoodComponent extends CollidableComponent {
         _boardWidth = board.width - (size?.x ?? 0),
         _isSpecial = false,
         super.passive() {
-    position = _randomPosition();
+    position = _randomPosition() + Vector2(size.x / 2, size.y / 2);
   }
 
   FoodComponent.specialRandom(
@@ -63,7 +62,7 @@ class FoodComponent extends CollidableComponent {
         _boardWidth = board.width - (size?.x ?? 0),
         _isSpecial = true,
         super.passive() {
-    position = _specialRandomPosition();
+    position = _specialRandomPosition() + Vector2(size.x / 2, size.y / 2);
   }
 
   final String name;
@@ -74,7 +73,8 @@ class FoodComponent extends CollidableComponent {
   bool get isSpecial => _isSpecial;
 
   void changePosition() =>
-      position = (isSpecial) ? _specialRandomPosition() : _randomPosition();
+      position = ((isSpecial) ? _specialRandomPosition() : _randomPosition()) +
+          Vector2(size.x / 2, size.y / 2);
 
   Vector2 _specialRandomPosition() {
     final random = Random();
