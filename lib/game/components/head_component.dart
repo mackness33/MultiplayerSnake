@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:multiplayersnake/game/components/external_component.dart';
 import 'package:multiplayersnake/game/components/food_component.dart';
+import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'package:multiplayersnake/game/game.dart';
 import 'dart:developer' as devtools;
 
@@ -33,6 +34,7 @@ class HeadComponent extends ExternalComponent
     if (other is FoodComponent) {
       devtools.log('You got ${other.point}');
       other.changePosition();
+      (parent as SnakeComponent).addBody();
     } else {
       gameRef.end();
     }

@@ -134,6 +134,18 @@ class SnakeComponent extends PositionComponent
 
   void moveLeft() => _stir.add(false);
 
+  void addBody() {
+    final InternalComponent body = InternalComponent(
+      'body0',
+      size: Vector2(tileSize, tileSize),
+      position: _body.elementAt(_body.length - 2).position,
+      anchor: Anchor.center,
+    );
+
+    _body.insert(_body.length - 2, body);
+    add(body);
+  }
+
   @override
   void update(double dt) {
     delta += dt;
