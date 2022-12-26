@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/rendering.dart';
 import 'package:multiplayersnake/game/components/player_points_component.dart';
 import 'package:multiplayersnake/game/components/time_component.dart';
@@ -8,11 +9,13 @@ class PointsBoardComponent extends Component {
   PointsBoardComponent(this.board);
 
   final Rect board;
+  late Timer time;
 
   @override
   Future<void>? onLoad() async {
     double x = board.width / 6;
     double progressivePos = 0;
+    TimeComponent timer;
     await super.onLoad();
     await addAll([
       PlayerPointsComponent(
@@ -25,9 +28,10 @@ class PointsBoardComponent extends Component {
         const Color.fromARGB(255, 15, 39, 217),
         Vector2(progressivePos += x, board.height / 2),
       ),
-      TimeComponent(
-        board,
+      timer = TimeComponent(
         Vector2(progressivePos += x, board.height / 2),
+        20,
+        size: Vector2(board.width / 6, board.height / 2),
       ),
       PlayerPointsComponent(
         board,
@@ -39,6 +43,7 @@ class PointsBoardComponent extends Component {
         const Color.fromARGB(255, 196, 41, 24),
         Vector2(progressivePos += x, board.height / 2),
       ),
+      TimerComponent(period: 1, onTick: () => timer.tick(), repeat: true),
     ]);
   }
 
