@@ -24,7 +24,7 @@ class GameEventConfigured extends GameEvent {
 }
 
 class GameEventStarted extends GameEvent {
-  final List<Player> players;
+  final List<String> players;
   const GameEventStarted(this.players);
 }
 
@@ -32,6 +32,10 @@ class GameEventDeletePlayer extends GameEvent {
   final String email;
   final String room;
   const GameEventDeletePlayer(this.email, this.room);
+}
+
+class GameEventReady extends GameEvent {
+  const GameEventReady();
 }
 
 class GameEventPlayed extends GameEvent {

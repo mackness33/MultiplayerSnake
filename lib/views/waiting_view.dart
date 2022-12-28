@@ -119,7 +119,7 @@ class _WaitingViewState extends State<WaitingView> {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<GameBloc>().add(
-                              GameEventStarted(rules.players),
+                              GameEventReady(),
                             );
                       },
                       child: const Text('Play'),

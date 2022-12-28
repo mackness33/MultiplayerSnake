@@ -15,5 +15,5 @@ abstract class SocketProvider {
 
   void leave();
 
-  Future<void> get start;
+  Future<List<String>> get start;
 }

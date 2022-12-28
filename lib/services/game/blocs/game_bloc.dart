@@ -36,28 +36,25 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<GameEventConfigured>((event, emit) async {
       try {
         GameRules rules;
-        // if (event.isCreating) {
-        //   await manager.create(event.data.createSettingsToJson());
-        rules = event.data;
-        rules.addPlayer(rules.player.email, true);
-        // } else {
-        //   Map<String, dynamic>? roomInfos =
-        //       await manager.join(event.data.joinSettingsToJson());
-        //   rules = GameRules.fromJson(
-        //     roomInfos['rules'],
-        //     (roomInfos['players'] as List).cast<String>(),
-        //     roomInfos['admin'],
-        //     event.data.player,
-        //     event.data.room,
-        //   );
-        // }
+        if (event.isCreating) {
+          await manager.create(event.data.createSettingsToJson());
+          rules = event.data;
+          rules.addPlayer(rules.player.email, true);
+        } else {
+          Map<String, dynamic>? roomInfos =
+              await manager.join(event.data.joinSettingsToJson());
+          rules = GameRules.fromJson(
+            roomInfos['rules'],
+            (roomInfos['players'] as List).cast<String>(),
+            roomInfos['admin'],
+            event.data.player,
+            event.data.room,
+          );
+        }
         manager.newGame(event.screen, rules, this);
-        // Stream<Map<String, dynamic>> stream = manager.streamPlayers();
-        // emit(GameStateStartWaiting(rules, stream));
-        // await manager.start;
-        emit(const GameStateStartLoading());
-        emit(GameStateStartLoaded(manager.game!));
-        emit(const GameStatePlayListening());
+        Stream<Map<String, dynamic>> stream = manager.streamPlayers();
+        emit(GameStateStartWaiting(rules, stream));
+        add(GameEventStarted(await manager.start));
       } on Exception catch (e) {
         devtools.log(e.toString());
         if (e is SocketException) {
@@ -89,6 +86,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // delete player
     on<GameEventDeletePlayer>(((event, emit) {
       manager.deletePlayer();
+    }));
+
+    // ready
+    on<GameEventReady>(((event, emit) {
+      manager.ready();
     }));
 
     // leave

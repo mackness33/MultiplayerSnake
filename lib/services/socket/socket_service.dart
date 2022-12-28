@@ -13,7 +13,7 @@ class SocketService implements SocketProvider {
   String? player;
   bool? isAdmin;
   Completer<bool> _connectionCompleter;
-  Completer<void> _readyCompleter;
+  Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
 
   SocketService()
@@ -24,7 +24,7 @@ class SocketService implements SocketProvider {
               .setTransports(['websocket']).build(),
         ),
         _connectionCompleter = Completer()..complete(false),
-        _readyCompleter = Completer(),
+        _readyCompleter = Completer()..complete([]),
         _playersCompleter = Completer()..complete({});
 
   void init() {
@@ -47,8 +47,8 @@ class SocketService implements SocketProvider {
       devtools.log('Error on ${socket.id}: $data');
     });
 
-    socket.on('ready', (_) {
-      _readyCompleter.complete();
+    socket.on('ready', (players) async {
+      _readyCompleter.complete((players as List).cast<String>());
       if (_playersCompleter.isCompleted) {
         _playersCompleter = Completer();
       }
@@ -74,7 +74,7 @@ class SocketService implements SocketProvider {
     }
 
     if (!_readyCompleter.isCompleted) {
-      _readyCompleter = Completer();
+      _readyCompleter.complete([]);
     }
 
     if (!_playersCompleter.isCompleted) {
@@ -116,12 +116,10 @@ class SocketService implements SocketProvider {
   }
 
   @override
-  void disconnect() {
-    socket.disconnect();
-  }
+  void disconnect() => socket.disconnect();
 
   @override
-  Future<void> get start => _readyCompleter.future;
+  Future<List<String>> get start => _readyCompleter.future;
 
   @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
@@ -132,6 +130,10 @@ class SocketService implements SocketProvider {
 
     if (!await createdCompleter.future) {
       throw RoomAlreadyExistedException();
+    }
+
+    if (_readyCompleter.isCompleted) {
+      _readyCompleter = Completer();
     }
 
     room = data['room'];
@@ -166,6 +168,10 @@ class SocketService implements SocketProvider {
       throw GeneralSocketException();
     }
 
+    if (_readyCompleter.isCompleted) {
+      _readyCompleter = Completer();
+    }
+
     room = data['room'];
     player = data['player'];
     isAdmin = false;
@@ -175,8 +181,6 @@ class SocketService implements SocketProvider {
 
   @override
   Stream<Map<String, dynamic>> streamPlayers() async* {
-    _readyCompleter = Completer();
-
     while (_readyCompleter.isCompleted) {
       _playersCompleter = Completer();
 
