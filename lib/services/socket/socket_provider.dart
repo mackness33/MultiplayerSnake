@@ -11,6 +11,8 @@ abstract class SocketProvider {
 
   void ready();
 
+  void eat(bool isSpecial);
+
   void deletePlayer();
 
   void leave();

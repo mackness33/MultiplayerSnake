@@ -38,6 +38,11 @@ class GameEventReady extends GameEvent {
   const GameEventReady();
 }
 
+class GameEventEat extends GameEvent {
+  final bool isSpecial;
+  const GameEventEat(this.isSpecial);
+}
+
 class GameEventPlayed extends GameEvent {
   const GameEventPlayed();
 }

@@ -208,6 +208,10 @@ class SocketService implements SocketProvider {
   void ready() => socket.emit('ready', {'player': player, 'room': room});
 
   @override
+  void eat(bool isSpecial) => socket
+      .emit('eat', {'player': player, 'room': room, 'isSpecial': isSpecial});
+
+  @override
   void deletePlayer() =>
       socket.emit('removePlayer', {'player': player, 'room': room});
 

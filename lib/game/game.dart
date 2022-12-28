@@ -41,10 +41,10 @@ class MultiplayerSnakeGame extends FlameGame
 
   void end() => gameBloc.add(const GameEventPlayed());
 
+  void eat(bool isSpecial) => gameBloc.add(GameEventEat(isSpecial));
+
   @override
   void onRemove() {
-    // gameBloc.add(const GameEventEnded());
-    // gameBloc.add(const GameEventRemoved());
     devtools.log('IsRemoving');
     super.onRemove();
     if (!_endedCompleter.isCompleted) {
@@ -55,7 +55,6 @@ class MultiplayerSnakeGame extends FlameGame
 
   @override
   void onDetach() {
-    // gameBloc.add(const GameEventPlayed());
     _endingCompleter.complete();
     devtools.log('isDetaching');
     super.onDetach();

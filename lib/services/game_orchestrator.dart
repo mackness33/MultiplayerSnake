@@ -66,4 +66,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   void addPlayers(List<String> players) => gameService.addPlayers(players);
+
+  @override
+  void eat(bool isSpecial) => socketService.eat(isSpecial);
 }

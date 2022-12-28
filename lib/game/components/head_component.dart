@@ -35,6 +35,7 @@ class HeadComponent extends ExternalComponent
       devtools.log('You got ${other.point}');
       other.changePosition();
       (parent as SnakeComponent).addBody();
+      gameRef.eat(other.isSpecial);
     } else {
       gameRef.end();
     }
