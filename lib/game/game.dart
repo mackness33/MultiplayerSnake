@@ -19,24 +19,24 @@ class MultiplayerSnakeGame extends FlameGame
   final GameBloc gameBloc;
   final Rect screen;
   final GameRules gameRules;
-  late final BoardController board;
-  late final BoardComponent boardC;
+  late final BoardComponent board;
   late final SnakeComponent player;
   late final double tileSize;
 
   MultiplayerSnakeGame(this.screen, this.gameRules, this.gameBloc) {
     tileSize = screen.width / 30;
+    board = BoardComponent(screen, tileSize);
   }
 
   @override
   Future<void> onLoad() async {
-    print('IsLoading');
+    devtools.log('IsLoading');
     await super.onLoad();
     await add(
       FlameBlocProvider<GameBloc, GameState>.value(value: gameBloc),
     );
-    await add(BoardComponent(screen, tileSize));
-    print('IsLoaded');
+    await add(board);
+    devtools.log('IsLoaded');
   }
 
   void end() => gameBloc.add(const GameEventPlayed());
@@ -45,44 +45,44 @@ class MultiplayerSnakeGame extends FlameGame
   void onRemove() {
     // gameBloc.add(const GameEventEnded());
     // gameBloc.add(const GameEventRemoved());
-    print('IsRemoving');
+    devtools.log('IsRemoving');
     super.onRemove();
     if (!_endedCompleter.isCompleted) {
       _endedCompleter.complete();
     }
-    print('IsRemoved');
+    devtools.log('IsRemoved');
   }
 
   @override
   void onDetach() {
     // gameBloc.add(const GameEventPlayed());
     _endingCompleter.complete();
-    print('isDetaching');
+    devtools.log('isDetaching');
     super.onDetach();
-    print('IsDetached');
+    devtools.log('IsDetached');
   }
 
   @override
   void onAttach() {
-    print('IsAttaching');
+    devtools.log('IsAttaching');
     super.onAttach();
-    print('IsAttached');
+    devtools.log('IsAttached');
   }
 
   @override
   void onMount() {
-    print('IsMounting');
+    devtools.log('IsMounting');
     super.onMount();
-    print('IsMounted');
+    devtools.log('IsMounted');
   }
 
   // endend
   final Completer<void> _endedCompleter = Completer();
-  @override
   Future<void> get ended => _endedCompleter.future;
 
   // ending
   final Completer<void> _endingCompleter = Completer();
-  @override
   Future<void> get ending => _endingCompleter.future;
+
+  void addPlayers(List<String> players) => board.addPlayers(players);
 }

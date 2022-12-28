@@ -12,4 +12,5 @@ abstract class GameProvider {
   Future<void> get ended;
   Future<void> get loaded;
   Future<void> get mounted;
+  void addPlayers(List<String> players);
 }

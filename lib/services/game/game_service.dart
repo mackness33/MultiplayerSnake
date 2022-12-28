@@ -32,6 +32,9 @@ class GameService implements GameProvider {
   GameRules? get rules => _rules;
 
   @override
+  void addPlayers(List<String> players) => _game?.addPlayers(players);
+
+  @override
   Future<void> get loaded async =>
       (_game != null) ? _game!.loaded : throw GameNotIstantietedException();
   @override

@@ -63,4 +63,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   void leave() => socketService.leave();
+
+  @override
+  void addPlayers(List<String> players) => gameService.addPlayers(players);
 }
