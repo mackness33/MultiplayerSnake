@@ -15,6 +15,8 @@ class SocketService implements SocketProvider {
   Completer<bool> _connectionCompleter;
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
+  Completer<void> _endCompleter;
+  Completer<Map<String, dynamic>> _pointsCompleter;
 
   SocketService()
       : socket = IO.io(
@@ -25,7 +27,9 @@ class SocketService implements SocketProvider {
         ),
         _connectionCompleter = Completer()..complete(false),
         _readyCompleter = Completer()..complete([]),
-        _playersCompleter = Completer()..complete({});
+        _playersCompleter = Completer()..complete({}),
+        _endCompleter = Completer()..complete(),
+        _pointsCompleter = Completer()..complete({});
 
   void init() {
     socket.onConnect((_) {
@@ -53,11 +57,20 @@ class SocketService implements SocketProvider {
         _playersCompleter = Completer();
       }
       _playersCompleter.complete({});
+      if (_endCompleter.isCompleted) {
+        _endCompleter = Completer();
+      }
     });
 
     socket.on('player', (data) {
       if (!_playersCompleter.isCompleted) {
         _playersCompleter.complete(data);
+      }
+    });
+
+    socket.on('points', (data) {
+      if (!_pointsCompleter.isCompleted) {
+        _pointsCompleter.complete(data);
       }
     });
 
@@ -122,6 +135,9 @@ class SocketService implements SocketProvider {
   Future<List<String>> get start => _readyCompleter.future;
 
   @override
+  void end() => _endCompleter.complete();
+
+  @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
     Completer<bool> createdCompleter = Completer();
     devtools.log(data.toString());
@@ -184,12 +200,6 @@ class SocketService implements SocketProvider {
     while (_readyCompleter.isCompleted) {
       _playersCompleter = Completer();
 
-      /**
-       * {
-       *    String player,
-       *    bool isDeleted,
-       * }
-       */
       final Map<String, dynamic> response = await _playersCompleter.future;
 
       // it will be empty only if the ready compleater is compleated
@@ -201,6 +211,25 @@ class SocketService implements SocketProvider {
     // make sure the chatMessages is done.
     if (!_playersCompleter.isCompleted) {
       _playersCompleter.complete({});
+    }
+  }
+
+  @override
+  Stream<Map<String, dynamic>> streamPoints() async* {
+    while (_endCompleter.isCompleted) {
+      _pointsCompleter = Completer();
+
+      final Map<String, dynamic> response = await _pointsCompleter.future;
+
+      // it will be empty only if the ready compleater is compleated
+      if (response.isNotEmpty) {
+        yield response;
+      }
+    }
+
+    // make sure the chatMessages is done.
+    if (!_pointsCompleter.isCompleted) {
+      _pointsCompleter.complete({});
     }
   }
 

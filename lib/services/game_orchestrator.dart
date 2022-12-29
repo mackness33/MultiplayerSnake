@@ -69,4 +69,10 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   void eat(bool isSpecial) => socketService.eat(isSpecial);
+
+  @override
+  Stream<Map<String, dynamic>> streamPoints() => socketService.streamPoints();
+
+  @override
+  void end() => socketService.end();
 }

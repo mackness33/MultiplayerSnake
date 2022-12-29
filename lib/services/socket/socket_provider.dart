@@ -9,7 +9,11 @@ abstract class SocketProvider {
 
   Stream<Map<String, dynamic>> streamPlayers();
 
+  Stream<Map<String, dynamic>> streamPoints();
+
   void ready();
+
+  void end();
 
   void eat(bool isSpecial);
 

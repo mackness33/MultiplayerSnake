@@ -72,7 +72,8 @@ class GameStateStartWaiting extends GameStatePlay with GameStateViewer {
 }
 
 class GameStatePlayListening extends GameStatePlay {
-  const GameStatePlayListening();
+  final Stream<Map<String, dynamic>> streamPoints;
+  const GameStatePlayListening(this.streamPoints);
 }
 
 // END

@@ -33,13 +33,17 @@ class MultiplayerSnakeGame extends FlameGame
     devtools.log('IsLoading');
     await super.onLoad();
     await add(
-      FlameBlocProvider<GameBloc, GameState>.value(value: gameBloc),
+      FlameBlocProvider<GameBloc, GameState>.value(
+          value: gameBloc, children: [board]),
     );
-    await add(board);
+    // await add(board);
     devtools.log('IsLoaded');
   }
 
-  void end() => gameBloc.add(const GameEventPlayed());
+  void end() {
+    gameBloc.add(const GameEventPlayed());
+    board.end();
+  }
 
   void eat(bool isSpecial) => gameBloc.add(GameEventEat(isSpecial));
 

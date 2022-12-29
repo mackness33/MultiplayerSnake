@@ -27,5 +27,7 @@ class BoardComponent extends Component {
     await super.onLoad();
   }
 
+  void end() => pointsBoard.end();
+
   void addPlayers(List<String> players) => pointsBoard.addPlayers(players);
 }
