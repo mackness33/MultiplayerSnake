@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:multiplayersnake/models/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
@@ -8,6 +10,8 @@ import 'dart:developer' as devtools;
 import 'package:multiplayersnake/services/socket/socket_service.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
+  StreamSubscription<Map<String, dynamic>>? _pointsSubscription;
+
   GameBloc(GameOrchestrator manager)
       : super(const GameStateReadyDisconnected()) {
     // start
@@ -79,9 +83,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         manager
             .addPlayers(<String>['davidantonhy962@gmail.com', 'Bravo', 'Code']);
         emit(const GameStateStartLoading());
-        emit(GameStateStartLoaded(manager.game!));
         Stream<Map<String, dynamic>> points = manager.streamPoints();
-        emit(GameStatePlayListening(points));
+        await _pointsSubscription?.cancel();
+        _pointsSubscription = points.listen((event) {
+          devtools.log('score: $event');
+          manager.updateScore(event['player'], event['isSpecial']);
+        });
+
+        devtools.log('afte in started pointsSub: $_pointsSubscription');
+        emit(GameStateStartLoaded(manager.game!));
+        emit(const GameStatePlayListening());
       } catch (e) {
         devtools.log(e.toString());
         emit(GameStateFailed(e as Exception));
@@ -105,6 +116,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     // leave
     on<GameEventLeft>(((event, emit) async {
+      await _pointsSubscription?.cancel();
       emit(const GameStateLeaving());
       manager.leave();
       emit(const GameStateLeft());
@@ -114,7 +126,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     // end
     on<GameEventPlayed>(((event, emit) async {
+      devtools.log('before in played pointsSub: $_pointsSubscription');
       manager.end();
+      _pointsSubscription?.cancel();
       emit(const GameStateEndWaiting());
       await manager.ending;
       emit(const GameStateEndResults());
@@ -130,6 +144,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     // fail
     on<GameEventFailed>(((event, emit) async {
+      await _pointsSubscription?.cancel();
       emit(GameStateFailed(event.exception));
     }));
   }

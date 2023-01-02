@@ -40,12 +40,16 @@ class MultiplayerSnakeGame extends FlameGame
     devtools.log('IsLoaded');
   }
 
-  void end() {
+  Future<void> end() async {
     gameBloc.add(const GameEventPlayed());
-    board.end();
+    // await board.end();
   }
 
   void eat(bool isSpecial) => gameBloc.add(GameEventEat(isSpecial));
+
+  void updateScore(String player, bool isSpecial) {
+    board.pointsBoard.pointsComponents[player]?.updatePoints(isSpecial);
+  }
 
   @override
   void onRemove() {

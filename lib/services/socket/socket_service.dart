@@ -52,11 +52,12 @@ class SocketService implements SocketProvider {
     });
 
     socket.on('ready', (players) async {
-      _readyCompleter.complete((players as List).cast<String>());
-      if (_playersCompleter.isCompleted) {
-        _playersCompleter = Completer();
+      if (!_readyCompleter.isCompleted) {
+        _readyCompleter.complete((players as List).cast<String>());
       }
-      _playersCompleter.complete({});
+      if (!_playersCompleter.isCompleted) {
+        _playersCompleter.complete({});
+      }
       if (_endCompleter.isCompleted) {
         _endCompleter = Completer();
       }
@@ -197,7 +198,7 @@ class SocketService implements SocketProvider {
 
   @override
   Stream<Map<String, dynamic>> streamPlayers() async* {
-    while (_readyCompleter.isCompleted) {
+    while (!_readyCompleter.isCompleted) {
       _playersCompleter = Completer();
 
       final Map<String, dynamic> response = await _playersCompleter.future;
@@ -216,7 +217,7 @@ class SocketService implements SocketProvider {
 
   @override
   Stream<Map<String, dynamic>> streamPoints() async* {
-    while (_endCompleter.isCompleted) {
+    while (!_endCompleter.isCompleted) {
       _pointsCompleter = Completer();
 
       final Map<String, dynamic> response = await _pointsCompleter.future;

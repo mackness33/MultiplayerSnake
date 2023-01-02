@@ -75,4 +75,7 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   void end() => socketService.end();
+
+  void updateScore(String player, bool isSpecial) =>
+      gameService.game?.updateScore(player, isSpecial);
 }

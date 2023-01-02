@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as devtools show log;
 
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
@@ -10,25 +11,31 @@ import 'package:multiplayersnake/models/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 
-class PointsBoardComponent extends Component
-    with FlameBlocListenable<GameBloc, GameState> {
-  @override
-  bool listenWhen(GameState previousState, GameState newState) =>
-      newState is GameStatePlayListening;
+class PointsBoardComponent extends Component {
+  // with FlameBlocListenable<GameBloc, GameState> {
+  // @override
+  // bool listenWhen(GameState previousState, GameState newState) {
+  //   return newState is GameStatePlayListening;
+  // }
 
-  @override
-  void onNewState(GameState state) {
-    super.onNewState(state);
-    subscription = (state as GameStatePlayListening).streamPoints.listen(
-        (data) =>
-            pointsComponents[data['player']]?.updatePoints(data['isSpecial']));
-  }
+  // @override
+  // void onNewState(GameState state) {
+  //   devtools.log('In pointsBoardComponent');
+  //   super.onNewState(state);
+  //   subscription?.cancel();
+  //   subscription = (state as GameStatePlayListening).streamPoints.listen(
+  //         (data) =>
+  //             pointsComponents[data['player']]?.updatePoints(data['isSpecial']),
+  //       );
 
-  PointsBoardComponent(this.board) : subscription = null;
+  //   devtools.log('getting the sub: $subscription');
+  // }
+
+  PointsBoardComponent(this.board);
 
   final Rect board;
   late final Map<String, PlayerPointsComponent> pointsComponents;
-  StreamSubscription? subscription;
+  // StreamSubscription? subscription;
   final List<Color> playersColor = <Color>[
     const Color.fromARGB(255, 24, 196, 53),
     const Color.fromARGB(255, 15, 39, 217),
@@ -75,7 +82,11 @@ class PointsBoardComponent extends Component
     return points;
   }
 
-  void end() => subscription?.cancel();
+  // Future<void> end() async {
+  //   devtools.log('ending subscription: $subscription');
+  //   await subscription?.cancel();
+  //   devtools.log('end subscription: $subscription');
+  // }
 
   @override
   void render(Canvas canvas) {
