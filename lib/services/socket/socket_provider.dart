@@ -13,7 +13,7 @@ abstract class SocketProvider {
 
   void ready();
 
-  void end();
+  void endGame();
 
   void eat(bool isSpecial);
 
@@ -22,4 +22,8 @@ abstract class SocketProvider {
   void leave();
 
   Future<List<String>> get start;
+
+  Future<bool> get end;
+
+  Future<void> get endOfAllPartecipants;
 }

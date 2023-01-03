@@ -21,9 +21,15 @@ class _WaitingViewState extends State<WaitingView> {
 
   @override
   void initState() {
-    final state = (context.read<GameBloc>().state as GameStateStartWaiting);
-    streamPlayers = state.streamPlayers;
-    rules = state.rules;
+    if (context.read<GameBloc>().state is! GameStateStartWaiting) {
+      context
+          .read<GameBloc>()
+          .add(GameEventFailed(Exception('Something went wrong')));
+    } else {
+      final state = (context.read<GameBloc>().state as GameStateStartWaiting);
+      streamPlayers = state.streamPlayers;
+      rules = state.rules;
+    }
     super.initState();
   }
 

@@ -41,7 +41,7 @@ class MultiplayerSnakeGame extends FlameGame
   }
 
   Future<void> end() async {
-    gameBloc.add(const GameEventPlayed());
+    gameBloc.add(const GameEventPlayed(true));
     // await board.end();
   }
 

@@ -44,7 +44,8 @@ class GameEventEat extends GameEvent {
 }
 
 class GameEventPlayed extends GameEvent {
-  const GameEventPlayed();
+  final bool hasCorrectlyEnded;
+  const GameEventPlayed(this.hasCorrectlyEnded);
 }
 
 class GameEventEnded extends GameEvent {

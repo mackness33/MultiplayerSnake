@@ -15,7 +15,8 @@ class SocketService implements SocketProvider {
   Completer<bool> _connectionCompleter;
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
-  Completer<void> _endCompleter;
+  Completer<bool> _endCompleter;
+  Completer<void> _allUserEndedCompleter;
   Completer<Map<String, dynamic>> _pointsCompleter;
 
   SocketService()
@@ -28,8 +29,9 @@ class SocketService implements SocketProvider {
         _connectionCompleter = Completer()..complete(false),
         _readyCompleter = Completer()..complete([]),
         _playersCompleter = Completer()..complete({}),
-        _endCompleter = Completer()..complete(),
-        _pointsCompleter = Completer()..complete({});
+        _endCompleter = Completer()..complete(false),
+        _pointsCompleter = Completer()..complete({}),
+        _allUserEndedCompleter = Completer()..complete();
 
   void init() {
     socket.onConnect((_) {
@@ -61,6 +63,14 @@ class SocketService implements SocketProvider {
       if (_endCompleter.isCompleted) {
         _endCompleter = Completer();
       }
+
+      devtools.log('IN READY: ${_allUserEndedCompleter.isCompleted}');
+
+      if (_allUserEndedCompleter.isCompleted) {
+        _allUserEndedCompleter = Completer();
+        devtools.log(
+            'CREATING A COMPLETER THEN: ${_allUserEndedCompleter.isCompleted}');
+      }
     });
 
     socket.on('player', (data) {
@@ -80,6 +90,19 @@ class SocketService implements SocketProvider {
       reset();
       throw AdminLeftGameException();
     });
+
+    socket.on('end', (data) {
+      devtools.log('ALL USER ENDED!!!');
+      if (!_endCompleter.isCompleted) {
+        _endCompleter.complete(false);
+      }
+
+      if (!_allUserEndedCompleter.isCompleted) {
+        _allUserEndedCompleter.complete(data);
+      }
+
+      reset();
+    });
   }
 
   void reset() {
@@ -95,6 +118,18 @@ class SocketService implements SocketProvider {
       _playersCompleter.complete({});
     }
 
+    if (!_endCompleter.isCompleted) {
+      _endCompleter.complete(false);
+    }
+
+    if (!_pointsCompleter.isCompleted) {
+      _pointsCompleter.complete({});
+    }
+
+    if (!_allUserEndedCompleter.isCompleted) {
+      _allUserEndedCompleter.complete();
+    }
+
     room = null;
     player = null;
     isAdmin = null;
@@ -106,8 +141,6 @@ class SocketService implements SocketProvider {
       socket.disconnect();
     }
 
-    devtools
-        .log('are we already connected? ${_connectionCompleter.isCompleted}');
     if (!_connectionCompleter.isCompleted) {
       await _connectionCompleter.future;
     }
@@ -117,8 +150,6 @@ class SocketService implements SocketProvider {
     _connectionCompleter = Completer();
     socket.connect();
 
-    devtools.log(
-        'emitted, waiting for the response: ${_connectionCompleter.isCompleted}');
     if (!_connectionCompleter.isCompleted) {
       await _connectionCompleter.future;
     }
@@ -134,9 +165,19 @@ class SocketService implements SocketProvider {
 
   @override
   Future<List<String>> get start => _readyCompleter.future;
+  @override
+  Future<bool> get end => _endCompleter.future;
 
   @override
-  void end() => _endCompleter.complete();
+  void endGame() {
+    socket.emit('end', {'player': player, 'room': room});
+    if (!_endCompleter.isCompleted) {
+      _endCompleter.complete(true);
+    }
+  }
+
+  @override
+  Future<void> get endOfAllPartecipants => _allUserEndedCompleter.future;
 
   @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
@@ -271,3 +312,5 @@ class RoomisFullException implements SocketException {}
 class RoomDoNotExistException implements SocketException {}
 
 class AdminLeftGameException implements SocketException {}
+
+class ExceededMaximumTimeException implements SocketException {}

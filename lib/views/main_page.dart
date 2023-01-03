@@ -48,6 +48,9 @@ class _MainPageState extends State<MainPage> {
             context.showErrorSnackBar(
                 message:
                     'The game failed to connect to the server. Check your connection or contact the developers!');
+          } else if (state.exception is ExceededMaximumTimeException) {
+            context.showErrorSnackBar(
+                message: 'Time to play exceeded the maximum time.');
           }
         }
       },

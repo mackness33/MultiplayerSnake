@@ -9,8 +9,8 @@ import 'package:multiplayersnake/services/socket/socket_service.dart';
 import 'package:multiplayersnake/services/socket/socket_provider.dart';
 
 class GameOrchestrator implements GameProvider, SocketProvider {
-  GameService gameService;
-  SocketService socketService;
+  final GameService gameService;
+  final SocketService? socketService;
 
   GameOrchestrator()
       : gameService = GameService(),
@@ -36,46 +36,53 @@ class GameOrchestrator implements GameProvider, SocketProvider {
   Future<void> get ending async => gameService.ending;
 
   @override
-  Future<void> connect() => socketService.connect();
+  Future<void> connect() => socketService!.connect();
 
   @override
-  void disconnect() => socketService.disconnect();
+  void disconnect() => socketService!.disconnect();
 
   @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) =>
-      socketService.create(data);
+      socketService!.create(data);
 
   @override
   Future<Map<String, dynamic>> join(Map<String, dynamic> data) =>
-      socketService.join(data);
+      socketService!.join(data);
 
   @override
-  Stream<Map<String, dynamic>> streamPlayers() => socketService.streamPlayers();
+  Stream<Map<String, dynamic>> streamPlayers() =>
+      socketService!.streamPlayers();
 
   @override
-  void ready() => socketService.ready();
+  void ready() => socketService!.ready();
 
   @override
-  void deletePlayer() => socketService.deletePlayer();
+  void deletePlayer() => socketService!.deletePlayer();
 
   @override
-  Future<List<String>> get start => socketService.start;
+  Future<List<String>> get start => socketService!.start;
 
   @override
-  void leave() => socketService.leave();
+  void leave() => socketService!.leave();
 
   @override
   void addPlayers(List<String> players) => gameService.addPlayers(players);
 
   @override
-  void eat(bool isSpecial) => socketService.eat(isSpecial);
+  void eat(bool isSpecial) => socketService!.eat(isSpecial);
 
   @override
-  Stream<Map<String, dynamic>> streamPoints() => socketService.streamPoints();
+  Stream<Map<String, dynamic>> streamPoints() => socketService!.streamPoints();
 
   @override
-  void end() => socketService.end();
+  void endGame() => socketService!.endGame();
+
+  @override
+  Future<void> get endOfAllPartecipants => socketService!.endOfAllPartecipants;
 
   void updateScore(String player, bool isSpecial) =>
       gameService.game?.updateScore(player, isSpecial);
+
+  @override
+  Future<bool> get end => socketService!.end;
 }
