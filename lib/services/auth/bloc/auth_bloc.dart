@@ -19,6 +19,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<AuthEventShouldSignup>(((_, emit) async {
+      emit(const AuthStateRegistering(null));
+    }));
+
     // initialize
     on<AuthEventInitialize>(((_, emit) async {
       await provider.initialize();
