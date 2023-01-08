@@ -21,7 +21,7 @@ import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
 import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
-import 'package:multiplayersnake/views/main_page.dart';
+import 'package:multiplayersnake/views/home_page.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
 
 Future<void> main() async {
@@ -39,14 +39,14 @@ Future<void> main() async {
       ),
       home: BlocProvider<AuthBloc>(
         create: (context) => AuthBloc(SupabaseAuthProvider()),
-        child: const HomePage(),
+        child: const MainPage(),
       ),
     ),
   );
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
           final GameOrchestrator gameManager = GameOrchestrator();
           return BlocProvider<GameBloc>(
             create: ((context) => GameBloc(gameManager)),
-            child: const MainPage(),
+            child: const HomePage(),
           );
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();

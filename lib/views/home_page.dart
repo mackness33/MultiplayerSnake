@@ -14,14 +14,14 @@ import 'package:multiplayersnake/views/menu_view.dart';
 import '../services/game/blocs/game_bloc.dart';
 import '../services/game/blocs/game_state.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State createState() => _MainPageState();
+  State createState() => _HomePageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _HomePageState extends State<HomePage> {
   late SocketService socketManager;
 
   @override
