@@ -25,5 +25,5 @@ abstract class SocketProvider {
 
   Future<bool> get end;
 
-  Future<void> get endOfAllPartecipants;
+  Future<Map<String, dynamic>> get endOfAllPartecipants;
 }

@@ -16,7 +16,7 @@ class SocketService implements SocketProvider {
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
   Completer<bool> _endCompleter;
-  Completer<void> _allUserEndedCompleter;
+  Completer<Map<String, dynamic>> _allUserEndedCompleter;
   Completer<Map<String, dynamic>> _pointsCompleter;
 
   SocketService()
@@ -31,7 +31,7 @@ class SocketService implements SocketProvider {
         _playersCompleter = Completer()..complete({}),
         _endCompleter = Completer()..complete(false),
         _pointsCompleter = Completer()..complete({}),
-        _allUserEndedCompleter = Completer()..complete();
+        _allUserEndedCompleter = Completer()..complete({});
 
   void init() {
     socket.onConnect((_) {
@@ -68,8 +68,6 @@ class SocketService implements SocketProvider {
 
       if (_allUserEndedCompleter.isCompleted) {
         _allUserEndedCompleter = Completer();
-        devtools.log(
-            'CREATING A COMPLETER THEN: ${_allUserEndedCompleter.isCompleted}');
       }
     });
 
@@ -92,13 +90,13 @@ class SocketService implements SocketProvider {
     });
 
     socket.on('end', (data) {
-      devtools.log('ALL USER ENDED!!!');
       if (!_endCompleter.isCompleted) {
         _endCompleter.complete(false);
       }
 
       if (!_allUserEndedCompleter.isCompleted) {
-        _allUserEndedCompleter.complete(data);
+        devtools.log(data.toString());
+        _allUserEndedCompleter.complete((data as List)[0] ?? {});
       }
 
       reset();
@@ -127,7 +125,7 @@ class SocketService implements SocketProvider {
     }
 
     if (!_allUserEndedCompleter.isCompleted) {
-      _allUserEndedCompleter.complete();
+      _allUserEndedCompleter.complete({});
     }
 
     room = null;
@@ -177,7 +175,8 @@ class SocketService implements SocketProvider {
   }
 
   @override
-  Future<void> get endOfAllPartecipants => _allUserEndedCompleter.future;
+  Future<Map<String, dynamic>> get endOfAllPartecipants =>
+      _allUserEndedCompleter.future;
 
   @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {

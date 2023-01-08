@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:multiplayersnake/game/game.dart';
-import 'package:multiplayersnake/models/game_rules.dart';
+import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/game_provider.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
@@ -78,7 +78,8 @@ class GameOrchestrator implements GameProvider, SocketProvider {
   void endGame() => socketService!.endGame();
 
   @override
-  Future<void> get endOfAllPartecipants => socketService!.endOfAllPartecipants;
+  Future<Map<String, dynamic>> get endOfAllPartecipants =>
+      socketService!.endOfAllPartecipants;
 
   void updateScore(String player, bool isSpecial) =>
       gameService.game?.updateScore(player, isSpecial);

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:multiplayersnake/game/game.dart';
-import 'package:multiplayersnake/models/game_rules.dart';
+import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 
 abstract class GameProvider {

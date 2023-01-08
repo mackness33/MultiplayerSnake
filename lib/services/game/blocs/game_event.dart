@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:multiplayersnake/models/game_rules.dart';
+import 'package:multiplayersnake/services/game/game_rules.dart';
 
 @immutable
 abstract class GameEvent {

@@ -8,7 +8,7 @@ import 'package:flame_bloc/flame_bloc.dart';
 import 'package:multiplayersnake/game/components/board_component.dart';
 import 'package:multiplayersnake/game/components/snake_component.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
-import 'package:multiplayersnake/models/game_rules.dart';
+import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';

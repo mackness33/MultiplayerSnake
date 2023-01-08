@@ -7,7 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:multiplayersnake/game/components/player_points_component.dart';
 import 'package:multiplayersnake/game/components/time_component.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
-import 'package:multiplayersnake/models/game_rules.dart';
+import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 

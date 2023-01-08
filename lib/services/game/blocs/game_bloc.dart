@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:multiplayersnake/models/game_rules.dart';
+import 'package:multiplayersnake/services/game/game_resume.dart';
+import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game_orchestrator.dart';
@@ -119,14 +120,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     // end
     on<GameEventPlayed>(((event, emit) async {
+      emit(const GameStateEndWaiting());
       if (event.hasCorrectlyEnded) {
         manager.endGame();
-        _pointsSubscription?.cancel();
-        await manager.endOfAllPartecipants;
       }
-      emit(const GameStateEndWaiting());
+      _pointsSubscription?.cancel();
+      final resume = await manager.endOfAllPartecipants;
       await manager.ending;
-      emit(const GameStateEndResults());
+      devtools.log(resume.toString());
+      emit(GameStateEndResults(GameResume(resume)));
       manager.disconnect();
     }));
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
+import 'package:multiplayersnake/services/game/blocs/game_state.dart';
+import 'package:multiplayersnake/services/game/game_resume.dart';
 
 import '../services/game/blocs/game_bloc.dart';
 
@@ -14,6 +16,8 @@ class ResumeView extends StatefulWidget {
 class _ResumeViewState extends State<ResumeView> {
   @override
   Widget build(BuildContext context) {
+    final GameResume resume =
+        (context.read<GameBloc>().state as GameStateEndResults).resume;
     return Scaffold(
       appBar: AppBar(title: const Text('Resume')),
       body: Center(
@@ -24,7 +28,7 @@ class _ResumeViewState extends State<ResumeView> {
               child: Column(
                 children: [
                   const SizedBox(height: 15),
-                  const Text('Hola'),
+                  Text(resume.name),
                   const SizedBox(height: 5),
                   const Divider(
                     thickness: 1,
@@ -34,9 +38,9 @@ class _ResumeViewState extends State<ResumeView> {
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      Text('Max Time: 2 min'),
-                      Text('Max Points : 2 pts'),
+                    children: [
+                      Text('Max Time: ${resume.maxTime} min'),
+                      const Text('Max Points: 2 pts'),
                     ],
                   ),
                   const SizedBox(height: 5),
@@ -46,17 +50,17 @@ class _ResumeViewState extends State<ResumeView> {
                   const SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      Text('player 1: 10'),
-                      Text('player 2: 25'),
+                    children: [
+                      Text('${resume.player0}: ${resume.points0}'),
+                      Text('${resume.player1}: ${resume.points1}'),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      Text('player 3: 50'),
-                      Text('player 4: 300'),
+                    children: [
+                      Text('${resume.player2}: ${resume.points2}'),
+                      Text('${resume.player3}: ${resume.points3}'),
                     ],
                   ),
                   const SizedBox(height: 15),
