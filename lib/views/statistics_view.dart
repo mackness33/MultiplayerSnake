@@ -1,23 +1,24 @@
 import "package:flutter/material.dart";
+import 'package:multiplayersnake/services/database/database_game.dart';
+import 'package:multiplayersnake/services/database/database_games_service.dart';
 
 import "dart:developer" as devtools show log;
-
-import 'package:multiplayersnake/services/database/database_service.dart';
 
 class StatisticsView extends StatefulWidget {
   const StatisticsView({super.key});
 
   @override
-  State<StatisticsView> createState() => _MenuViewState();
+  State<StatisticsView> createState() => _StatisticsViewState();
 }
 
-class _MenuViewState extends State<StatisticsView> {
+class _StatisticsViewState extends State<StatisticsView> {
   late final TextEditingController _search;
-  final GamesService _databaseService = GamesService();
+  final DatabaseGamesService _databaseService = DatabaseGamesService();
 
   @override
   void initState() {
     _search = TextEditingController();
+    _databaseService.init();
     super.initState();
   }
 
@@ -65,29 +66,25 @@ class _MenuViewState extends State<StatisticsView> {
                 ),
               ],
             ),
-            FutureBuilder(
-              future: _databaseService.getGames([]),
+            StreamBuilder(
+              stream: _databaseService.allGames,
               builder: ((context, snapshot) {
                 switch (snapshot.connectionState) {
-                  case ConnectionState.done:
-                    return StreamBuilder(
-                      builder: ((context, snapshot) {
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.waiting:
-                          case ConnectionState.active:
-                            if (snapshot.hasData) {
-                              final allGames =
-                                  snapshot.data as List<Map<String, dynamic>>;
-                              devtools.log(allGames.toString());
-                              return const Text('Got all the games');
-                            } else {
-                              return const CircularProgressIndicator();
-                            }
-                          default:
-                            return const CircularProgressIndicator();
-                        }
-                      }),
-                    );
+                  case ConnectionState.waiting:
+                  case ConnectionState.active:
+                    if (snapshot.hasData) {
+                      final allGames = snapshot.data as List<DatabaseGame>;
+                      devtools.log(allGames.toString());
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: allGames.length,
+                        itemBuilder: (context, index) {
+                          return const Text('item');
+                        },
+                      );
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
                   default:
                     return const CircularProgressIndicator();
                 }

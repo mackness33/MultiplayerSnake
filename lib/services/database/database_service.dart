@@ -1,79 +1,60 @@
-import 'dart:async';
+// import 'dart:async';
 
-import 'package:multiplayersnake/services/database/database_game.dart';
-import 'package:multiplayersnake/services/database/database_provider.dart';
-import 'package:multiplayersnake/services/game/game_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:multiplayersnake/services/auth/auth_service.dart';
+// import 'package:multiplayersnake/services/database/database_entity.dart';
+// import 'package:multiplayersnake/services/database/database_game.dart';
+// import 'package:multiplayersnake/services/database/database_provider.dart';
+// import 'package:multiplayersnake/services/game/game_service.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'database_exceptions.dart';
-import 'dart:developer' as devtools show log;
+// import 'database_exceptions.dart';
+// import 'dart:developer' as devtools show log;
 
-class GamesService implements DatabaseProvider {
-  final SupabaseClient supabase;
-  final String user;
+// class DatabaseService<T extends DatabaseEntity> implements DatabaseProvider {
+//   final SupabaseClient supabase;
+//   final String user;
+//   final String? table;
 
-  List<DatabaseGame> _games = [];
+//   List<T> _entities = [];
 
-  final _gamesStreamController =
-      StreamController<List<DatabaseGame>>.broadcast();
+//   // static final DatabaseService _shared = DatabaseService._sharedInstance(user: user);
+//   // DatabaseService._sharedInstance() : supabase = Supabase.instance.client, user = AuthService.supabase().currentUser!.email;
 
-  Future<void> _cacheGames() async {
-    final allGames = await getAllGames();
-    _games = allGames.toList();
-    _gamesStreamController.add(_games);
-  }
+//   // factory DatabaseService() => _shared;
 
-  GamesService({required this.user}) : supabase = Supabase.instance.client;
+//   final _entitiesStreamController =
+//       StreamController<List<T>>.broadcast();
 
-  void init() async {
-    await _cacheGames();
-  }
+//   Future<void> _cacheGames() async {
+//     final allEntities = await getAllEntities(table: '');
+//     _entities = allEntities.toList();
+//     _entitiesStreamController.add(_entities);
+//   }
 
-  @override
-  Future<Iterable<DatabaseGame>> getAllGames() async {
-    try {
-      final List<Map<String, dynamic>> games =
-          await supabase.from('games').select('*');
-      devtools.log(games.toString());
+//   DatabaseService({required this.user, this.table})
+//       : supabase = Supabase.instance.client;
 
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow));
-    } on DatabaseException catch (_) {
-      throw GenericDatabaseException();
-    } catch (e) {
-      rethrow;
-    }
-  }
+//   @override
+//   void init() async {
+//     await _cacheGames();
+//   }
 
-  @override
-  Future<Iterable<DatabaseGame>> getGames(List<String> names) async {
-    try {
-      final List<Map<String, dynamic>> games =
-          await supabase.from('games').select('*').in_('name', names);
+//   @override
+//   Future<Iterable<T>> getAllEntities({required String table}) async {
+//     try {
+//       if (table == null) {
+//         throw NoBasicTableException;
+//       }
 
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow));
-    } on DatabaseException catch (_) {
-      throw GenericDatabaseException();
-    } catch (e) {
-      rethrow;
-    }
-  }
+//       final List<Map<String, dynamic>> entities =
+//           await supabase.from(table).select('*');
+//       devtools.log(entities.toString());
 
-  @override
-  Future<DatabaseGame> getGame(int id) async {
-    try {
-      final List<Map<String, dynamic>> result =
-          await supabase.from('games').select('*').eq('id', id);
-      devtools.log(result.toString());
-
-      if (result.isEmpty) {
-        throw CouldNotFindGamesException();
-      }
-
-      return DatabaseGame.fromRow(result.first);
-    } on DatabaseException catch (_) {
-      throw GenericDatabaseException();
-    } catch (e) {
-      rethrow;
-    }
-  }
-}
+//       return entities.map((gameRow) => T.fromRow(gameRow));
+//     } on DatabaseException catch (_) {
+//       throw GenericDatabaseException();
+//     } catch (e) {
+//       rethrow;
+//     }
+//   }
+// }
