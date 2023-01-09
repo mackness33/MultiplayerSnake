@@ -24,6 +24,7 @@ class _StatisticsViewState extends State<StatisticsView> {
   late DateTime? _endDate;
   late bool? _onlyWon;
   late bool? _onlyLosses;
+  late List<Filter> filterData;
 
   @override
   void initState() {
@@ -37,6 +38,11 @@ class _StatisticsViewState extends State<StatisticsView> {
     _onlyLosses = true;
     _startDate = null;
     _endDate = null;
+    filterData = List.generate(
+      1,
+      ((index) =>
+          Filter(true, 'Filter', filters(), const Icon(Icons.filter_alt))),
+    );
     super.initState();
   }
 
@@ -48,12 +54,6 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   @override
   Widget build(BuildContext context) {
-    List<Filter> filterData = List.generate(
-      1,
-      ((index) =>
-          Filter(true, 'Filter', filters(), const Icon(Icons.filter_alt))),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Statistics"),
@@ -87,6 +87,8 @@ class _StatisticsViewState extends State<StatisticsView> {
               ExpansionPanelList(
                 expansionCallback: (int index, bool isExpanded) {
                   devtools.log('isExpanded: $isExpanded');
+                  devtools.log(
+                      'filterData.first.isExpanded: ${filterData.first.isExpanded}');
                   setState(() {
                     filterData.first.isExpanded = !isExpanded;
                   });
