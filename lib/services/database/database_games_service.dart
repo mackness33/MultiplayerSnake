@@ -51,7 +51,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
           Map<String,
               dynamic>> games = await supabase.from(table).select(
           '*, player0(email), player1(email), player2(email), player3(email)');
-      devtools.log(games.toString());
+
       return games.map((gameRow) => DatabaseGame.fromRow(gameRow, user));
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
@@ -61,40 +61,23 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   }
 
   @override
-  Future<Iterable<DatabaseGame>> getGames(List<String> names) async {
-    try {
-      final List<Map<String, dynamic>> games =
-          await supabase.from('games').select('*').in_('name', names);
-
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow, user));
-    } on DatabaseException catch (_) {
-      throw GenericDatabaseException();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> applyFilters(Filters filters) async {
+  void applyFilters(Filters filters) {
     _gamesStreamController
         .add(_games.where((game) => filters.apply(game)).toList());
   }
 
   @override
-  Future<DatabaseGame> getGame(int id) async {
-    try {
-      final List<Map<String, dynamic>> result =
-          await supabase.from(table).select('*').eq('id', id);
+  void onlyWinsFilter(bool? onlyWins) {
+    _gamesStreamController.add(_games
+        .where((game) => (onlyWins != null) ? onlyWins && game.winner : true)
+        .toList());
+  }
 
-      if (result.isEmpty) {
-        throw CouldNotFindGameException();
-      }
-
-      return DatabaseGame.fromRow(result.first, user);
-    } on DatabaseException catch (_) {
-      throw GenericDatabaseException();
-    } catch (e) {
-      rethrow;
-    }
+  @override
+  void searchGame(String names) {
+    _gamesStreamController.add(_games
+        .where((game) => (names != '') ? names.contains(game.name) : true)
+        .toList());
   }
 }
 

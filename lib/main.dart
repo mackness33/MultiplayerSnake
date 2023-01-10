@@ -34,7 +34,7 @@ Future<void> main() async {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData.from(
-        colorScheme: const ColorScheme.light(),
+        colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
       home: BlocProvider<AuthBloc>(
