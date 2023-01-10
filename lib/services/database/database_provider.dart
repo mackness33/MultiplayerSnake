@@ -9,4 +9,5 @@ abstract class DatabaseGamesProvider extends DatabaseProvider {
   Future<Iterable<DatabaseGame>> getAllGames();
   void searchGame(String names);
   void applyFilters(Filters filters);
+  void onlyWinsFilter(bool? onlyWins);
 }

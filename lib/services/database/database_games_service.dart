@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/services/database/database_game.dart';
@@ -11,8 +12,9 @@ import 'database_exceptions.dart';
 import 'dart:developer' as devtools show log;
 
 class DatabaseGamesService implements DatabaseGamesProvider {
-  final SupabaseClient supabase;
-  final String user;
+  final SupabaseClient _supabase;
+  final String _user;
+  final Stats _stats;
 
   List<DatabaseGame> _games = [];
 
@@ -21,8 +23,9 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   static final DatabaseGamesService _shared =
       DatabaseGamesService._sharedInstance();
   DatabaseGamesService._sharedInstance()
-      : supabase = Supabase.instance.client,
-        user = AuthService.supabase().currentUser!.email {
+      : _supabase = Supabase.instance.client,
+        _user = AuthService.supabase().currentUser!.email,
+        _stats = Stats.empty() {
     _gamesStreamController = StreamController<List<DatabaseGame>>.broadcast(
       onListen: () {
         _gamesStreamController.sink.add(_games);
@@ -33,6 +36,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
 
   Future<void> _cacheGames() async {
     final allGames = await getAllGames();
+    _stats.update(allGames.toList());
     _games = allGames.toList();
     _gamesStreamController.add(_games);
   }
@@ -49,10 +53,10 @@ class DatabaseGamesService implements DatabaseGamesProvider {
     try {
       final List<
           Map<String,
-              dynamic>> games = await supabase.from(table).select(
+              dynamic>> games = await _supabase.from(table).select(
           '*, player0(email), player1(email), player2(email), player3(email)');
 
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow, user));
+      return games.map((gameRow) => DatabaseGame.fromRow(gameRow, _user));
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {
@@ -62,23 +66,70 @@ class DatabaseGamesService implements DatabaseGamesProvider {
 
   @override
   void applyFilters(Filters filters) {
-    _gamesStreamController
-        .add(_games.where((game) => filters.apply(game)).toList());
+    List<DatabaseGame> results =
+        _games.where((game) => filters.apply(game)).toList();
+
+    _stats.update(results);
+    _gamesStreamController.add(results);
   }
 
   @override
   void onlyWinsFilter(bool? onlyWins) {
-    _gamesStreamController.add(_games
+    List<DatabaseGame> results = _games
         .where((game) => (onlyWins != null) ? onlyWins && game.winner : true)
-        .toList());
+        .toList();
+    _stats.update(results);
+    _gamesStreamController.add(results);
   }
 
   @override
   void searchGame(String names) {
-    _gamesStreamController.add(_games
+    List<DatabaseGame> results = _games
         .where((game) => (names != '') ? names.contains(game.name) : true)
-        .toList());
+        .toList();
+
+    _stats.update(results);
+    _gamesStreamController.add(results);
   }
+
+  Stats getStats() => _stats;
 }
 
 const table = 'games';
+
+class Stats {
+  int _countWins;
+  int _countLosses;
+  int _maxPointsMade;
+  int _totalGamePlayed;
+
+  Stats(this._countWins, this._countLosses, this._maxPointsMade,
+      this._totalGamePlayed);
+
+  Stats.empty()
+      : _countWins = 0,
+        _countLosses = 0,
+        _maxPointsMade = 0,
+        _totalGamePlayed = 0;
+
+  int get countWins => _countWins;
+  int get countLosses => _countLosses;
+  int get maxPointsMade => _maxPointsMade;
+  int get totalGamePlayed => _totalGamePlayed;
+
+  void update(List<DatabaseGame> games) {
+    _countWins = 0;
+    _countLosses = 0;
+    _maxPointsMade = 0;
+    _totalGamePlayed = games.length;
+
+    for (DatabaseGame game in games) {
+      game.winner ? _countWins++ : _countLosses++;
+      _maxPointsMade = max(_maxPointsMade, game.pointsUser);
+    }
+  }
+
+  @override
+  String toString() =>
+      'Stats, countWins = $_countWins, countLosses = $_countLosses, maxPointsMade = $_maxPointsMade, totalGamePlayed = $_totalGamePlayed';
+}

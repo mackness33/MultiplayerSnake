@@ -22,7 +22,11 @@ class _StatisticsViewState extends State<StatisticsView> {
   late final TextEditingController _minPoints;
   late bool? _onlyWins = true;
   late Filters _filters;
-  late List<FilterData> filterDataPanel;
+  late Stats _stats;
+  late List<PanelData> panelData = <PanelData>[
+    PanelData(true, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
+    PanelData(true, 'Stats', statsWidget(), const Icon(Icons.data_usage))
+  ];
 
   @override
   void initState() {
@@ -33,11 +37,11 @@ class _StatisticsViewState extends State<StatisticsView> {
     _minPoints = TextEditingController();
     _databaseService.init();
     _filters = Filters(null, null, null, null, null);
-    filterDataPanel = List.generate(
-      1,
-      ((index) =>
-          FilterData(true, 'Filter', filters(), const Icon(Icons.filter_alt))),
-    );
+    _stats = _databaseService.getStats();
+    panelData = <PanelData>[
+      PanelData(false, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
+      PanelData(false, 'Stats', statsWidget(), const Icon(Icons.data_usage))
+    ];
     super.initState();
   }
 
@@ -49,6 +53,13 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   @override
   Widget build(BuildContext context) {
+    // for (int i = 0; i < panelData.length; i++) {
+    //   panelData[i].body = panelWidget[i];
+    // }
+    // // panelData = <PanelData>[
+    // //   PanelData(true, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
+    // //   PanelData(true, 'Stats', statsWidget(), const Icon(Icons.data_usage))
+    // // ];
     return Scaffold(
       appBar: AppBar(
         title: const Text("Statistics"),
@@ -69,8 +80,11 @@ class _StatisticsViewState extends State<StatisticsView> {
                     onChanged: ((bool? value) {
                       setState(() {
                         _onlyWins = value;
+                        _databaseService.onlyWinsFilter(_onlyWins);
+                        _stats = _databaseService.getStats();
+                        panelData[1].body = statsWidget();
+                        devtools.log(_stats.toString());
                       });
-                      _databaseService.onlyWinsFilter(_onlyWins);
                     }),
                   ),
                   Expanded(
@@ -91,20 +105,36 @@ class _StatisticsViewState extends State<StatisticsView> {
                   ),
                 ],
               ),
+              // ExpansionPanelList(
+              //   expansionCallback: (int index, bool isExpanded) {
+              //     setState(() {
+              //       filterDataPanel.first.isExpanded = !isExpanded;
+              //     });
+              //   },
+              //   children:
+              //       filterDataPanel.map<ExpansionPanel>((FilterData filter) {
+              //     return ExpansionPanel(
+              //       headerBuilder: ((context, isExpanded) {
+              //         return Text(filter.header);
+              //       }),
+              //       body: filter.body,
+              //       isExpanded: filter.isExpanded,
+              //     );
+              //   }).toList(),
+              // ),
               ExpansionPanelList(
                 expansionCallback: (int index, bool isExpanded) {
                   setState(() {
-                    filterDataPanel.first.isExpanded = !isExpanded;
+                    panelData[index].isExpanded = !isExpanded;
                   });
                 },
-                children:
-                    filterDataPanel.map<ExpansionPanel>((FilterData filter) {
+                children: panelData.map<ExpansionPanel>((PanelData data) {
                   return ExpansionPanel(
                     headerBuilder: ((context, isExpanded) {
-                      return Text(filter.header);
+                      return Text(data.header);
                     }),
-                    body: filter.body,
-                    isExpanded: filter.isExpanded,
+                    body: data.body,
+                    isExpanded: data.isExpanded,
                   );
                 }).toList(),
               ),
@@ -141,7 +171,7 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
-  Widget filters() {
+  Widget filtersWidget() {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: const Color.fromARGB(255, 46, 178, 94)),
@@ -171,9 +201,12 @@ class _StatisticsViewState extends State<StatisticsView> {
                 setState(() {
                   _filters.update(_players.text, int.tryParse(_maxPoints.text),
                       int.tryParse(_minPoints.text));
+                  devtools.log(_filters.toString());
+                  _databaseService.applyFilters(_filters);
+                  _stats = _databaseService.getStats();
+                  panelData[1].body = statsWidget();
+                  devtools.log(_stats.toString());
                 });
-                devtools.log(_filters.toString());
-                _databaseService.applyFilters(_filters);
               },
               child: const Text('Apply'),
             ),
@@ -252,6 +285,7 @@ class _StatisticsViewState extends State<StatisticsView> {
               _filters.endDate = picked.end;
               controller.text =
                   '${_dateFormatter(_filters.startDate)} -> ${_dateFormatter(_filters.endDate?.subtract(const Duration(days: 1)))}';
+              _stats = _databaseService.getStats();
             });
           }
         },
@@ -275,6 +309,39 @@ class _StatisticsViewState extends State<StatisticsView> {
       ),
     );
   }
+
+  Widget statsWidget() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromARGB(255, 46, 178, 94)),
+      ),
+      padding: const EdgeInsets.all(20.0),
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text('Wins: ${_stats.countWins}'),
+                Text('Losses: ${_stats.countLosses}'),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text('Max Points Made: ${_stats.maxPointsMade}'),
+                Text('Total Game Played: ${_stats.totalGamePlayed}'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class FilterData {
@@ -283,6 +350,14 @@ class FilterData {
   final Widget body;
   final Icon icon;
   FilterData(this.isExpanded, this.header, this.body, this.icon);
+}
+
+class PanelData {
+  bool isExpanded;
+  final String header;
+  Widget body;
+  final Icon icon;
+  PanelData(this.isExpanded, this.header, this.body, this.icon);
 }
 
 class Filters {
