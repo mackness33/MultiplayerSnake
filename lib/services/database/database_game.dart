@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 class DatabaseGame {
   final int id;
   final String name;
+  final DateTime createdAt;
   final int maxTime;
   final String player0;
   final int points0;
@@ -13,6 +14,9 @@ class DatabaseGame {
   final int points2;
   final String player3;
   final int points3;
+  final String user;
+  late final int pointsUser;
+  late final bool winner;
 
   // DatabaseGame.fromSocket(Map<String, dynamic> json)
   //     : id = json[idColumn],
@@ -27,9 +31,10 @@ class DatabaseGame {
   //       player3 = json['fourth_player']?[emailColumn] ?? 'player 4',
   //       points3 = json['fourth_player_points']?[emailColumn] ?? 0;
 
-  DatabaseGame(Map<String, dynamic> json)
+  DatabaseGame(Map<String, dynamic> json, String userEmail)
       : id = json[idColumn] as int,
         name = json[nameColumn] as String,
+        createdAt = DateTime.now(),
         maxTime = json[maxTimeColumn] as int,
         player0 = json[firstPlayerColumn][emailColumn] as String,
         points0 = json[firstPlayerPointsColumn] as int,
@@ -38,23 +43,55 @@ class DatabaseGame {
         player2 = json[thirdPlayerColumn]?[emailColumn] ?? 'player 3',
         points2 = json[thirdPlayerPointsColumn] ?? 0,
         player3 = json[fourthPlayerColumn]?[emailColumn] ?? 'player 4',
-        points3 = json[fourthPlayerPointsColumn] ?? 0;
-
-  DatabaseGame.fromRow(Map<String, dynamic> row)
+        points3 = json[fourthPlayerPointsColumn] ?? 0,
+        user = userEmail {
+    pointsUser = (user.contains(player0))
+        ? points0
+        : (user.contains(player1))
+            ? points1
+            : (user.contains(player2))
+                ? points2
+                : (user.contains(player3))
+                    ? points3
+                    : -1;
+    winner = (pointsUser >= points0) &&
+        (pointsUser >= points1) &&
+        (pointsUser >= points2) &&
+        (pointsUser >= points3);
+  }
+  DatabaseGame.fromRow(Map<String, dynamic> row, String userEmail)
       : id = row[idColumn] as int,
         name = row[nameColumn] as String,
+        createdAt = DateTime.tryParse(row[createdAtColumn])?.toUtc() ??
+            DateTime.now().toUtc(),
         maxTime = row[maxTimeColumn] as int,
-        player0 = row[firstPlayerColumn] as String,
+        player0 = row[firstPlayerColumn][emailColumn] as String,
         points0 = row[firstPlayerPointsColumn] as int,
-        player1 = row[secondPlayerColumn] ?? 'player 2',
+        player1 = row[secondPlayerColumn]?[emailColumn] ?? 'player 2',
         points1 = row[secondPlayerPointsColumn] ?? 0,
-        player2 = row[thirdPlayerColumn] ?? 'player 3',
+        player2 = row[thirdPlayerColumn]?[emailColumn] ?? 'player 3',
         points2 = row[thirdPlayerPointsColumn] ?? 0,
-        player3 = row[fourthPlayerColumn] ?? 'player 4',
-        points3 = row[fourthPlayerPointsColumn] ?? 0;
+        player3 = row[fourthPlayerColumn]?[emailColumn] ?? 'player 4',
+        points3 = row[fourthPlayerPointsColumn] ?? 0,
+        user = userEmail {
+    pointsUser = (user.contains(player0))
+        ? points0
+        : (user.contains(player1))
+            ? points1
+            : (user.contains(player2))
+                ? points2
+                : (user.contains(player3))
+                    ? points3
+                    : -1;
+    winner = (pointsUser >= points0) &&
+        (pointsUser >= points1) &&
+        (pointsUser >= points2) &&
+        (pointsUser >= points3);
+  }
 
   @override
-  String toString() => 'Game, ID = $id, name = $name, player0 = $player0';
+  String toString() =>
+      'Game, ID = $id, name = $name, player0 = $player0, user = $user, userPoints = $pointsUser, createdAt = $createdAt';
 
   @override
   bool operator ==(covariant DatabaseGame other) => id == other.id;
@@ -66,6 +103,7 @@ class DatabaseGame {
 const gameTable = 'games';
 const idColumn = 'id';
 const nameColumn = 'name';
+const createdAtColumn = 'created_at';
 const emailColumn = 'email';
 const maxTimeColumn = 'max_time';
 const firstPlayerColumn = 'player0';

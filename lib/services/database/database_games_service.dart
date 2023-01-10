@@ -4,6 +4,7 @@ import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/database/database_provider.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
+import 'package:multiplayersnake/views/statistics_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'database_exceptions.dart';
@@ -46,9 +47,12 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   @override
   Future<Iterable<DatabaseGame>> getAllGames() async {
     try {
-      final List<Map<String, dynamic>> games =
-          await supabase.from(table).select('*');
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow));
+      final List<
+          Map<String,
+              dynamic>> games = await supabase.from(table).select(
+          '*, player0(email), player1(email), player2(email), player3(email)');
+      devtools.log(games.toString());
+      return games.map((gameRow) => DatabaseGame.fromRow(gameRow, user));
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {
@@ -62,12 +66,17 @@ class DatabaseGamesService implements DatabaseGamesProvider {
       final List<Map<String, dynamic>> games =
           await supabase.from('games').select('*').in_('name', names);
 
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow));
+      return games.map((gameRow) => DatabaseGame.fromRow(gameRow, user));
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<void> applyFilters(Filters filters) async {
+    _gamesStreamController
+        .add(_games.where((game) => filters.apply(game)).toList());
   }
 
   @override
@@ -80,7 +89,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
         throw CouldNotFindGameException();
       }
 
-      return DatabaseGame.fromRow(result.first);
+      return DatabaseGame.fromRow(result.first, user);
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {

@@ -24,7 +24,8 @@ class _StatisticsViewState extends State<StatisticsView> {
   late DateTime? _endDate;
   late bool? _onlyWon;
   late bool? _onlyLosses;
-  late List<Filter> filterData;
+  late Filters _filters;
+  late List<FilterData> filterDataPanel;
 
   @override
   void initState() {
@@ -38,10 +39,11 @@ class _StatisticsViewState extends State<StatisticsView> {
     _onlyLosses = true;
     _startDate = null;
     _endDate = null;
-    filterData = List.generate(
+    _filters = Filters(null, null, null, null, null, null, null);
+    filterDataPanel = List.generate(
       1,
       ((index) =>
-          Filter(true, 'Filter', filters(), const Icon(Icons.filter_alt))),
+          FilterData(true, 'Filter', filters(), const Icon(Icons.filter_alt))),
     );
     super.initState();
   }
@@ -86,14 +88,12 @@ class _StatisticsViewState extends State<StatisticsView> {
               ),
               ExpansionPanelList(
                 expansionCallback: (int index, bool isExpanded) {
-                  devtools.log('isExpanded: $isExpanded');
-                  devtools.log(
-                      'filterData.first.isExpanded: ${filterData.first.isExpanded}');
                   setState(() {
-                    filterData.first.isExpanded = !isExpanded;
+                    filterDataPanel.first.isExpanded = !isExpanded;
                   });
                 },
-                children: filterData.map<ExpansionPanel>((Filter filter) {
+                children:
+                    filterDataPanel.map<ExpansionPanel>((FilterData filter) {
                   return ExpansionPanel(
                     headerBuilder: ((context, isExpanded) {
                       return Text(filter.header);
@@ -144,15 +144,15 @@ class _StatisticsViewState extends State<StatisticsView> {
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
-          filterRow('Date', dateWidget(_date, _startDate, _endDate)),
+          filterRow('Date', dateWidget(_date)),
           filterRow(
             'Points',
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Expanded(child: minWidget()),
-                  Expanded(child: maxWidget()),
+                  Expanded(child: textWidget(_minPoints, 'min')),
+                  Expanded(child: textWidget(_maxPoints, 'max')),
                 ],
               ),
             ),
@@ -163,15 +163,20 @@ class _StatisticsViewState extends State<StatisticsView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                onlyWidget('Won', _onlyWon),
-                onlyWidget('Loss', _onlyLosses),
+                onlyWidget('Won', _filters.onlyWins ?? true),
+                onlyWidget('Loss', _filters.onlyLosses ?? true),
               ],
             ),
           ),
           ElevatedButton(
             onPressed: () {
               devtools.log('Applying filters ');
-              // _databaseService.applyFilters();
+              setState(() {
+                _filters.update(_players.text, int.tryParse(_maxPoints.text),
+                    int.tryParse(_minPoints.text));
+              });
+              devtools.log(_filters.toString());
+              _databaseService.applyFilters(_filters);
             },
             child: const Text('Apply'),
           ),
@@ -210,7 +215,10 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
-  Widget minWidget() {
+  Widget textWidget(
+    TextEditingController controller,
+    String title,
+  ) {
     return Container(
       padding: const EdgeInsets.only(right: 15.0, top: 20.0, bottom: 30.0),
       child: Row(
@@ -219,17 +227,17 @@ class _StatisticsViewState extends State<StatisticsView> {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.only(right: 10.0),
-            child: const Text('min'),
+            child: Text(title.toLowerCase()),
           ),
           Expanded(
             child: TextField(
-              controller: _minPoints,
+              keyboardType: TextInputType.number,
+              controller: controller,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Min",
+                hintText: 'eg. 12',
               ),
               maxLines: 1,
-              maxLength: 4,
             ),
           ),
         ],
@@ -237,32 +245,7 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
-  Widget maxWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          padding: const EdgeInsets.only(right: 10.0, top: 10.0, bottom: 15.0),
-          child: const Text('max'),
-        ),
-        Expanded(
-          child: TextField(
-            controller: _maxPoints,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Max",
-            ),
-            maxLines: 1,
-            maxLength: 4,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget dateWidget(TextEditingController controller, DateTime? startDate,
-      DateTime? endDate) {
+  Widget dateWidget(TextEditingController controller) {
     return Expanded(
       child: TextField(
         controller: controller,
@@ -284,10 +267,10 @@ class _StatisticsViewState extends State<StatisticsView> {
           );
           if (picked != null) {
             setState(() {
-              startDate = picked.start;
-              endDate = picked.end;
+              _filters.startDate = picked.start;
+              _filters.endDate = picked.end;
               controller.text =
-                  '${_dateFormatter(startDate)} -> ${_dateFormatter(endDate)}';
+                  '${_dateFormatter(_filters.startDate)} -> ${_dateFormatter(_filters.endDate?.subtract(const Duration(days: 1)))}';
             });
           }
         },
@@ -305,7 +288,7 @@ class _StatisticsViewState extends State<StatisticsView> {
         controller: _players,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
-          labelText: 'Players',
+          hintText: 'eg. player0, player2',
         ),
         maxLines: 1,
       ),
@@ -313,10 +296,78 @@ class _StatisticsViewState extends State<StatisticsView> {
   }
 }
 
-class Filter {
+class FilterData {
   bool isExpanded;
   final String header;
   final Widget body;
   final Icon icon;
-  Filter(this.isExpanded, this.header, this.body, this.icon);
+  FilterData(this.isExpanded, this.header, this.body, this.icon);
+}
+
+class Filters {
+  String? players;
+  int? maxPoints;
+  int? minPoints;
+  DateTime? startDate;
+  DateTime? _endDate;
+  bool? onlyWins;
+  bool? onlyLosses;
+
+  Filters(this.players, this.maxPoints, this.minPoints, this.startDate,
+      this._endDate, this.onlyWins, this.onlyLosses);
+
+  DateTime? get endDate => _endDate;
+  set endDate(DateTime? eD) => _endDate = eD?.add(const Duration(days: 1));
+
+  void update(String? players, int? maxPoints, int? minPoints) {
+    this.players = players;
+    this.maxPoints = maxPoints;
+    this.minPoints = minPoints;
+  }
+
+  bool apply(DatabaseGame game) {
+    bool result = true;
+
+    if (players != null && players != '') {
+      result &= players!.contains(game.player0) ||
+          players!.contains(game.player1) ||
+          players!.contains(game.player2) ||
+          players!.contains(game.player3);
+    }
+
+    if (maxPoints != null) {
+      result &= (game.pointsUser <= maxPoints!);
+    }
+
+    if (minPoints != null) {
+      result &= (game.pointsUser >= minPoints!);
+    }
+
+    if (startDate != null && _endDate != null) {
+      devtools.log(
+          'StartDate is before: ${(startDate!.compareTo(game.createdAt))}');
+      devtools.log('EndDate is after: ${(endDate!.compareTo(game.createdAt))}');
+      result &= (startDate!.compareTo(game.createdAt) <= 0) &&
+          (_endDate!.compareTo(game.createdAt) >= 0);
+      // result &= (_endDate!.compareTo(game.createdAt) >= 0);
+    }
+
+    // if (_endDate != null) {
+    // }
+
+    if (onlyWins != null) {
+      result &= onlyWins! && game.winner;
+    }
+
+    if (onlyLosses != null) {
+      result &= onlyLosses! && game.winner;
+    }
+
+    return result;
+  }
+
+  @override
+  String toString() {
+    return 'Filters: players = $players, maxPoints = $maxPoints, minPoints = $minPoints, startDate = $startDate, endDate = $_endDate, onlyWins = $onlyWins, onlyLosses = $onlyLosses';
+  }
 }
