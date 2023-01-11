@@ -117,6 +117,7 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
     }
   }
 
+  @override
   Future<void> searchPlayer(String player) async {
     try {
       final List<dynamic> players = await _supabase

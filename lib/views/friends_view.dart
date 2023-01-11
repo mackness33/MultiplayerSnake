@@ -59,6 +59,9 @@ class _FriendsViewState extends State<FriendsView> {
                         shrinkWrap: true,
                         itemCount: friends.length,
                         itemBuilder: ((context, index) {
+                          final String idFriend = (friends[index].amRequester)
+                              ? friends[index].followed
+                              : friends[index].requester;
                           return ListTile(
                             title: Text(
                               ((friends[index].amRequester)
@@ -66,6 +69,32 @@ class _FriendsViewState extends State<FriendsView> {
                                       : friends[index].requesterEmail) ??
                                   'Not Found',
                             ),
+                            subtitle: (friends[index].isConfirmed)
+                                ? Container()
+                                : Container(
+                                    margin: const EdgeInsets.all(3.0),
+                                    padding: const EdgeInsets.all(3.0),
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 200,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: (friends[index].amRequester)
+                                              ? Colors.blue.shade900
+                                              : Colors.amber.shade400,
+                                          width: 3),
+                                      color: (friends[index].amRequester)
+                                          ? const Color.fromARGB(
+                                              158, 33, 149, 243)
+                                          : const Color.fromARGB(
+                                              160, 249, 200, 56),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.elliptical(40, 40)),
+                                    ),
+                                    child: (friends[index].amRequester)
+                                        ? const Center(child: Text('Requested'))
+                                        : const Center(child: Text('Pending')),
+                                  ),
                             trailing: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               mainAxisSize: MainAxisSize.min,
@@ -75,28 +104,26 @@ class _FriendsViewState extends State<FriendsView> {
                                   IconButton(
                                     onPressed: () {
                                       devtools.log('Accepted!');
+                                      _databaseService.acceptFriend(
+                                          id: idFriend);
                                     },
                                     icon: const Icon(Icons.check_circle),
                                   ),
                                 IconButton(
                                   onPressed: () {
                                     devtools.log('Deleted!');
+                                    _databaseService.deleteFriend(id: idFriend);
                                   },
                                   icon: const Icon(Icons.delete),
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    final String email = ((friends[index]
-                                                .amRequester)
-                                            ? friends[index].followedEmail
-                                            : friends[index].requesterEmail) ??
-                                        'Not Found';
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               StaticProfileView(
-                                                  profileEmail: email)),
+                                                  profileId: idFriend)),
                                     );
                                   },
                                   icon: const Icon(

@@ -7,6 +7,7 @@ import 'package:multiplayersnake/services/database/database_profile.dart';
 import "dart:developer" as devtools show log;
 
 import 'package:multiplayersnake/services/database/database_profiles_service.dart';
+import 'package:multiplayersnake/views/static_profile_view.dart';
 
 class AddFriendsView extends StatefulWidget {
   const AddFriendsView({super.key});
@@ -79,13 +80,35 @@ class _AddFriendsViewState extends State<AddFriendsView> {
                                   title: Text(
                                     players[index].followedEmail ?? 'Not Found',
                                   ),
-                                  trailing: IconButton(
-                                    onPressed: () {
-                                      devtools.log('Added!');
-                                      _databaseService.addFriend(
-                                          id: players[index].followed);
-                                    },
-                                    icon: const Icon(Icons.add),
+                                  trailing: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      IconButton(
+                                        onPressed: () {
+                                          devtools.log('Added!');
+                                          _databaseService.addFriend(
+                                              id: players[index].followed);
+                                        },
+                                        icon: const Icon(Icons.add),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    StaticProfileView(
+                                                        profileId:
+                                                            players[index]
+                                                                .followed)),
+                                          );
+                                        },
+                                        icon: const Icon(
+                                            Icons.arrow_forward_ios_rounded),
+                                      ),
+                                    ],
                                   ),
                                 );
                               }),

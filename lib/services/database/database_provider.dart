@@ -15,7 +15,7 @@ abstract class DatabaseGamesProvider extends DatabaseProvider {
 }
 
 abstract class DatabaseProfilesProvider extends DatabaseProvider {
-  Future<DatabaseProfile> getProfile({String? email});
+  Future<DatabaseProfile> getProfile({String? id});
   Future<void> updateProfile({required String key, required dynamic value});
 }
 
@@ -24,4 +24,5 @@ abstract class DatabaseFriendsProvider extends DatabaseProvider {
   Future<void> addFriend({required String id});
   Future<void> deleteFriend({required String id});
   Future<void> acceptFriend({required String id});
+  Future<void> searchPlayer(String player);
 }

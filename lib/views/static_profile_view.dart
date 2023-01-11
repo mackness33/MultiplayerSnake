@@ -7,10 +7,10 @@ import "dart:developer" as devtools show log;
 import 'package:multiplayersnake/services/database/database_profiles_service.dart';
 
 class StaticProfileView extends StatefulWidget {
-  final String profileEmail;
+  final String profileId;
   const StaticProfileView({
     super.key,
-    required this.profileEmail,
+    required this.profileId,
   });
 
   @override
@@ -41,7 +41,7 @@ class _StaticProfileViewState extends State<StaticProfileView> {
         child: Container(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: _databaseService.getProfile(email: widget.profileEmail),
+              future: _databaseService.getProfile(id: widget.profileId),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.done:
