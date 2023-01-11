@@ -1,14 +1,10 @@
+import "dart:developer" as devtools show log;
+
 import "package:flutter/material.dart";
 import 'package:multiplayersnake/services/database/database_friend.dart';
 import 'package:multiplayersnake/services/database/database_friends_service.dart';
-import 'package:multiplayersnake/services/database/database_games_service.dart';
-import 'package:multiplayersnake/services/database/database_profile.dart';
-
-import "dart:developer" as devtools show log;
-
-import 'package:multiplayersnake/services/database/database_profiles_service.dart';
-import 'package:multiplayersnake/utils/dialogs/add2_dialog.dart';
 import 'package:multiplayersnake/views/add_friend_view.dart';
+import 'package:multiplayersnake/views/static_profile_view.dart';
 
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});
@@ -74,7 +70,8 @@ class _FriendsViewState extends State<FriendsView> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                if (!friends[index].isConfirmed)
+                                if (!friends[index].amRequester &&
+                                    !friends[index].isConfirmed)
                                   IconButton(
                                     onPressed: () {
                                       devtools.log('Accepted!');
@@ -87,16 +84,34 @@ class _FriendsViewState extends State<FriendsView> {
                                   },
                                   icon: const Icon(Icons.delete),
                                 ),
+                                IconButton(
+                                  onPressed: () {
+                                    final String email = ((friends[index]
+                                                .amRequester)
+                                            ? friends[index].followedEmail
+                                            : friends[index].requesterEmail) ??
+                                        'Not Found';
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              StaticProfileView(
+                                                  profileEmail: email)),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                      Icons.arrow_forward_ios_rounded),
+                                ),
                               ],
                             ),
                           );
                         }),
                       );
                     } else {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     }
                   default:
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                 }
               }),
         ),

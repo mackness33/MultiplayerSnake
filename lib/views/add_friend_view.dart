@@ -91,10 +91,12 @@ class _AddFriendsViewState extends State<AddFriendsView> {
                               }),
                             );
                           } else {
-                            return const CircularProgressIndicator();
+                            return const Center(
+                                child: CircularProgressIndicator());
                           }
                         default:
-                          return const CircularProgressIndicator();
+                          return const Center(
+                              child: CircularProgressIndicator());
                       }
                     }),
               ],
