@@ -48,18 +48,15 @@ class _StatisticsViewState extends State<StatisticsView> {
   @override
   void dispose() {
     _search.dispose();
+    _date.dispose();
+    _players.dispose();
+    _maxPoints.dispose();
+    _minPoints.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // for (int i = 0; i < panelData.length; i++) {
-    //   panelData[i].body = panelWidget[i];
-    // }
-    // // panelData = <PanelData>[
-    // //   PanelData(true, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
-    // //   PanelData(true, 'Stats', statsWidget(), const Icon(Icons.data_usage))
-    // // ];
     return Scaffold(
       appBar: AppBar(
         title: const Text("Statistics"),
@@ -105,23 +102,6 @@ class _StatisticsViewState extends State<StatisticsView> {
                   ),
                 ],
               ),
-              // ExpansionPanelList(
-              //   expansionCallback: (int index, bool isExpanded) {
-              //     setState(() {
-              //       filterDataPanel.first.isExpanded = !isExpanded;
-              //     });
-              //   },
-              //   children:
-              //       filterDataPanel.map<ExpansionPanel>((FilterData filter) {
-              //     return ExpansionPanel(
-              //       headerBuilder: ((context, isExpanded) {
-              //         return Text(filter.header);
-              //       }),
-              //       body: filter.body,
-              //       isExpanded: filter.isExpanded,
-              //     );
-              //   }).toList(),
-              // ),
               ExpansionPanelList(
                 expansionCallback: (int index, bool isExpanded) {
                   setState(() {

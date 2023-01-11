@@ -32,11 +32,8 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData.from(
-        colorScheme: const ColorScheme.dark(),
-        useMaterial3: true,
-      ),
+      title: 'Multiplayer Snake',
+      theme: ThemeData.dark(useMaterial3: true),
       home: BlocProvider<AuthBloc>(
         create: (context) => AuthBloc(SupabaseAuthProvider()),
         child: const MainPage(),
