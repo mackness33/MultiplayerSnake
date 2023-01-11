@@ -10,16 +10,22 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class DatabaseFriendsService implements DatabaseFriendsProvider {
   final SupabaseClient _supabase;
   final String _id;
+  final String _email;
 
   List<DatabaseFriend> _friends = [];
+  List<DatabaseFriend> _players = [];
 
   late final StreamController<List<DatabaseFriend>> _friendsStreamController;
+  late final StreamController<List<DatabaseFriend>> _playersStreamController;
 
   static final DatabaseFriendsService _shared =
       DatabaseFriendsService._sharedInstance();
   DatabaseFriendsService._sharedInstance()
       : _supabase = Supabase.instance.client,
-        _id = AuthService.supabase().currentUser!.id {
+        _id = AuthService.supabase().currentUser!.id,
+        _email = AuthService.supabase().currentUser!.email {
+    _playersStreamController =
+        StreamController<List<DatabaseFriend>>.broadcast();
     _friendsStreamController = StreamController<List<DatabaseFriend>>.broadcast(
       onListen: () {
         _friendsStreamController.sink.add(_friends);
@@ -42,11 +48,14 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
   Stream<List<DatabaseFriend>> get allFriends =>
       _friendsStreamController.stream;
 
+  Stream<List<DatabaseFriend>> get searchedPlayers =>
+      _playersStreamController.stream;
+
   @override
   Future<Iterable<DatabaseFriend>> getAllFriends() async {
     try {
       final List<Map<String, dynamic>> friends =
-          await _supabase.from(table).select();
+          await _supabase.from(friendsTable).select(queryAllFriendsWithEmail);
 
       devtools.log('Friends: ${friends.toString()}');
 
@@ -61,8 +70,10 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
   @override
   Future<void> acceptFriend({required String id}) async {
     try {
-      await _supabase.from(table).update({isConfirmedColumn: true}).match(
-          {requesterColumn: id, followedColumn: _id});
+      await _supabase
+          .from(friendsTable)
+          .update({isConfirmedColumn: true}).match(
+              {requesterColumn: id, followedColumn: _id});
 
       _cacheFriends();
     } on DatabaseException catch (_) {
@@ -76,10 +87,12 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
   Future<void> addFriend({required String id}) async {
     try {
       await _supabase
-          .from(table)
+          .from(friendsTable)
           .insert({requesterColumn: _id, followedColumn: id});
 
       _cacheFriends();
+      _players.removeWhere((friendship) => friendship.followed == id);
+      _playersStreamController.add(_players);
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {
@@ -91,7 +104,7 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
   Future<void> deleteFriend({required String id}) async {
     try {
       await _supabase
-          .from(table)
+          .from(friendsTable)
           .delete()
           .in_(requesterColumn, <String>[id, _id]).in_(
               followedColumn, <String>[id, _id]);
@@ -103,8 +116,38 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
       rethrow;
     }
   }
+
+  Future<void> searchPlayer(String player) async {
+    try {
+      final List<dynamic> players = await _supabase
+          .from(profilesTable)
+          .select('id, email')
+          .like(emailColumn, '*$player*')
+          .neq(emailColumn, _email);
+
+      devtools.log('Players: ${players.toString()}');
+
+      Iterable<DatabaseFriend> playersNotFriends = players
+          .map((playerRow) => DatabaseFriend.notYetFriends(playerRow, _id))
+          .where(
+            (possibleFriendship) => _friends.every(
+              (friendship) =>
+                  friendship.requester != possibleFriendship.followed &&
+                  friendship.followed != possibleFriendship.followed,
+            ),
+          );
+
+      _players = playersNotFriends.toList();
+      _playersStreamController.add(_players);
+    } on DatabaseException catch (_) {
+      throw GenericDatabaseException();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
-const table = 'friends';
+const friendsTable = 'friends';
+const profilesTable = 'profiles';
 const queryAllFriendsWithEmail =
     'requester(id, email), followed(id, email), is_confirmed';
