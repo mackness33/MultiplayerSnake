@@ -7,6 +7,7 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
+import 'package:multiplayersnake/views/profile_view.dart';
 import 'package:multiplayersnake/views/statistics_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -63,21 +64,40 @@ class _MenuViewState extends State<MenuView> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                context.read<GameBloc>().add(const GameEventConnection());
-              },
-              child: const Text('Let\'s play'),
+            Container(
+              margin: const EdgeInsets.all(15),
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<GameBloc>().add(const GameEventConnection());
+                },
+                child: const Text('Let\'s play'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const StatisticsView()),
-                );
-              },
-              child: const Text('Stats'),
+            Container(
+              margin: const EdgeInsets.all(15),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const StatisticsView()),
+                  );
+                },
+                child: const Text('Stats'),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.all(15),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfileView()),
+                  );
+                },
+                child: const Text('Profile'),
+              ),
             ),
           ],
         ),
