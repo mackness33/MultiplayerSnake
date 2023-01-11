@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class DatabaseProfile {
-  final int id;
-  final String email;
+  final String? id;
+  final String? email;
   final String? fullName;
   final String? avatarUrl;
   final String? website;
@@ -15,8 +15,15 @@ class DatabaseProfile {
       required this.avatarUrl,
       required this.website});
 
+  const DatabaseProfile.empty()
+      : id = null,
+        email = null,
+        fullName = null,
+        avatarUrl = null,
+        website = null;
+
   DatabaseProfile.fromRow(Map<String, dynamic> row)
-      : id = row[idColumn] as int,
+      : id = row[idColumn] as String,
         email = row[emailColumn] as String,
         fullName = row[fullNameColumn] ?? '',
         avatarUrl = row[avatarUrlColumn] ?? '',
