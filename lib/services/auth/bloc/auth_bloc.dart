@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/auth_provider.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
@@ -13,7 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await provider.createUser(email: email, password: password);
 
-        emit(const AuthEventNeedsVerification());
+        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } on Exception catch (e) {
         emit(AuthStateRegistering(e));
       }
