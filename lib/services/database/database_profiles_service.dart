@@ -10,7 +10,7 @@ import 'dart:developer' as devtools show log;
 
 class DatabaseProfilesService implements DatabaseProfilesProvider {
   final SupabaseClient _supabase;
-  final String _id;
+  String _id;
 
   DatabaseProfile _profile = const DatabaseProfile.empty();
 
@@ -36,6 +36,7 @@ class DatabaseProfilesService implements DatabaseProfilesProvider {
 
   @override
   void init() async {
+    _id = AuthService.supabase().currentUser!.id;
     await _cacheProfile();
   }
 

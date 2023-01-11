@@ -9,8 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DatabaseFriendsService implements DatabaseFriendsProvider {
   final SupabaseClient _supabase;
-  final String _id;
-  final String _email;
+  String _id;
+  String _email;
 
   List<DatabaseFriend> _friends = [];
   List<DatabaseFriend> _players = [];
@@ -42,6 +42,8 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
 
   @override
   void init() async {
+    _id = AuthService.supabase().currentUser!.id;
+    _email = AuthService.supabase().currentUser!.email;
     await _cacheFriends();
   }
 
@@ -58,6 +60,8 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
           await _supabase.from(friendsTable).select(queryAllFriendsWithEmail);
 
       devtools.log('Friends: ${friends.toString()}');
+      devtools.log('id: $_id');
+      devtools.log('email: $_email');
 
       return friends.map((friendRow) => DatabaseFriend.fromRow(friendRow, _id));
     } on DatabaseException catch (_) {

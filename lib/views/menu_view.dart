@@ -40,24 +40,13 @@ class _MenuViewState extends State<MenuView> {
       appBar: AppBar(
         title: const Text("Menu"),
         actions: [
-          PopupMenuButton<MenuAction>(
-            onSelected: (value) async {
-              switch (value) {
-                case MenuAction.logout:
-                  final shouldLogout = await showLogOutDialog(context);
-                  if (shouldLogout) logout();
-                  break;
-              }
+          IconButton(
+            onPressed: () async {
+              final shouldLogout = await showLogOutDialog(context);
+              if (shouldLogout) logout();
             },
-            itemBuilder: (context) {
-              return const [
-                PopupMenuItem<MenuAction>(
-                  value: MenuAction.logout,
-                  child: Text('Log out'),
-                ),
-              ];
-            },
-          )
+            icon: const Icon(Icons.exit_to_app),
+          ),
         ],
       ),
       body: Center(

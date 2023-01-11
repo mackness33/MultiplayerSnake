@@ -7,9 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart'
     show AuthException, Supabase, SupabaseAuth;
 import 'dart:developer' as devtools show log;
 
-final supabase = Supabase.instance.client;
-
 class SupabaseAuthProvider implements AuthProvider {
+  final supabase = Supabase.instance.client;
   @override
   Future<AuthUser> createUser(
       {required String email, required String password}) async {
@@ -47,6 +46,7 @@ class SupabaseAuthProvider implements AuthProvider {
   @override
   AuthUser? get currentUser {
     final user = Supabase.instance.client.auth.currentUser;
+    devtools.log('currentUser: ${user?.id}, email: ${user?.email}');
     return (user != null) ? AuthUser.fromSupabase(user) : null;
   }
 

@@ -13,8 +13,8 @@ import 'dart:developer' as devtools show log;
 
 class DatabaseGamesService implements DatabaseGamesProvider {
   final SupabaseClient _supabase;
-  final String _user;
   final Stats _stats;
+  String _user;
 
   List<DatabaseGame> _games = [];
 
@@ -37,6 +37,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   Future<void> _cacheGames() async {
     final allGames = await getAllGames();
     _stats.update(allGames.toList());
+    _user = AuthService.supabase().currentUser!.email;
     _games = allGames.toList();
     _gamesStreamController.add(_games);
   }
