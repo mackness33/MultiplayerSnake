@@ -7,6 +7,8 @@ import 'package:multiplayersnake/services/database/database_profile.dart';
 import "dart:developer" as devtools show log;
 
 import 'package:multiplayersnake/services/database/database_profiles_service.dart';
+import 'package:multiplayersnake/utils/dialogs/add2_dialog.dart';
+import 'package:multiplayersnake/views/add_friend_view.dart';
 
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});
@@ -33,7 +35,18 @@ class _FriendsViewState extends State<FriendsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: const Text("Friends"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddFriendsView()),
+                );
+              },
+              icon: const Icon(Icons.add))
+        ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -53,8 +66,8 @@ class _FriendsViewState extends State<FriendsView> {
                           return ListTile(
                             title: Text(
                               ((friends[index].amRequester)
-                                      ? friends[index].requesterEmail
-                                      : friends[index].followedEmail) ??
+                                      ? friends[index].followedEmail
+                                      : friends[index].requesterEmail) ??
                                   'Not Found',
                             ),
                             trailing: Row(

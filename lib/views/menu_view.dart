@@ -7,7 +7,7 @@ import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
-import 'package:multiplayersnake/views/friend_view.dart';
+import 'package:multiplayersnake/views/friends_view.dart';
 import 'package:multiplayersnake/views/profile_view.dart';
 import 'package:multiplayersnake/views/statistics_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
