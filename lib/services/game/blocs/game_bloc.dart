@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:multiplayersnake/services/game/game_resume.dart';
+import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
@@ -128,7 +128,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final resume = await manager.endOfAllPartecipants;
       await manager.ending;
       devtools.log(resume.toString());
-      emit(GameStateEndResults(GameResume(resume)));
+      emit(GameStateEndResults(
+          DatabaseGame.fromJSON(resume, manager.rules!.player.email)));
       manager.disconnect();
     }));
 

@@ -14,7 +14,8 @@ import 'dart:developer' as devtools show log;
 class DatabaseGamesService implements DatabaseGamesProvider {
   final SupabaseClient _supabase;
   final Stats _stats;
-  String _user;
+  String _email;
+  String _id;
 
   List<DatabaseGame> _games = [];
 
@@ -24,7 +25,8 @@ class DatabaseGamesService implements DatabaseGamesProvider {
       DatabaseGamesService._sharedInstance();
   DatabaseGamesService._sharedInstance()
       : _supabase = Supabase.instance.client,
-        _user = AuthService.supabase().currentUser!.email,
+        _email = AuthService.supabase().currentUser!.email,
+        _id = AuthService.supabase().currentUser!.id,
         _stats = Stats.empty() {
     _gamesStreamController = StreamController<List<DatabaseGame>>.broadcast(
       onListen: () {
@@ -37,7 +39,8 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   Future<void> _cacheGames() async {
     final allGames = await getAllGames();
     _stats.update(allGames.toList());
-    _user = AuthService.supabase().currentUser!.email;
+    _email = AuthService.supabase().currentUser!.email;
+    _id = AuthService.supabase().currentUser!.id;
     _games = allGames.toList();
     _gamesStreamController.add(_games);
   }
@@ -52,12 +55,13 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   @override
   Future<Iterable<DatabaseGame>> getAllGames() async {
     try {
-      final List<
-          Map<String,
-              dynamic>> games = await _supabase.from(table).select(
-          '*, player0(email), player1(email), player2(email), player3(email)');
+      final List<dynamic> games = await _supabase
+          .from(table)
+          .select(selectAllGamesOfUserQuery)
+          .eq(firstPlayerColumn, _id);
 
-      return games.map((gameRow) => DatabaseGame.fromRow(gameRow, _user));
+      return games.map((gameRow) =>
+          DatabaseGame.fromRow(gameRow as Map<String, dynamic>, _email));
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {
@@ -97,6 +101,8 @@ class DatabaseGamesService implements DatabaseGamesProvider {
 }
 
 const table = 'games';
+const selectAllGamesOfUserQuery =
+    '*, player0(email), player1(email), player2(email), player3(email)';
 
 class Stats {
   int _countWins;

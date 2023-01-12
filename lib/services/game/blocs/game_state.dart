@@ -1,7 +1,7 @@
 // import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:multiplayersnake/game/game.dart';
-import 'package:multiplayersnake/services/game/game_resume.dart';
+import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/game/game_rules.dart';
 // import 'package:multiplayersnake/services/auth/auth_user.dart';
 
@@ -86,7 +86,7 @@ class GameStateEndWaiting extends GameStateUnactive {
 }
 
 class GameStateEndResults extends GameStateEnd with GameStateViewer {
-  final GameResume resume;
+  final DatabaseGame resume;
   const GameStateEndResults(this.resume);
 }
 

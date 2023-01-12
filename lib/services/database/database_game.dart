@@ -18,20 +18,7 @@ class DatabaseGame {
   late final int pointsUser;
   late final bool winner;
 
-  // DatabaseGame.fromSocket(Map<String, dynamic> json)
-  //     : id = json[idColumn],
-  //       name = json[nameColumn],
-  //       maxTime = json[maxTimeColumn],
-  //       player0 = json['first_player'][emailColumn],
-  //       points0 = json['first_player_points'],
-  //       player1 = json['second_player']?[emailColumn] ?? 'player 2',
-  //       points1 = json['second_player_points'] ?? 0,
-  //       player2 = json['third_player']?[emailColumn] ?? 'player 3',
-  //       points2 = json['third_player_points'] ?? 0,
-  //       player3 = json['fourth_player']?[emailColumn] ?? 'player 4',
-  //       points3 = json['fourth_player_points']?[emailColumn] ?? 0;
-
-  DatabaseGame(Map<String, dynamic> json, String userEmail)
+  DatabaseGame.fromJSON(Map<String, dynamic> json, String userEmail)
       : id = json[idColumn] as int,
         name = json[nameColumn] as String,
         createdAt = DateTime.now(),

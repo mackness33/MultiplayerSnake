@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
-import 'package:multiplayersnake/services/game/game_resume.dart';
 
 import '../services/game/blocs/game_bloc.dart';
 
@@ -16,7 +16,7 @@ class ResumeView extends StatefulWidget {
 class _ResumeViewState extends State<ResumeView> {
   @override
   Widget build(BuildContext context) {
-    final GameResume resume =
+    final DatabaseGame resume =
         (context.read<GameBloc>().state as GameStateEndResults).resume;
     return Scaffold(
       appBar: AppBar(title: const Text('Resume')),
