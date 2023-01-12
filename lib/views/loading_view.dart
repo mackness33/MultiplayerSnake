@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
@@ -21,9 +22,7 @@ class _LoadingViewState extends State<LoadingView> {
 
   @override
   void initState() {
-    String email =
-        (context.read<AuthBloc>().state as AuthStateLoggedIn).user.email;
-    _gameRules = GameRules(email);
+    _gameRules = GameRules(SupabaseAuthProvider().currentUser!.email);
     _room = TextEditingController();
     super.initState();
   }
@@ -51,7 +50,7 @@ class _LoadingViewState extends State<LoadingView> {
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: List.generate(
-            3,
+            _gameRules.valuePlayers.length,
             (index) {
               return InkWell(
                 onTap: () {
@@ -74,11 +73,12 @@ class _LoadingViewState extends State<LoadingView> {
                   ),
                   child: Center(
                     child: Text(
-                      (index + 1).toString(),
+                      _gameRules.valuePlayers[index].toString(),
                       style: TextStyle(
-                          color: (_gameRules.indexPlayers == index)
-                              ? Colors.red
-                              : Colors.amber),
+                        color: (_gameRules.indexPlayers == index)
+                            ? Colors.red
+                            : Colors.amber,
+                      ),
                     ),
                   ),
                 ),
@@ -92,7 +92,7 @@ class _LoadingViewState extends State<LoadingView> {
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: List.generate(
-            3,
+            _gameRules.valueTime.length,
             (index) {
               return InkWell(
                 onTap: () {
@@ -115,7 +115,7 @@ class _LoadingViewState extends State<LoadingView> {
                   ),
                   child: Center(
                     child: Text(
-                      (index + 1).toString(),
+                      _gameRules.valueTime[index].toString(),
                       style: TextStyle(
                           color: (_gameRules.indexTime == index)
                               ? Colors.red
@@ -133,7 +133,7 @@ class _LoadingViewState extends State<LoadingView> {
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: List.generate(
-            3,
+            _gameRules.valuePoints.length,
             (index) {
               return InkWell(
                 onTap: () {
@@ -156,7 +156,7 @@ class _LoadingViewState extends State<LoadingView> {
                   ),
                   child: Center(
                     child: Text(
-                      (index + 1).toString(),
+                      _gameRules.valuePoints[index].toString(),
                       style: TextStyle(
                           color: (_gameRules.indexPoints == index)
                               ? Colors.red
@@ -187,7 +187,6 @@ class _LoadingViewState extends State<LoadingView> {
         ElevatedButton(
           onPressed: () {
             _gameRules.isAdmin = true;
-            print("create: $create");
             context.read<GameBloc>().add(
                   GameEventConfigured(
                     SettingsService.screenSize(MediaQuery.of(context)),

@@ -6,9 +6,9 @@ class GameRules {
   bool public;
   final Player _player;
   final List<Player> _playersInTheRoom;
-  final List<int> _valuePlayers = [1, 2, 3];
-  final List<int> _valueTime = [1, 2, 5];
-  final List<int> _valuePoints = [100, 200, 400, 1000];
+  final List<int> _valuePlayers = [2, 3, 4];
+  final List<int> _valueTime = [0, 1, 2, 5];
+  final List<int> _valuePoints = [0, 2, 20, 30, 50];
 
   GameRules(String email)
       : indexPlayers = 0,
@@ -61,6 +61,7 @@ class GameRules {
     data['indexPoints'] = indexPoints;
     data['maxPlayers'] = maxPlayers;
     data['maxTime'] = maxTime;
+    data['maxPoints'] = maxPoints;
     data['public'] = public;
     data['player'] = _player.email;
 

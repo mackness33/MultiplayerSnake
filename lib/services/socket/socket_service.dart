@@ -53,21 +53,25 @@ class SocketService implements SocketProvider {
       devtools.log('Error on ${socket.id}: $data');
     });
 
-    socket.on('ready', (players) async {
-      if (!_readyCompleter.isCompleted) {
-        _readyCompleter.complete((players as List).cast<String>());
-      }
-      if (!_playersCompleter.isCompleted) {
-        _playersCompleter.complete({});
-      }
-      if (_endCompleter.isCompleted) {
-        _endCompleter = Completer();
-      }
+    socket.on('ready', (playersInfo) async {
+      List<String> players = (playersInfo as List).cast<String>();
+      devtools.log(players.toString());
+      if (players.isNotEmpty) {
+        if (!_readyCompleter.isCompleted) {
+          _readyCompleter.complete(players);
+        }
+        if (!_playersCompleter.isCompleted) {
+          _playersCompleter.complete({});
+        }
+        if (_endCompleter.isCompleted) {
+          _endCompleter = Completer();
+        }
 
-      devtools.log('IN READY: ${_allUserEndedCompleter.isCompleted}');
+        devtools.log('IN READY: ${_allUserEndedCompleter.isCompleted}');
 
-      if (_allUserEndedCompleter.isCompleted) {
-        _allUserEndedCompleter = Completer();
+        if (_allUserEndedCompleter.isCompleted) {
+          _allUserEndedCompleter = Completer();
+        }
       }
     });
 

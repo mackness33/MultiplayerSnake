@@ -18,7 +18,7 @@ class _WaitingViewState extends State<WaitingView> {
   // the ChatMessage class was declared above
   late final GameRules rules;
   late final Stream<Map<String, dynamic>> streamPlayers;
-
+  late bool _isButtonDisabled;
   @override
   void initState() {
     if (context.read<GameBloc>().state is! GameStateStartWaiting) {
@@ -30,6 +30,7 @@ class _WaitingViewState extends State<WaitingView> {
       streamPlayers = state.streamPlayers;
       rules = state.rules;
     }
+    _isButtonDisabled = false;
     super.initState();
   }
 
@@ -71,6 +72,10 @@ class _WaitingViewState extends State<WaitingView> {
                   if (snapshot.data?["initial"] != null) {
                     if (snapshot.data!['isDeleted']) {
                       rules.addPlayer(snapshot.data!['player'], false);
+                      setState(() {
+                        _isButtonDisabled =
+                            rules.players.length == rules.maxPlayers;
+                      });
                     } else {
                       rules.removePlayer(snapshot.data!['player']);
                     }
@@ -88,20 +93,20 @@ class _WaitingViewState extends State<WaitingView> {
                             ? const Text(
                                 'Admin',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
+                                    fontWeight: FontWeight.bold, fontSize: 15),
                               )
                             : null,
                         // message
                         title: Text(
                           player.email,
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 15,
                               // use different colors for different people
                               color:
                                   player.isAdmin ? Colors.pink : Colors.blue),
                         ),
-                        trailing: !player.isAdmin
-                            ? TextButton.icon(
+                        trailing: player.isAdmin
+                            ? IconButton(
                                 icon: const Icon(Icons.remove),
                                 onPressed: () {
                                   context.read<GameBloc>().add(
@@ -109,7 +114,6 @@ class _WaitingViewState extends State<WaitingView> {
                                             player.email, rules.room),
                                       );
                                 },
-                                label: Container(),
                               )
                             : null,
                       );
@@ -123,11 +127,13 @@ class _WaitingViewState extends State<WaitingView> {
             (rules.player.isAdmin)
                 ? Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        context.read<GameBloc>().add(
-                              GameEventReady(),
-                            );
-                      },
+                      onPressed: _isButtonDisabled
+                          ? null
+                          : () {
+                              context.read<GameBloc>().add(
+                                    const GameEventReady(),
+                                  );
+                            },
                       child: const Text('Play'),
                     ),
                   )

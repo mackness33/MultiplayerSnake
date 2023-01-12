@@ -2,7 +2,6 @@ import 'package:flutter/material.dart'
     show
         BuildContext,
         CircularProgressIndicator,
-        ColorScheme,
         MaterialApp,
         Scaffold,
         StatelessWidget,
@@ -18,8 +17,6 @@ import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game_orchestrator.dart';
-import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
-import 'package:multiplayersnake/views/game_view.dart';
 import 'package:multiplayersnake/views/login_view.dart';
 import 'package:multiplayersnake/views/home_page.dart';
 import 'package:multiplayersnake/views/signup_view.dart';
