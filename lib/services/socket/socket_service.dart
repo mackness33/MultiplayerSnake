@@ -16,7 +16,7 @@ class SocketService implements SocketProvider {
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
   Completer<bool> _endCompleter;
-  Completer<Map<String, dynamic>> _allUserEndedCompleter;
+  Completer<Map<String, dynamic>> _results;
   Completer<Map<String, dynamic>> _pointsCompleter;
 
   SocketService()
@@ -31,7 +31,7 @@ class SocketService implements SocketProvider {
         _playersCompleter = Completer()..complete({}),
         _endCompleter = Completer()..complete(false),
         _pointsCompleter = Completer()..complete({}),
-        _allUserEndedCompleter = Completer()..complete({});
+        _results = Completer()..complete({});
 
   void init() {
     socket.onConnect((_) {
@@ -67,10 +67,10 @@ class SocketService implements SocketProvider {
           _endCompleter = Completer();
         }
 
-        devtools.log('IN READY: ${_allUserEndedCompleter.isCompleted}');
+        devtools.log('IN READY: ${_results.isCompleted}');
 
-        if (_allUserEndedCompleter.isCompleted) {
-          _allUserEndedCompleter = Completer();
+        if (_results.isCompleted) {
+          _results = Completer();
         }
       }
     });
@@ -97,10 +97,16 @@ class SocketService implements SocketProvider {
       if (!_endCompleter.isCompleted) {
         _endCompleter.complete(false);
       }
+    });
 
-      if (!_allUserEndedCompleter.isCompleted) {
+    socket.on('results', (data) {
+      if (!_endCompleter.isCompleted) {
+        _endCompleter.complete(false);
+      }
+
+      if (!_results.isCompleted) {
         devtools.log(data.toString());
-        _allUserEndedCompleter.complete((data as List)[0] ?? {});
+        _results.complete((data as List)[0] ?? {});
       }
 
       reset();
@@ -128,8 +134,8 @@ class SocketService implements SocketProvider {
       _pointsCompleter.complete({});
     }
 
-    if (!_allUserEndedCompleter.isCompleted) {
-      _allUserEndedCompleter.complete({});
+    if (!_results.isCompleted) {
+      _results.complete({});
     }
 
     room = null;
@@ -179,8 +185,7 @@ class SocketService implements SocketProvider {
   }
 
   @override
-  Future<Map<String, dynamic>> get endOfAllPartecipants =>
-      _allUserEndedCompleter.future;
+  Future<Map<String, dynamic>> get results => _results.future;
 
   @override
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {

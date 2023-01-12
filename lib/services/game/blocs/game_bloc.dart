@@ -69,9 +69,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // start
     on<GameEventStarted>((event, emit) async {
       try {
-        // manager.addPlayers(event.players);
-        manager
-            .addPlayers(<String>['davidantonhy962@gmail.com', 'Bravo', 'Code']);
+        manager.addPlayers(event.players);
         emit(const GameStateStartLoading());
         Stream<Map<String, dynamic>> points = manager.streamPoints();
         await _pointsSubscription?.cancel();
@@ -125,7 +123,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         manager.endGame();
       }
       _pointsSubscription?.cancel();
-      final resume = await manager.endOfAllPartecipants;
+      final resume = await manager.results;
       await manager.ending;
       devtools.log(resume.toString());
       emit(GameStateEndResults(
