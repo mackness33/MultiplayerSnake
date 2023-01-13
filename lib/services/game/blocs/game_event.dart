@@ -28,10 +28,9 @@ class GameEventStarted extends GameEvent {
   const GameEventStarted(this.players);
 }
 
-class GameEventDeletePlayer extends GameEvent {
-  final String email;
-  final String room;
-  const GameEventDeletePlayer(this.email, this.room);
+class GameEventRemovePlayer extends GameEvent {
+  final String deletedUserEmail;
+  const GameEventRemovePlayer(this.deletedUserEmail);
 }
 
 class GameEventReady extends GameEvent {

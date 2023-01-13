@@ -85,7 +85,9 @@ class GameRules {
     devtools.log('newPlayers: ${newPlayers.toString()}');
     if (_playersInTheRoom.length > newPlayers.length) {
       devtools.log('Deleting players');
-      _playersInTheRoom.retainAll(newPlayers);
+      _playersInTheRoom.retainAll(newPlayers
+          .map((player) => Player(email: player, isAdmin: false))
+          .toSet());
     } else if (_playersInTheRoom.length < newPlayers.length) {
       devtools.log('Adding players');
       _playersInTheRoom.add(Player(

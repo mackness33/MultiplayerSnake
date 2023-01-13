@@ -92,6 +92,13 @@ class SocketService implements SocketProvider {
       _waitingPlayersStreamController.add((players as List).cast<String>());
     });
 
+    socket.on('deletePlayer', (deletedPlayer) {
+      devtools.log('in deleted players: ${deletedPlayer.toString()}');
+      if (player == deletedPlayer && !_readyCompleter.isCompleted) {
+        _readyCompleter.complete([]);
+      }
+    });
+
     socket.on('points', (data) {
       if (!_pointsCompleter.isCompleted) {
         _pointsCompleter.complete(data);
@@ -99,9 +106,9 @@ class SocketService implements SocketProvider {
     });
 
     socket.on('abort', (_) {
-      devtools.log('resetting');
-      reset();
-      throw AdminLeftGameException();
+      if (!_readyCompleter.isCompleted) {
+        _readyCompleter.complete([]);
+      }
     });
 
     socket.on('end', (data) {
@@ -306,8 +313,8 @@ class SocketService implements SocketProvider {
       .emit('eat', {'player': player, 'room': room, 'isSpecial': isSpecial});
 
   @override
-  void deletePlayer() =>
-      socket.emit('removePlayer', {'player': player, 'room': room});
+  void removePlayer(String deletedUserEmail) =>
+      socket.emit('removePlayer', {'player': deletedUserEmail, 'room': room});
 
   @override
   void leave() {
@@ -325,6 +332,8 @@ class SocketService implements SocketProvider {
     room = null;
     player = null;
     isAdmin = null;
+
+    reset();
   }
 }
 

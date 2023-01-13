@@ -17,7 +17,7 @@ abstract class SocketProvider {
 
   void eat(bool isSpecial);
 
-  void deletePlayer();
+  void removePlayer(String deletedUserEmail);
 
   void leave();
 

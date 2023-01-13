@@ -71,6 +71,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // start
     on<GameEventStarted>((event, emit) async {
       try {
+        if (event.players.isEmpty) {
+          add(const GameEventLeft());
+          return;
+        }
         manager.addPlayers(event.players);
         emit(const GameStateStartLoading());
         Stream<Map<String, dynamic>> points = manager.streamPoints();
@@ -103,8 +107,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     });
 
     // delete player
-    on<GameEventDeletePlayer>(((event, emit) {
-      manager.deletePlayer();
+    on<GameEventRemovePlayer>(((event, emit) {
+      manager.removePlayer(event.deletedUserEmail);
     }));
 
     // ready

@@ -114,8 +114,7 @@ class _WaitingViewState extends State<WaitingView> {
                                 icon: const Icon(Icons.remove),
                                 onPressed: () {
                                   context.read<GameBloc>().add(
-                                        GameEventDeletePlayer(
-                                            player.email, rules.room),
+                                        GameEventRemovePlayer(player.email),
                                       );
                                 },
                               )
