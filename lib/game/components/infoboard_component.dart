@@ -6,12 +6,14 @@ import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/rendering.dart';
 import 'package:multiplayersnake/game/components/player_points_component.dart';
 import 'package:multiplayersnake/game/components/time_component.dart';
+import 'package:multiplayersnake/game/game.dart';
 import 'package:multiplayersnake/game/models/board_controller.dart';
 import 'package:multiplayersnake/services/game/game_rules.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 
-class PointsBoardComponent extends Component {
+class PointsBoardComponent extends Component
+    with HasGameRef<MultiplayerSnakeGame> {
   // with FlameBlocListenable<GameBloc, GameState> {
   // @override
   // bool listenWhen(GameState previousState, GameState newState) {
@@ -47,14 +49,16 @@ class PointsBoardComponent extends Component {
   Future<void>? onLoad() async {
     TimeComponent timer;
     await super.onLoad();
-    await addAll([
-      timer = TimeComponent(
-        Vector2(board.width / 2, board.height / 2),
-        20,
-        size: Vector2(board.width / 6, board.height / 2),
-      ),
-      TimerComponent(period: 1, onTick: () => timer.tick(), repeat: true),
-    ]);
+    if (gameRef.gameRules.maxTime > 0) {
+      await addAll([
+        timer = TimeComponent(
+          Vector2(board.width / 2, board.height / 2),
+          gameRef.gameRules.maxTime * 60,
+          size: Vector2(board.width / 6, board.height / 2),
+        ),
+        TimerComponent(period: 1, onTick: () => timer.tick(), repeat: true),
+      ]);
+    }
   }
 
   void addPlayers(List<String> players) {

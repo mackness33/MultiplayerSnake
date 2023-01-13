@@ -21,7 +21,9 @@ class SocketService implements SocketProvider {
 
   SocketService()
       : socket = IO.io(
-          'http://10.0.2.2:3001',
+          // 'http://10.0.2.2:3001',
+          // 'http://127.0.0.1:3001',
+          'https://multiplayer-snake.herokuapp.com',
           IO.OptionBuilder()
               .disableAutoConnect()
               .setTransports(['websocket']).build(),
