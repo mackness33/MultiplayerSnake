@@ -1,3 +1,5 @@
+import "dart:developer" as devtools show log;
+
 class GameRules {
   int indexPlayers;
   int indexTime;
@@ -5,7 +7,7 @@ class GameRules {
   String room;
   bool public;
   final Player _player;
-  final List<Player> _playersInTheRoom;
+  Set<Player> _playersInTheRoom;
   final List<int> _valuePlayers = [2, 3, 4];
   final List<int> _valueTime = [0, 1, 2, 5];
   final List<int> _valuePoints = [0, 2, 20, 30, 50];
@@ -17,7 +19,7 @@ class GameRules {
         room = '',
         public = false,
         _player = Player.member(email),
-        _playersInTheRoom = [];
+        _playersInTheRoom = <Player>{};
 
   GameRules.fromJson(Map<String, dynamic> rules, List<String> playersEmail,
       String admin, this._player, this.room)
@@ -25,7 +27,7 @@ class GameRules {
         indexTime = rules['indexTime'],
         indexPoints = rules['indexPoints'],
         public = rules['public'],
-        _playersInTheRoom = <Player>[] {
+        _playersInTheRoom = <Player>{} {
     for (final email in playersEmail) {
       _playersInTheRoom
           .add(email == admin ? Player.admin(email) : Player.member(email));
@@ -39,18 +41,19 @@ class GameRules {
         indexPoints = rules.indexPoints,
         public = rules.public,
         _player = admin,
-        _playersInTheRoom = [admin];
+        _playersInTheRoom = <Player>{admin};
 
   int get maxPlayers => _valuePlayers[indexPlayers];
   int get maxTime => _valueTime[indexTime];
   int get maxPoints => _valuePoints[indexPoints];
-  List<Player> get players => _playersInTheRoom;
+  List<Player> get players => _playersInTheRoom.toList();
   List<int> get valuePlayers => _valuePlayers;
   List<int> get valueTime => _valueTime;
   List<int> get valuePoints => _valuePoints;
   Player get player => _player;
 
   set isAdmin(bool value) => _player.isAdmin = value;
+  bool get isAdmin => _player.isAdmin;
 
   Map<String, dynamic> createSettingsToJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -77,6 +80,26 @@ class GameRules {
     return data;
   }
 
+  void updatePlayers(Set<String> newPlayers) {
+    devtools.log('players in the room: ${_playersInTheRoom.toString()}');
+    devtools.log('newPlayers: ${newPlayers.toString()}');
+    if (_playersInTheRoom.length > newPlayers.length) {
+      devtools.log('Deleting players');
+      _playersInTheRoom.retainAll(newPlayers);
+    } else if (_playersInTheRoom.length < newPlayers.length) {
+      devtools.log('Adding players');
+      _playersInTheRoom.add(Player(
+          email: newPlayers
+              .difference(
+                  _playersInTheRoom.map((player) => player.email).toSet())
+              .first,
+          isAdmin: false));
+    }
+
+    devtools
+        .log('At the end players in the room: ${_playersInTheRoom.toString()}');
+  }
+
   void addPlayer(String email, bool isAdmin) =>
       _playersInTheRoom.add(Player(email: email, isAdmin: isAdmin));
   void removePlayer(String email) =>
@@ -100,4 +123,7 @@ class Player {
 
   @override
   bool operator ==(Object other) => hashCode == other.hashCode;
+
+  @override
+  String toString() => 'Player: email = $email, isAdmin = $isAdmin';
 }

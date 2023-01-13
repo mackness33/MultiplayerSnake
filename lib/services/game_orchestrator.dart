@@ -84,4 +84,8 @@ class GameOrchestrator implements GameProvider, SocketProvider {
 
   @override
   Future<bool> get end => socketService.end;
+
+  @override
+  Stream<List<String>> get waitingPlayersStream =>
+      socketService.waitingPlayersStream;
 }

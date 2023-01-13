@@ -68,7 +68,8 @@ class GameStateStartLoaded extends GameStatePlay with GameStateViewer {
 
 class GameStateStartWaiting extends GameStatePlay with GameStateViewer {
   final GameRules rules;
-  final Stream<Map<String, dynamic>> streamPlayers;
+  // final Stream<Map<String, dynamic>> streamPlayers;
+  final Stream<List<String>> streamPlayers;
   const GameStateStartWaiting(this.rules, this.streamPlayers);
 }
 

@@ -26,4 +26,6 @@ abstract class SocketProvider {
   Future<bool> get end;
 
   Future<Map<String, dynamic>> get results;
+
+  Stream<List<String>> get waitingPlayersStream;
 }

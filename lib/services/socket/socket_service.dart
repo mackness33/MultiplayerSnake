@@ -15,6 +15,7 @@ class SocketService implements SocketProvider {
   Completer<bool> _connectionCompleter;
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
+  StreamController<List<String>> _waitingPlayersStreamController;
   Completer<bool> _endCompleter;
   Completer<Map<String, dynamic>> _results;
   Completer<Map<String, dynamic>> _pointsCompleter;
@@ -33,6 +34,8 @@ class SocketService implements SocketProvider {
         _playersCompleter = Completer()..complete({}),
         _endCompleter = Completer()..complete(false),
         _pointsCompleter = Completer()..complete({}),
+        _waitingPlayersStreamController =
+            StreamController<List<String>>.broadcast(),
         _results = Completer()..complete({});
 
   void init() {
@@ -81,6 +84,12 @@ class SocketService implements SocketProvider {
       if (!_playersCompleter.isCompleted) {
         _playersCompleter.complete(data);
       }
+      _waitingPlayersStreamController.add(data);
+    });
+
+    socket.on('waitingPlayers', (players) {
+      devtools.log('in waiting players: ${players.toString()}');
+      _waitingPlayersStreamController.add((players as List).cast<String>());
     });
 
     socket.on('points', (data) {
@@ -89,7 +98,7 @@ class SocketService implements SocketProvider {
       }
     });
 
-    socket.on('abort', (data) {
+    socket.on('abort', (_) {
       devtools.log('resetting');
       reset();
       throw AdminLeftGameException();
@@ -267,6 +276,10 @@ class SocketService implements SocketProvider {
   }
 
   @override
+  Stream<List<String>> get waitingPlayersStream =>
+      _waitingPlayersStreamController.stream;
+
+  @override
   Stream<Map<String, dynamic>> streamPoints() async* {
     while (!_endCompleter.isCompleted) {
       _pointsCompleter = Completer();
@@ -298,9 +311,15 @@ class SocketService implements SocketProvider {
 
   @override
   void leave() {
+    devtools.log('Player $player is leaving $room as admin? $isAdmin');
     if (isAdmin != null) {
-      socket.emit(
-          (isAdmin!) ? 'abort' : 'leave', {'player': player, 'room': room});
+      if (isAdmin!) {
+        socket.emit('abort', {'player': player, 'room': room});
+      } else {
+        socket.emit('leave', {'player': player, 'room': room});
+      }
+      // socket.emit(
+      //     (isAdmin!) ? 'abort' : 'leave', {'player': player, 'room': room});
     }
 
     room = null;

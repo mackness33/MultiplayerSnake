@@ -9,6 +9,7 @@ import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'dart:developer' as devtools;
 
 import 'package:multiplayersnake/services/socket/socket_service.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription<Map<String, dynamic>>? _pointsSubscription;
@@ -47,22 +48,23 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           );
         }
         manager.newGame(event.screen, rules, this);
-        Stream<Map<String, dynamic>> stream = manager.streamPlayers();
-        emit(GameStateStartWaiting(rules, stream));
+        // Stream<Map<String, dynamic>> stream = manager.streamPlayers();
+        // manager.waitingPlayersStream;
+        // emit(GameStateStartWaiting(rules, stream));
+        emit(GameStateStartWaiting(rules, manager.waitingPlayersStream));
         add(GameEventStarted(await manager.start));
+      } on SocketException catch (e) {
+        devtools.log(e.toString());
+        if (e is AdminLeftGameException) {
+          devtools.log('about to leeave the game. Admin has left');
+          add(const GameEventLeft());
+        } else {
+          devtools.log('Dunno, something happend');
+          emit(GameStateConfigurationFailed(e));
+        }
       } on Exception catch (e) {
         devtools.log(e.toString());
-        if (e is SocketException) {
-          emit(GameStateConfigurationFailed(e));
-        } else if (e is AdminLeftGameException) {
-          emit(const GameStateLeaving());
-          manager.leave();
-          emit(const GameStateLeft());
-          manager.disconnect();
-          emit(const GameStateReadyDisconnected());
-        } else {
-          emit(GameStateFailed(e));
-        }
+        emit(GameStateFailed(e));
       }
     });
 
@@ -83,6 +85,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         bool correctlyEnded = await manager.end;
         if (!correctlyEnded) {
           add(GameEventPlayed(correctlyEnded));
+        }
+      } on SocketException catch (e) {
+        devtools.log(e.toString());
+        if (e is AdminLeftGameException) {
+          devtools.log('about to leeave the game. Admin has left');
+          add(const GameEventLeft());
+        } else {
+          devtools.log('Dunno, something happend');
+          emit(GameStateConfigurationFailed(e));
         }
       } on Exception catch (e) {
         devtools.log(e.toString());

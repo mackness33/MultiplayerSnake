@@ -17,7 +17,8 @@ class _WaitingViewState extends State<WaitingView> {
   // This list holds the conversation
   // the ChatMessage class was declared above
   late final GameRules rules;
-  late final Stream<Map<String, dynamic>> streamPlayers;
+  // late final Stream<Map<String, dynamic>> streamPlayers;
+  late final Stream<List<String>> waitingPlayersStream;
   late bool _isButtonDisabled;
   @override
   void initState() {
@@ -27,7 +28,8 @@ class _WaitingViewState extends State<WaitingView> {
           .add(GameEventFailed(Exception('Something went wrong')));
     } else {
       final state = (context.read<GameBloc>().state as GameStateStartWaiting);
-      streamPlayers = state.streamPlayers;
+      // streamPlayers = state.streamPlayers;
+      waitingPlayersStream = state.streamPlayers;
       rules = state.rules;
     }
     _isButtonDisabled = false;
@@ -64,22 +66,24 @@ class _WaitingViewState extends State<WaitingView> {
             //   ],
             // ),
             const SizedBox(height: 30),
-            StreamBuilder(
-              stream: streamPlayers,
-              initialData: const <String, dynamic>{"initial": null},
-              builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+            StreamBuilder<List<String>>(
+              stream: waitingPlayersStream,
+              initialData: rules.players.map((player) => player.email).toList(),
+              builder: (context, AsyncSnapshot<List<String>> snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data?["initial"] != null) {
-                    if (snapshot.data!['isDeleted']) {
-                      rules.addPlayer(snapshot.data!['player'], false);
-                      setState(() {
-                        _isButtonDisabled =
-                            rules.players.length == rules.maxPlayers;
-                      });
-                    } else {
-                      rules.removePlayer(snapshot.data!['player']);
-                    }
-                  }
+                  // if (snapshot.data?["initial"] != null) {
+                  //   if (snapshot.data!['isDeleted']) {
+                  //     rules.addPlayer(snapshot.data!['player'], false);
+                  //     setState(() {
+                  //       _isButtonDisabled =
+                  //           rules.players.length == rules.maxPlayers;
+                  //     });
+                  //   } else {
+                  //     rules.removePlayer(snapshot.data!['player']);
+                  //   }
+                  // }
+
+                  rules.updatePlayers(snapshot.data!.toSet());
 
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
@@ -105,7 +109,7 @@ class _WaitingViewState extends State<WaitingView> {
                               color:
                                   player.isAdmin ? Colors.pink : Colors.blue),
                         ),
-                        trailing: player.isAdmin
+                        trailing: rules.isAdmin && !player.isAdmin
                             ? IconButton(
                                 icon: const Icon(Icons.remove),
                                 onPressed: () {
