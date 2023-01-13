@@ -56,14 +56,17 @@ class DatabaseFriendsService implements DatabaseFriendsProvider {
   @override
   Future<Iterable<DatabaseFriend>> getAllFriends() async {
     try {
-      final List<Map<String, dynamic>> friends =
-          await _supabase.from(friendsTable).select(queryAllFriendsWithEmail);
+      final List<dynamic> friends = await _supabase
+          .from(friendsTable)
+          .select(queryAllFriendsWithEmail)
+          .or('requester.eq.$_id,followed.eq.$_id');
 
       devtools.log('Friends: ${friends.toString()}');
       devtools.log('id: $_id');
       devtools.log('email: $_email');
 
-      return friends.map((friendRow) => DatabaseFriend.fromRow(friendRow, _id));
+      return friends.map((friendRow) =>
+          DatabaseFriend.fromRow(friendRow as Map<String, dynamic>, _id));
     } on DatabaseException catch (_) {
       throw GenericDatabaseException();
     } catch (e) {

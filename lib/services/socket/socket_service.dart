@@ -15,7 +15,7 @@ class SocketService implements SocketProvider {
   Completer<bool> _connectionCompleter;
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
-  StreamController<List<String>> _waitingPlayersStreamController;
+  final StreamController<List<String>> _waitingPlayersStreamController;
   Completer<bool> _endCompleter;
   Completer<Map<String, dynamic>> _results;
   Completer<Map<String, dynamic>> _pointsCompleter;
@@ -320,13 +320,13 @@ class SocketService implements SocketProvider {
   void leave() {
     devtools.log('Player $player is leaving $room as admin? $isAdmin');
     if (isAdmin != null) {
-      if (isAdmin!) {
-        socket.emit('abort', {'player': player, 'room': room});
-      } else {
-        socket.emit('leave', {'player': player, 'room': room});
-      }
-      // socket.emit(
-      //     (isAdmin!) ? 'abort' : 'leave', {'player': player, 'room': room});
+      // if (isAdmin!) {
+      //   socket.emit('abort', {'player': player, 'room': room});
+      // } else {
+      //   socket.emit('leave', {'player': player, 'room': room});
+      // }
+      socket.emit(
+          (isAdmin!) ? 'abort' : 'leave', {'player': player, 'room': room});
     }
 
     room = null;
