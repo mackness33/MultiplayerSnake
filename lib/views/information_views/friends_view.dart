@@ -3,8 +3,8 @@ import "dart:developer" as devtools show log;
 import "package:flutter/material.dart";
 import 'package:multiplayersnake/services/database/database_friend.dart';
 import 'package:multiplayersnake/services/database/database_friends_service.dart';
-import 'package:multiplayersnake/views/add_friend_view.dart';
-import 'package:multiplayersnake/views/static_profile_view.dart';
+import 'package:multiplayersnake/views/information_views/add_friend_view.dart';
+import 'package:multiplayersnake/views/information_views/static_profile_view.dart';
 
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});

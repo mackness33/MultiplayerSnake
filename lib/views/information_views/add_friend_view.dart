@@ -7,7 +7,7 @@ import 'package:multiplayersnake/services/database/database_profile.dart';
 import "dart:developer" as devtools show log;
 
 import 'package:multiplayersnake/services/database/database_profiles_service.dart';
-import 'package:multiplayersnake/views/static_profile_view.dart';
+import 'package:multiplayersnake/views/information_views/static_profile_view.dart';
 
 class AddFriendsView extends StatefulWidget {
   const AddFriendsView({super.key});

@@ -17,9 +17,9 @@ import 'package:multiplayersnake/services/auth/bloc/auth_state.dart';
 import 'package:multiplayersnake/services/auth/supabase_auth_provider.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game_orchestrator.dart';
-import 'package:multiplayersnake/views/login_view.dart';
+import 'package:multiplayersnake/views/authentication_views/login_view.dart';
 import 'package:multiplayersnake/views/home_page.dart';
-import 'package:multiplayersnake/views/signup_view.dart';
+import 'package:multiplayersnake/views/authentication_views/signup_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

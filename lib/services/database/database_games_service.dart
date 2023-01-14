@@ -5,7 +5,7 @@ import 'package:multiplayersnake/services/auth/auth_service.dart';
 import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/database/database_provider.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
-import 'package:multiplayersnake/views/statistics_view.dart';
+import 'package:multiplayersnake/views/information_views/statistics_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'database_exceptions.dart';

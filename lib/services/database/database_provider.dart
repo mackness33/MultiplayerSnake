@@ -1,7 +1,7 @@
 import 'package:multiplayersnake/services/database/database_friend.dart';
 import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/database/database_profile.dart';
-import 'package:multiplayersnake/views/statistics_view.dart';
+import 'package:multiplayersnake/views/information_views/statistics_view.dart';
 
 abstract class DatabaseProvider {
   void init();
