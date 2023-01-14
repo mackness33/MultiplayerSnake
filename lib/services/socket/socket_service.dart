@@ -333,7 +333,7 @@ class SocketService implements SocketProvider {
     player = null;
     isAdmin = null;
 
-    reset();
+    // reset();
   }
 }
 

@@ -42,11 +42,13 @@ class _WaitingViewState extends State<WaitingView> {
       appBar: AppBar(
         title: Text(rules.room),
         actions: [
-          IconButton(
+          if (rules.isAdmin)
+            IconButton(
               onPressed: () {
                 context.read<GameBloc>().add(const GameEventLeft());
               },
-              icon: const Icon(Icons.exit_to_app)),
+              icon: const Icon(Icons.exit_to_app),
+            ),
         ],
       ),
       body: SingleChildScrollView(
