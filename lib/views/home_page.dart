@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
+import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
 import 'package:multiplayersnake/services/game_orchestrator.dart';
 import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
 import 'package:multiplayersnake/services/socket/socket_service.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/game_page.dart';
-import 'package:multiplayersnake/views/resume_view.dart';
-import 'package:multiplayersnake/views/game_view.dart';
-import 'package:multiplayersnake/views/loading_view.dart';
+import 'package:multiplayersnake/views/game_views/resume_view.dart';
+import 'package:multiplayersnake/views/game_views/game_view.dart';
+import 'package:multiplayersnake/views/game_views/loading_view.dart';
 import 'package:multiplayersnake/views/menu_view.dart';
-
-import '../services/game/blocs/game_bloc.dart';
-import '../services/game/blocs/game_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,12 +21,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late SocketService socketManager;
-
   @override
   void initState() {
     super.initState();
-    socketManager = SocketService();
   }
 
   @override

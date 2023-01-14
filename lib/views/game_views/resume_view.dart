@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/database/database_game.dart';
+import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
-
-import '../services/game/blocs/game_bloc.dart';
 
 class ResumeView extends StatefulWidget {
   const ResumeView({super.key});
