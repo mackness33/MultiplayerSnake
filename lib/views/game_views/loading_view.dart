@@ -33,7 +33,7 @@ class _LoadingViewState extends State<LoadingView> {
         searchWidget(
           trailing: publicSwitch(isPublic: _gameRules.public, title: 'Public'),
           title: 'Create',
-          isAdmin: false,
+          isAdmin: true,
         ),
         option(
           title: 'Players',

@@ -14,11 +14,8 @@ class WaitingView extends StatefulWidget {
 }
 
 class _WaitingViewState extends State<WaitingView> {
-  // This list holds the conversation
-  // the ChatMessage class was declared above
-  late final GameRules rules;
-  // late final Stream<Map<String, dynamic>> streamPlayers;
-  late final Stream<List<String>> waitingPlayersStream;
+  late final GameRules _rules;
+  late final Stream<List<String>> _waitingPlayersStream;
   late bool _isButtonDisabled;
   @override
   void initState() {
@@ -27,10 +24,11 @@ class _WaitingViewState extends State<WaitingView> {
           .read<GameBloc>()
           .add(GameEventFailed(Exception('Something went wrong')));
     } else {
-      final state = (context.read<GameBloc>().state as GameStateStartWaiting);
+      final gameState =
+          (context.read<GameBloc>().state as GameStateStartWaiting);
       // streamPlayers = state.streamPlayers;
-      waitingPlayersStream = state.streamPlayers;
-      rules = state.rules;
+      _waitingPlayersStream = gameState.streamPlayers;
+      _rules = gameState.rules;
     }
     _isButtonDisabled = false;
     super.initState();
@@ -40,9 +38,9 @@ class _WaitingViewState extends State<WaitingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(rules.room),
+        title: Center(child: Text(_rules.room)),
         actions: [
-          if (rules.isAdmin)
+          if (_rules.isAdmin)
             IconButton(
               onPressed: () {
                 context.read<GameBloc>().add(const GameEventLeft());
@@ -51,101 +49,187 @@ class _WaitingViewState extends State<WaitingView> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const SizedBox(height: 30),
-            const Text('RULES'),
-            // Column(
-            //   children: [
-            Text('Max Players: ${rules.maxPlayers}'),
-            const SizedBox(height: 10),
-            Text('Max Time: ${rules.maxTime}'),
-            const SizedBox(height: 10),
-            Text('Max Points: ${rules.maxPoints}'),
-            const SizedBox(height: 10),
-            Text('Public: ${rules.public}'),
-            //   ],
-            // ),
-            const SizedBox(height: 30),
-            StreamBuilder<List<String>>(
-              stream: waitingPlayersStream,
-              initialData: rules.players.map((player) => player.email).toList(),
-              builder: (context, AsyncSnapshot<List<String>> snapshot) {
-                if (snapshot.hasData) {
-                  // if (snapshot.data?["initial"] != null) {
-                  //   if (snapshot.data!['isDeleted']) {
-                  //     rules.addPlayer(snapshot.data!['player'], false);
-                  //     setState(() {
-                  //       _isButtonDisabled =
-                  //           rules.players.length == rules.maxPlayers;
-                  //     });
-                  //   } else {
-                  //     rules.removePlayer(snapshot.data!['player']);
-                  //   }
-                  // }
-
-                  rules.updatePlayers(snapshot.data!.toSet());
-
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: rules.players.length,
-                    itemBuilder: (context, index) {
-                      final Player player = rules.players[index];
-                      return ListTile(
-                        // user room
-                        leading: player.isAdmin
-                            ? const Text(
-                                'Admin',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 15),
-                              )
-                            : null,
-                        // message
-                        title: Text(
-                          player.email,
-                          style: TextStyle(
-                              fontSize: 15,
-                              // use different colors for different people
-                              color:
-                                  player.isAdmin ? Colors.pink : Colors.blue),
-                        ),
-                        trailing: rules.isAdmin && !player.isAdmin
-                            ? IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () {
-                                  context.read<GameBloc>().add(
-                                        GameEventRemovePlayer(player.email),
-                                      );
-                                },
-                              )
-                            : null,
-                      );
-                    },
-                  );
-                }
-                return const LinearProgressIndicator();
-              },
-            ),
-            const SizedBox(height: 30),
-            (rules.player.isAdmin)
-                ? Center(
-                    child: ElevatedButton(
-                      onPressed: _isButtonDisabled
-                          ? null
-                          : () {
-                              context.read<GameBloc>().add(
-                                    const GameEventReady(),
-                                  );
-                            },
-                      child: const Text('Play'),
-                    ),
-                  )
-                : Container(),
+            rulesWidget(rules: _rules),
+            playersWidget(
+                rules: _rules, waitingPlayersStream: _waitingPlayersStream),
+            if (_rules.player.isAdmin)
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                child: ElevatedButton(
+                  onPressed: _isButtonDisabled
+                      ? null
+                      : () {
+                          context.read<GameBloc>().add(
+                                const GameEventReady(),
+                              );
+                        },
+                  child: const Text(
+                    'Start',
+                    style: TextStyle(fontSize: 17.5),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget rulesWidget({required GameRules rules}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 40, bottom: 20),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).primaryColor,
+      ),
+      child: Column(
+        children: [
+          const Center(
+            child: Text(
+              'Rules',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          ruleRow(
+            title1: 'Max Players',
+            value1: _rules.maxPlayers.toString(),
+            title2: 'Max Time',
+            value2: (_rules.maxTime == 0) ? '-' : _rules.maxTime.toString(),
+          ),
+          ruleRow(
+            title1: 'Max Points',
+            value1: (_rules.maxPoints == 0) ? '-' : _rules.maxPoints.toString(),
+            title2: 'Public',
+            value2: _rules.public.toString(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget rule({required String title, required String value}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 17.5),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        Text(
+          value,
+          style: const TextStyle(color: Colors.indigo, fontSize: 20),
+        ),
+      ],
+    );
+  }
+
+  Widget ruleRow({
+    required String title1,
+    required String value1,
+    required String title2,
+    required String value2,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          rule(
+            title: title1,
+            value: value1,
+          ),
+          rule(
+            title: title2,
+            value: value2,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget playersWidget(
+      {required GameRules rules,
+      required Stream<List<String>> waitingPlayersStream}) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).primaryColor,
+      ),
+      child: Column(
+        children: [
+          const Center(
+            child: Text(
+              'Players',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          StreamBuilder<List<String>>(
+            stream: waitingPlayersStream,
+            initialData: rules.players.map((player) => player.email).toList(),
+            builder: (context, AsyncSnapshot<List<String>> snapshot) {
+              if (snapshot.hasData) {
+                rules.updatePlayers(snapshot.data!.toSet());
+
+                return ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: rules.players.length,
+                  itemBuilder: (context, index) {
+                    return playerTile(
+                        player: rules.players[index], amAdmin: rules.isAdmin);
+                  },
+                );
+              }
+              return const LinearProgressIndicator();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget playerTile({required Player player, required bool amAdmin}) {
+    return ListTile(
+      // user room
+      leading: player.isAdmin
+          // ? const Text(
+          //     'Admin',
+          //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          //   )
+          ? const Icon(Icons.military_tech_outlined)
+          : null,
+      // message
+      title: Text(
+        player.email,
+        style: TextStyle(
+            fontSize: 15,
+            // use different colors for different people
+            color: player.isAdmin ? Colors.pink : Colors.blue),
+      ),
+      trailing: amAdmin && !player.isAdmin
+          ? IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                context.read<GameBloc>().add(
+                      GameEventRemovePlayer(player.email),
+                    );
+              },
+            )
+          : null,
     );
   }
 }
