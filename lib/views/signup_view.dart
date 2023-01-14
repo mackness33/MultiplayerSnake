@@ -53,42 +53,73 @@ class _SignupViewState extends State<SignupView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text("Signup")),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextField(
-                controller: _email,
-                enableSuggestions: false,
-                autocorrect: false,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(hintText: "Enter email")),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: "Enter password"),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                String email = _email.text;
-                String password = _password.text;
+        appBar: AppBar(title: const Center(child: Text("Signup"))),
+        body: Container(
+          margin: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: _email,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(fontSize: 17.5),
+                      decoration: const InputDecoration(
+                        hintText: "Enter email",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _password,
+                      obscureText: true,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      style: const TextStyle(fontSize: 17.5),
+                      decoration: const InputDecoration(
+                        hintText: "Enter password",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 50,
+                      width: 100,
+                      margin: const EdgeInsets.only(top: 20),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          String email = _email.text;
+                          String password = _password.text;
 
-                context.read<AuthBloc>().add(AuthEventSignup(email, password));
-              },
-              child: const Text("Register"),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(const AuthEventLogout());
-              },
-              child: const Text('Alredy registered? Login here!'),
-            ),
-          ],
+                          context
+                              .read<AuthBloc>()
+                              .add(AuthEventSignup(email, password));
+                        },
+                        child: const Text(
+                          "Sign up",
+                          style: TextStyle(fontSize: 17.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventLogout());
+                },
+                child: const Text(
+                  'Alredy registered? Login here!',
+                  style: TextStyle(fontSize: 17.5),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
