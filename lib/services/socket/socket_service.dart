@@ -15,7 +15,7 @@ class SocketService implements SocketProvider {
   Completer<bool> _connectionCompleter;
   Completer<List<String>> _readyCompleter;
   Completer<Map<String, dynamic>> _playersCompleter;
-  final StreamController<List<String>> _waitingPlayersStreamController;
+  StreamController<List<String>> _waitingPlayersStreamController;
   Completer<bool> _endCompleter;
   Completer<Map<String, dynamic>> _results;
   Completer<Map<String, dynamic>> _pointsCompleter;
