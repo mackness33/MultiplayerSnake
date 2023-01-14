@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multiplayersnake/enums/menu_action.dart';
 import 'package:multiplayersnake/services/auth/auth_exceptions.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_bloc.dart';
 import 'package:multiplayersnake/services/auth/bloc/auth_event.dart';
@@ -9,7 +8,6 @@ import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/information_views/friends_view.dart';
 import 'package:multiplayersnake/views/information_views/profile_view.dart';
-import 'package:multiplayersnake/views/information_views/static_profile_view.dart';
 import 'package:multiplayersnake/views/information_views/statistics_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

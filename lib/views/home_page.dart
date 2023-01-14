@@ -3,34 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
 import 'package:multiplayersnake/services/game/game_service.dart';
-import 'package:multiplayersnake/services/game_orchestrator.dart';
-import 'package:multiplayersnake/services/socket/blocs/socket_bloc.dart';
 import 'package:multiplayersnake/services/socket/socket_service.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/game_page.dart';
-import 'package:multiplayersnake/views/game_views/resume_view.dart';
-import 'package:multiplayersnake/views/game_views/game_view.dart';
-import 'package:multiplayersnake/views/game_views/loading_view.dart';
 import 'package:multiplayersnake/views/menu_view.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
