@@ -9,6 +9,7 @@ import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/utils/constants.dart';
 import 'package:multiplayersnake/views/friends_view.dart';
 import 'package:multiplayersnake/views/profile_view.dart';
+import 'package:multiplayersnake/views/static_profile_view.dart';
 import 'package:multiplayersnake/views/statistics_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -38,7 +39,7 @@ class _MenuViewState extends State<MenuView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Menu"),
+        title: const Center(child: Text("Menu")),
         actions: [
           IconButton(
             onPressed: () async {
@@ -54,55 +55,46 @@ class _MenuViewState extends State<MenuView> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              margin: const EdgeInsets.all(15),
-              child: ElevatedButton(
-                onPressed: () {
-                  context.read<GameBloc>().add(const GameEventConnection());
-                },
-                child: const Text('Let\'s play'),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(15),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const StatisticsView()),
-                  );
-                },
-                child: const Text('Stats'),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(15),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileView()),
-                  );
-                },
-                child: const Text('Profile'),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(15),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FriendsView()),
-                  );
-                },
-                child: const Text('Friends'),
-              ),
-            ),
+            option(
+                onPressed: addEvent(event: const GameEventConnection()),
+                title: 'Play'),
+            option(
+                onPressed: navigateTo(const StatisticsView()), title: 'Stats'),
+            option(
+                onPressed: navigateTo(const ProfileView()), title: 'Profile'),
+            option(
+                onPressed: navigateTo(const FriendsView()), title: 'Friends'),
           ],
+        ),
+      ),
+    );
+  }
+
+  void Function() navigateTo(StatefulWidget view) {
+    return () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => view),
+      );
+    };
+  }
+
+  void Function() addEvent({required GameEvent event}) {
+    return () {
+      context.read<GameBloc>().add(event);
+    };
+  }
+
+  Widget option({required void Function() onPressed, required String title}) {
+    return Container(
+      height: 75,
+      width: 150,
+      margin: const EdgeInsets.all(15),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -115,7 +107,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
     builder: (context) {
       return AlertDialog(
         title: const Text('Log out'),
-        content: const Text('Are you sure youwant to log out?'),
+        content: const Text('Are you sure you want to log out?'),
         actions: [
           TextButton(
             onPressed: () {
