@@ -50,7 +50,7 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: const Center(child: Text("Profile")),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -254,12 +254,6 @@ class _ProfileViewState extends State<ProfileView> {
   }
 }
 
-const List<String> titles = <String>['Email', 'Website', 'Full Name'];
-const List<String> infos = <String>[
-  'palmeiro.leonardo@gmail.com',
-  'https://github.com/leopalmeiro',
-  'www.linkedin.com/in/leonardo-palmeiro-834a1755'
-];
 const avatarUrlKey = 'avatar_url';
 const websiteKey = 'website';
 const fullNameKey = 'full_name';
