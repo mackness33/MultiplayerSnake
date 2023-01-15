@@ -16,9 +16,11 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   final DatabaseGamesStats _stats;
   String _email;
   String _id;
+  Filters _lastFilters = Filters.empty();
+  bool? _lastOnlyWins;
+  String _lastNames = '';
 
   List<DatabaseGame> _games = [];
-  List<DatabaseGame> _actualGames = [];
 
   late final StreamController<List<DatabaseGame>> _gamesStreamController;
 
@@ -43,7 +45,6 @@ class DatabaseGamesService implements DatabaseGamesProvider {
     _email = AuthService.supabase().currentUser!.email;
     _id = AuthService.supabase().currentUser!.id;
     _games = allGames.toList();
-    _actualGames = allGames.toList();
     _gamesStreamController.add(_games);
   }
 
@@ -73,31 +74,35 @@ class DatabaseGamesService implements DatabaseGamesProvider {
 
   @override
   void applyFilters(Filters filters) {
-    List<DatabaseGame> results =
-        _actualGames.where((game) => filters.apply(game)).toList();
-
-    _stats.update(results);
-    _gamesStreamController.add(results);
+    _lastFilters = filters;
+    _applyAllFilters();
   }
 
   @override
   void onlyWinsFilter(bool? onlyWins) {
-    List<DatabaseGame> results = _actualGames
-        .where((game) =>
-            (onlyWins != null) ? !onlyWins ^ game.user.isWinner : true)
-        .toList();
-    _stats.update(results);
-    _gamesStreamController.add(results);
+    _lastOnlyWins = onlyWins;
+    _applyAllFilters();
   }
 
   @override
   void searchGame(String names) {
+    _lastNames = names;
+    _applyAllFilters();
+  }
+
+  void _applyAllFilters() {
     List<DatabaseGame> results = _games
-        .where((game) => (names != '') ? names.contains(game.name) : true)
+        .where((game) =>
+            (_lastNames != '') ? _lastNames.contains(game.name) : true)
         .toList();
+    results = results
+        .where((game) => (_lastOnlyWins != null)
+            ? !_lastOnlyWins! ^ game.user.isWinner
+            : true)
+        .toList();
+    results = results.where((game) => _lastFilters.apply(game)).toList();
 
     _stats.update(results);
-    _actualGames = results;
     _gamesStreamController.add(results);
   }
 

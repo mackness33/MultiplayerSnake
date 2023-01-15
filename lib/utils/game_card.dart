@@ -17,18 +17,19 @@ Widget gameCard({required DatabaseGame game, required List<Widget> rules}) {
 
 Widget titleWidget({
   required bool isWinner,
-  String? title,
+  required String title,
 }) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 20),
     decoration: BoxDecoration(
       borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-      color: isWinner ? Colors.blue : Colors.deepOrangeAccent.shade700,
+      color:
+          isWinner ? Colors.green.shade700 : Colors.deepOrangeAccent.shade700,
     ),
     child: Center(
         child: Text(
-      title ?? 'Daje',
+      title,
       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     )),
   );
@@ -44,7 +45,7 @@ Widget bodyWidget({
       borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
       color: game.user.isWinner
-          ? const Color.fromARGB(152, 33, 149, 243)
+          ? const Color.fromARGB(152, 56, 142, 60)
           : const Color.fromARGB(152, 221, 44, 0),
     ),
     child: Column(
@@ -57,7 +58,7 @@ Widget bodyWidget({
         ),
         // ruleWidget(title: 'ID', value: game.id.toString()),
         const Divider(),
-        rulesWidget(game: game, rows: rows),
+        rulesWidget(rows: rows, title: 'Rules'),
         const Divider(),
         playersWidget(game: game),
       ],
@@ -65,12 +66,12 @@ Widget bodyWidget({
   );
 }
 
-Widget rulesWidget({required DatabaseGame game, required List<Widget> rows}) {
+Widget rulesWidget({required List<Widget> rows, required String title}) {
   List<Widget> widgets = <Widget>[
-    const Center(
+    Center(
       child: Text(
-        'Rules',
-        style: TextStyle(fontSize: 20),
+        title,
+        style: const TextStyle(fontSize: 20),
       ),
     ),
   ];

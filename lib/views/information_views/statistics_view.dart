@@ -23,10 +23,7 @@ class _StatisticsViewState extends State<StatisticsView> {
   late final TextEditingController _minPoints;
   late Filters _filters;
   late DatabaseGamesStats _stats;
-  late List<PanelData> panelData = <PanelData>[
-    PanelData(true, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
-    PanelData(true, 'Stats', statsWidget(), const Icon(Icons.data_usage))
-  ];
+  late List<PanelData> _panelData;
 
   @override
   void initState() {
@@ -38,9 +35,13 @@ class _StatisticsViewState extends State<StatisticsView> {
     _databaseService.init();
     _filters = Filters(null, null, null, null, null);
     _stats = _databaseService.getStats();
-    panelData = <PanelData>[
-      PanelData(false, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
-      PanelData(false, 'Stats', statsWidget(), const Icon(Icons.data_usage))
+    _panelData = <PanelData>[
+      PanelData(
+        false,
+        headerWidget(title: 'Filters', icon: const Icon(Icons.filter_alt)),
+        filtersWidget(),
+        const Icon(Icons.filter_alt),
+      )
     ];
     _onlyWins = null;
     super.initState();
@@ -60,7 +61,7 @@ class _StatisticsViewState extends State<StatisticsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Statistics"),
+        title: const Center(child: Text("Statistics")),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -69,115 +70,10 @@ class _StatisticsViewState extends State<StatisticsView> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  const Text('Only wins: '),
-                  Checkbox(
-                    value: _onlyWins,
-                    tristate: true,
-                    onChanged: ((bool? value) {
-                      setState(() {
-                        _onlyWins = value;
-                        _databaseService.onlyWinsFilter(_onlyWins);
-                        _stats = _databaseService.getStats();
-                        panelData[1].body = statsWidget();
-                        devtools.log(_stats.toString());
-                      });
-                    }),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _search,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Search',
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      devtools.log('Search');
-                      _databaseService.searchGame(_search.text);
-                    },
-                    child: const Text('Search'),
-                  ),
-                ],
-              ),
-              ExpansionPanelList(
-                expansionCallback: (int index, bool isExpanded) {
-                  setState(() {
-                    panelData[index].isExpanded = !isExpanded;
-                  });
-                },
-                children: panelData.map<ExpansionPanel>((PanelData data) {
-                  return ExpansionPanel(
-                    headerBuilder: ((context, isExpanded) {
-                      return Text(data.header);
-                    }),
-                    body: data.body,
-                    isExpanded: data.isExpanded,
-                  );
-                }).toList(),
-              ),
-              StreamBuilder(
-                stream: _databaseService.allGames,
-                builder: ((context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      if (snapshot.hasData) {
-                        final allGames = snapshot.data as List<DatabaseGame>;
-                        // devtools.log(allGames.toString());
-                        return ListView.builder(
-                          physics: const ClampingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: allGames.length,
-                          itemBuilder: (context, index) {
-                            final game = allGames[index];
-                            return gameCard(
-                              game: allGames[index],
-                              rules: <Widget>[
-                                ruleRow(
-                                  rules: <Widget>[
-                                    ruleWidget(
-                                      title: 'Max Points',
-                                      value: (game.maxPoints == 0)
-                                          ? '-'
-                                          : game.maxPoints.toString(),
-                                      // value: '-',
-                                    ),
-                                    ruleWidget(
-                                      title: 'Max Time',
-                                      value: (allGames[index].maxTime == 0)
-                                          ? '-'
-                                          : allGames[index].maxTime.toString(),
-                                    ),
-                                  ],
-                                ),
-                                ruleRow(
-                                  rules: <Widget>[
-                                    ruleWidget(
-                                      title: 'Public',
-                                      value: game.public.toString(),
-                                    ),
-                                    ruleWidget(
-                                      title: 'Total players',
-                                      value: game.players.length.toString(),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
-                    default:
-                      return const CircularProgressIndicator();
-                  }
-                }),
-              ),
+              searchWidget(title: 'Search'),
+              expansionPanel(setStatePanel: setExpanded),
+              statsWidget(),
+              gamesWidget(),
             ],
           ),
         ),
@@ -185,11 +81,185 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
+  // Games
+
+  Widget gamesWidget() {
+    return StreamBuilder(
+      stream: _databaseService.allGames,
+      builder: ((context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            if (snapshot.hasData) {
+              final allGames = snapshot.data as List<DatabaseGame>;
+
+              return ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: allGames.length,
+                itemBuilder: (context, index) =>
+                    gameCardWidget(game: allGames[index]),
+              );
+            } else {
+              return const CircularProgressIndicator();
+            }
+          default:
+            return const CircularProgressIndicator();
+        }
+      }),
+    );
+  }
+
+  Widget gameCardWidget({required DatabaseGame game}) {
+    return gameCard(
+      game: game,
+      rules: <Widget>[
+        ruleRow(
+          rules: <Widget>[
+            ruleWidget(
+              title: 'Max Points',
+              value: (game.maxPoints == 0) ? '-' : game.maxPoints.toString(),
+              // value: '-',
+            ),
+            ruleWidget(
+              title: 'Max Time',
+              value: (game.maxTime == 0) ? '-' : game.maxTime.toString(),
+            ),
+          ],
+        ),
+        ruleRow(
+          rules: <Widget>[
+            ruleWidget(
+              title: 'Public',
+              value: game.public.toString(),
+            ),
+            ruleWidget(
+              title: 'Total players',
+              value: game.players.length.toString(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Expanded Panels
+
+  void setExpanded({required int index, required bool isExpanded}) {
+    setState(() {
+      _panelData[index].isExpanded = !isExpanded;
+    });
+  }
+
+  List<ExpansionPanel> listExpansionPanel() {
+    return _panelData.map<ExpansionPanel>((PanelData data) {
+      return ExpansionPanel(
+        headerBuilder: ((context, isExpanded) {
+          return data.header;
+        }),
+        body: data.body,
+        isExpanded: data.isExpanded,
+      );
+    }).toList();
+  }
+
+  Widget expansionPanel({
+    required Function setStatePanel,
+  }) {
+    return ExpansionPanelList(
+      expansionCallback: (int index, bool isExpanded) {
+        setStatePanel(index: index, isExpanded: isExpanded);
+      },
+      children: listExpansionPanel(),
+    );
+  }
+
+  Widget headerWidget({required String title, required Icon icon}) {
+    return Container(
+      margin: const EdgeInsets.only(left: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          icon,
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Search
+
+  Widget onlyWinsCheckbox({required String title}) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 17.5),
+        ),
+        const SizedBox(width: 10),
+        Checkbox(
+          value: _onlyWins,
+          tristate: true,
+          onChanged: ((bool? value) {
+            setState(() {
+              _onlyWins = value;
+              _databaseService.onlyWinsFilter(_onlyWins);
+              _stats = _databaseService.getStats();
+            });
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget searchWidget({required String title}) {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          onlyWinsCheckbox(title: 'Only Wins'),
+          Expanded(
+            child: TextField(
+              controller: _search,
+              enableSuggestions: false,
+              autocorrect: false,
+              style: const TextStyle(fontSize: 17.5),
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                hintText: "Enter name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
+          ElevatedButton(
+            onPressed: () {
+              _databaseService.searchGame(_search.text);
+              setState(() {
+                _stats = _databaseService.getStats();
+              });
+            },
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 17.5),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // filters panel
+
   Widget filtersWidget() {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromARGB(255, 46, 178, 94)),
-      ),
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
@@ -209,20 +279,44 @@ class _StatisticsViewState extends State<StatisticsView> {
           filterRow('Players', playersWidget()),
           Container(
             padding: const EdgeInsets.only(top: 20.0),
-            child: ElevatedButton(
-              onPressed: () {
-                devtools.log('Applying filters ');
-                setState(() {
-                  _filters.update(_players.text, int.tryParse(_maxPoints.text),
-                      int.tryParse(_minPoints.text));
-                  devtools.log(_filters.toString());
-                  _databaseService.applyFilters(_filters);
-                  _stats = _databaseService.getStats();
-                  panelData[1].body = statsWidget();
-                  devtools.log(_stats.toString());
-                });
-              },
-              child: const Text('Apply'),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _filters.reset();
+                      _databaseService.applyFilters(_filters);
+                      _stats = _databaseService.getStats();
+                      _maxPoints.text = '';
+                      _minPoints.text = '';
+                      _date.text = '';
+                      _players.text = '';
+                    });
+                  },
+                  child: const Text(
+                    'Reset',
+                    style: TextStyle(fontSize: 17.5),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    devtools.log('Applying filters ');
+                    setState(() {
+                      _filters.update(
+                          _players.text,
+                          int.tryParse(_maxPoints.text),
+                          int.tryParse(_minPoints.text));
+                      _databaseService.applyFilters(_filters);
+                      _stats = _databaseService.getStats();
+                    });
+                  },
+                  child: const Text(
+                    'Apply',
+                    style: TextStyle(fontSize: 17.5),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -324,43 +418,47 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
+  // stats Board
+
   Widget statsWidget() {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+      padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromARGB(255, 46, 178, 94)),
-      ),
-      padding: const EdgeInsets.all(20.0),
-      child: Row(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('Wins: ${_stats.countWins}'),
-                Text('Losses: ${_stats.countLosses}'),
-              ],
+          borderRadius: BorderRadius.circular(20), color: Colors.indigo),
+      child: rulesWidget(rows: <Widget>[
+        ruleRow(
+          rules: <Widget>[
+            ruleWidget(
+              title: 'Wins',
+              value: _stats.countWins.toString(),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('Max Points Made: ${_stats.maxPointsMade}'),
-                Text('Total Game Played: ${_stats.totalGamePlayed}'),
-              ],
+            ruleWidget(
+              title: 'Total Game Played',
+              value: _stats.totalGamePlayed.toString(),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+        ruleRow(
+          rules: <Widget>[
+            ruleWidget(
+              title: 'Max Points Made',
+              value: _stats.maxPointsMade.toString(),
+            ),
+            ruleWidget(
+              title: 'Losses',
+              value: _stats.countLosses.toString(),
+            ),
+          ],
+        ),
+      ], title: 'Stats'),
     );
   }
 }
 
 class PanelData {
   bool isExpanded;
-  final String header;
+  final Widget header;
   Widget body;
   final Icon icon;
   PanelData(this.isExpanded, this.header, this.body, this.icon);
@@ -376,6 +474,8 @@ class Filters {
   Filters(this.players, this.maxPoints, this.minPoints, this.startDate,
       this._endDate);
 
+  Filters.empty();
+
   DateTime? get endDate => _endDate;
   set endDate(DateTime? eD) => _endDate = eD?.add(const Duration(days: 1));
 
@@ -385,14 +485,18 @@ class Filters {
     this.minPoints = minPoints;
   }
 
+  void reset() {
+    players = null;
+    maxPoints = null;
+    minPoints = null;
+    startDate = null;
+    _endDate = null;
+  }
+
   bool apply(DatabaseGame game) {
     bool result = true;
 
     if (players != null && players != '') {
-      // result &= players!.contains(game.player0) ||
-      //     players!.contains(game.player1) ||
-      //     players!.contains(game.player2) ||
-      //     players!.contains(game.player3);
       result &= game.players.fold(
           false,
           (previousValue, player) =>
