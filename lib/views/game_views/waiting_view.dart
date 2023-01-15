@@ -127,7 +127,7 @@ class _WaitingViewState extends State<WaitingView> {
         ),
         Text(
           value,
-          style: const TextStyle(color: Colors.indigo, fontSize: 20),
+          style: const TextStyle(color: Colors.blueAccent, fontSize: 20),
         ),
       ],
     );
@@ -167,7 +167,7 @@ class _WaitingViewState extends State<WaitingView> {
       decoration: BoxDecoration(
         border: Border.all(),
         borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).primaryColor,
+        color: Colors.blueAccent.shade700,
       ),
       child: Column(
         children: [

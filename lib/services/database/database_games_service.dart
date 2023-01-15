@@ -13,11 +13,12 @@ import 'dart:developer' as devtools show log;
 
 class DatabaseGamesService implements DatabaseGamesProvider {
   final SupabaseClient _supabase;
-  final Stats _stats;
+  final DatabaseGamesStats _stats;
   String _email;
   String _id;
 
   List<DatabaseGame> _games = [];
+  List<DatabaseGame> _actualGames = [];
 
   late final StreamController<List<DatabaseGame>> _gamesStreamController;
 
@@ -27,7 +28,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
       : _supabase = Supabase.instance.client,
         _email = AuthService.supabase().currentUser!.email,
         _id = AuthService.supabase().currentUser!.id,
-        _stats = Stats.empty() {
+        _stats = DatabaseGamesStats.empty() {
     _gamesStreamController = StreamController<List<DatabaseGame>>.broadcast(
       onListen: () {
         _gamesStreamController.sink.add(_games);
@@ -42,6 +43,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
     _email = AuthService.supabase().currentUser!.email;
     _id = AuthService.supabase().currentUser!.id;
     _games = allGames.toList();
+    _actualGames = allGames.toList();
     _gamesStreamController.add(_games);
   }
 
@@ -72,7 +74,7 @@ class DatabaseGamesService implements DatabaseGamesProvider {
   @override
   void applyFilters(Filters filters) {
     List<DatabaseGame> results =
-        _games.where((game) => filters.apply(game)).toList();
+        _actualGames.where((game) => filters.apply(game)).toList();
 
     _stats.update(results);
     _gamesStreamController.add(results);
@@ -80,8 +82,9 @@ class DatabaseGamesService implements DatabaseGamesProvider {
 
   @override
   void onlyWinsFilter(bool? onlyWins) {
-    List<DatabaseGame> results = _games
-        .where((game) => (onlyWins != null) ? onlyWins && game.winner : true)
+    List<DatabaseGame> results = _actualGames
+        .where((game) =>
+            (onlyWins != null) ? !onlyWins ^ game.user.isWinner : true)
         .toList();
     _stats.update(results);
     _gamesStreamController.add(results);
@@ -94,26 +97,27 @@ class DatabaseGamesService implements DatabaseGamesProvider {
         .toList();
 
     _stats.update(results);
+    _actualGames = results;
     _gamesStreamController.add(results);
   }
 
-  Stats getStats() => _stats;
+  DatabaseGamesStats getStats() => _stats;
 }
 
 const table = 'games';
 const selectAllGamesOfUserQuery =
     '*, player0(email), player1(email), player2(email), player3(email)';
 
-class Stats {
+class DatabaseGamesStats {
   int _countWins;
   int _countLosses;
   int _maxPointsMade;
   int _totalGamePlayed;
 
-  Stats(this._countWins, this._countLosses, this._maxPointsMade,
+  DatabaseGamesStats(this._countWins, this._countLosses, this._maxPointsMade,
       this._totalGamePlayed);
 
-  Stats.empty()
+  DatabaseGamesStats.empty()
       : _countWins = 0,
         _countLosses = 0,
         _maxPointsMade = 0,
@@ -131,8 +135,8 @@ class Stats {
     _totalGamePlayed = games.length;
 
     for (DatabaseGame game in games) {
-      game.winner ? _countWins++ : _countLosses++;
-      _maxPointsMade = max(_maxPointsMade, game.pointsUser);
+      game.user.isWinner ? _countWins++ : _countLosses++;
+      _maxPointsMade = max(_maxPointsMade, game.user.points);
     }
   }
 

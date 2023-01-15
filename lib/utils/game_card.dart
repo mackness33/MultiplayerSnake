@@ -1,54 +1,162 @@
 import 'package:flutter/material.dart';
 import 'package:multiplayersnake/services/database/database_game.dart';
 
-Card gameCard(DatabaseGame game) {
-  return Card(
+Widget gameCard({required DatabaseGame game, required List<Widget> rules}) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+    child: Card(
+      child: Column(
+        children: [
+          titleWidget(isWinner: game.user.isWinner, title: game.name),
+          bodyWidget(game: game, rows: rules),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget titleWidget({
+  required bool isWinner,
+  String? title,
+}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 20),
+    decoration: BoxDecoration(
+      borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+      color: isWinner ? Colors.blue : Colors.deepOrangeAccent.shade700,
+    ),
+    child: Center(
+        child: Text(
+      title ?? 'Daje',
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    )),
+  );
+}
+
+Widget bodyWidget({
+  required DatabaseGame game,
+  required List<Widget> rows,
+}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    decoration: BoxDecoration(
+      borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
+      color: game.user.isWinner
+          ? const Color.fromARGB(152, 33, 149, 243)
+          : const Color.fromARGB(152, 221, 44, 0),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child:
+              Center(child: ruleWidget(title: 'ID', value: game.id.toString())),
+        ),
+        // ruleWidget(title: 'ID', value: game.id.toString()),
+        const Divider(),
+        rulesWidget(game: game, rows: rows),
+        const Divider(),
+        playersWidget(game: game),
+      ],
+    ),
+  );
+}
+
+Widget rulesWidget({required DatabaseGame game, required List<Widget> rows}) {
+  List<Widget> widgets = <Widget>[
+    const Center(
+      child: Text(
+        'Rules',
+        style: TextStyle(fontSize: 20),
+      ),
+    ),
+  ];
+  widgets.addAll(rows);
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 20),
+    child: Column(
+      children: widgets,
+    ),
+  );
+}
+
+Widget ruleWidget({required String title, required String value}) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(fontSize: 17.5),
+      ),
+      const SizedBox(
+        width: 20,
+      ),
+      Text(
+        value,
+        style: const TextStyle(fontSize: 20),
+      ),
+    ],
+  );
+}
+
+Widget ruleRow({required List<Widget> rules}) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 10),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisSize: MainAxisSize.max,
+      children: rules,
+    ),
+  );
+}
+
+Widget playersWidget({required DatabaseGame game}) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 15),
     child: Column(
       children: [
-        const SizedBox(height: 15),
-        Text(game.name),
-        const SizedBox(height: 5),
-        const Divider(
-          thickness: 1,
+        const Center(
+          child: Text(
+            'Players',
+            style: TextStyle(fontSize: 20),
+          ),
         ),
-        const SizedBox(height: 5),
-        Text('ID: ${game.id}'),
-        const SizedBox(height: 10),
-        const Divider(
-          thickness: 1,
+        ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: game.players.length,
+          itemBuilder: (context, index) {
+            return playerTile(
+              player: game.players[index],
+              // amUser: game.players[index].email == game.user.email,
+              amUser: game.index == index,
+            );
+          },
         ),
-        const SizedBox(height: 5),
-        const Text('Rules'),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text('Max Time: ${game.maxTime} min'),
-            const Text('Max Points: 2 pts'),
-          ],
-        ),
-        const SizedBox(height: 5),
-        const Divider(
-          thickness: 1,
-        ),
-        const SizedBox(height: 5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text('${game.player0}: ${game.points0}'),
-            Text('${game.player1}: ${game.points1}'),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text('${game.player2}: ${game.points2}'),
-            Text('${game.player3}: ${game.points3}'),
-          ],
-        ),
-        const SizedBox(height: 15),
       ],
+    ),
+  );
+}
+
+Widget playerTile({required DatabasePlayer player, required bool amUser}) {
+  return ListTile(
+    leading: (player.isWinner) ? const Icon(Icons.hail) : null,
+    title: Text(
+      player.email,
+      style: TextStyle(
+          fontSize: 15,
+          // use different colors for different people
+          color: amUser ? Colors.pink : Colors.blue),
+    ),
+    trailing: Text(
+      player.points.toString(),
+      style: TextStyle(
+          fontSize: 15,
+          // use different colors for different people
+          color: amUser ? Colors.pink : Colors.blue),
     ),
   );
 }

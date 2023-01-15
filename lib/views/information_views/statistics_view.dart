@@ -15,14 +15,14 @@ class StatisticsView extends StatefulWidget {
 
 class _StatisticsViewState extends State<StatisticsView> {
   final DatabaseGamesService _databaseService = DatabaseGamesService();
+  late bool? _onlyWins;
   late final TextEditingController _search;
   late final TextEditingController _date;
   late final TextEditingController _players;
   late final TextEditingController _maxPoints;
   late final TextEditingController _minPoints;
-  late bool? _onlyWins = true;
   late Filters _filters;
-  late Stats _stats;
+  late DatabaseGamesStats _stats;
   late List<PanelData> panelData = <PanelData>[
     PanelData(true, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
     PanelData(true, 'Stats', statsWidget(), const Icon(Icons.data_usage))
@@ -42,6 +42,7 @@ class _StatisticsViewState extends State<StatisticsView> {
       PanelData(false, 'Filter', filtersWidget(), const Icon(Icons.filter_alt)),
       PanelData(false, 'Stats', statsWidget(), const Icon(Icons.data_usage))
     ];
+    _onlyWins = null;
     super.initState();
   }
 
@@ -133,7 +134,40 @@ class _StatisticsViewState extends State<StatisticsView> {
                           itemCount: allGames.length,
                           itemBuilder: (context, index) {
                             final game = allGames[index];
-                            return gameCard(game);
+                            return gameCard(
+                              game: allGames[index],
+                              rules: <Widget>[
+                                ruleRow(
+                                  rules: <Widget>[
+                                    ruleWidget(
+                                      title: 'Max Points',
+                                      value: (game.maxPoints == 0)
+                                          ? '-'
+                                          : game.maxPoints.toString(),
+                                      // value: '-',
+                                    ),
+                                    ruleWidget(
+                                      title: 'Max Time',
+                                      value: (allGames[index].maxTime == 0)
+                                          ? '-'
+                                          : allGames[index].maxTime.toString(),
+                                    ),
+                                  ],
+                                ),
+                                ruleRow(
+                                  rules: <Widget>[
+                                    ruleWidget(
+                                      title: 'Public',
+                                      value: game.public.toString(),
+                                    ),
+                                    ruleWidget(
+                                      title: 'Total players',
+                                      value: game.players.length.toString(),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
                           },
                         );
                       } else {
@@ -324,14 +358,6 @@ class _StatisticsViewState extends State<StatisticsView> {
   }
 }
 
-class FilterData {
-  bool isExpanded;
-  final String header;
-  final Widget body;
-  final Icon icon;
-  FilterData(this.isExpanded, this.header, this.body, this.icon);
-}
-
 class PanelData {
   bool isExpanded;
   final String header;
@@ -363,18 +389,22 @@ class Filters {
     bool result = true;
 
     if (players != null && players != '') {
-      result &= players!.contains(game.player0) ||
-          players!.contains(game.player1) ||
-          players!.contains(game.player2) ||
-          players!.contains(game.player3);
+      // result &= players!.contains(game.player0) ||
+      //     players!.contains(game.player1) ||
+      //     players!.contains(game.player2) ||
+      //     players!.contains(game.player3);
+      result &= game.players.fold(
+          false,
+          (previousValue, player) =>
+              previousValue || players!.contains(player.email));
     }
 
     if (maxPoints != null) {
-      result &= (game.pointsUser <= maxPoints!);
+      result &= (game.user.points <= maxPoints!);
     }
 
     if (minPoints != null) {
-      result &= (game.pointsUser >= minPoints!);
+      result &= (game.user.points >= minPoints!);
     }
 
     if (startDate != null && _endDate != null) {

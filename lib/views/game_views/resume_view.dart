@@ -4,6 +4,7 @@ import 'package:multiplayersnake/services/database/database_game.dart';
 import 'package:multiplayersnake/services/game/blocs/game_bloc.dart';
 import 'package:multiplayersnake/services/game/blocs/game_event.dart';
 import 'package:multiplayersnake/services/game/blocs/game_state.dart';
+import 'package:multiplayersnake/utils/game_card.dart';
 
 class ResumeView extends StatefulWidget {
   const ResumeView({super.key});
@@ -23,48 +24,42 @@ class _ResumeViewState extends State<ResumeView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Card(
-              child: Column(
-                children: [
-                  const SizedBox(height: 15),
-                  Text(resume.name),
-                  const SizedBox(height: 5),
-                  const Divider(
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 5),
-                  const Text('Rules'),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('Max Time: ${resume.maxTime} min'),
-                      const Text('Max Points: 2 pts'),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  const Divider(
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('${resume.player0}: ${resume.points0}'),
-                      Text('${resume.player1}: ${resume.points1}'),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('${resume.player2}: ${resume.points2}'),
-                      Text('${resume.player3}: ${resume.points3}'),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                ],
-              ),
+            gameCard(
+              game: resume,
+              rules: <Widget>[
+                ruleRow(
+                  rules: <Widget>[
+                    ruleWidget(
+                      title: 'Max Points',
+                      // value: (game.maxPoints == 0)
+                      //     ? '-'
+                      //     : game.maxPoints.toString(),
+                      value: '-',
+                    ),
+                    ruleWidget(
+                      title: 'Max Time',
+                      value: (resume.maxTime == 0)
+                          ? '-'
+                          : resume.maxTime.toString(),
+                    ),
+                  ],
+                ),
+                ruleRow(
+                  rules: <Widget>[
+                    ruleWidget(
+                      title: 'Public',
+                      // value: (game.maxPoints == 0)
+                      //     ? '-'
+                      //     : game.maxPoints.toString(),
+                      value: '-',
+                    ),
+                    ruleWidget(
+                      title: 'Total players',
+                      value: resume.players.length.toString(),
+                    ),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 50),
             ElevatedButton(
